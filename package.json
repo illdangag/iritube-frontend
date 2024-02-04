@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "dev": "next -p 3000",
+    "dev": "next -p 3001",
     "build": "next build",
     "start": "next start",
     "type-check": "tsc",
@@ -15,9 +15,13 @@
     "firebase": "^9.17.1",
     "framer-motion": "^11.0.3",
     "next": "^14.1.0",
+    "nookies": "^2.5.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "recoil": "^0.7.7"
+    "react-icons": "^5.0.1",
+    "recoil": "^0.7.7",
+    "sass": "^1.70.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/node": "^12.12.21",
