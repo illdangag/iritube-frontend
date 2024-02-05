@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
 
-import { TokenInfo, Account, } from '../interfaces';
+import { TokenInfo, Account, Video, } from '../interfaces';
 import process from 'process';
 
 const apiKey: string = process.env.apiKey as string;
@@ -9,6 +9,7 @@ const backendURL: string = process.env.backendURL as string;
 type IricomAPIList = {
   refreshToken: (tokenInfo: TokenInfo) => Promise<TokenInfo>,
   getMyAccount: (tokenInfo: TokenInfo) => Promise<Account>,
+  getVideo: (tokenInfo: TokenInfo | null, videoKey: string) => Promise<Video>,
 };
 
 function setToken (config: AxiosRequestConfig, tokenInfo: TokenInfo | null) {
@@ -54,6 +55,21 @@ const IritubeAPI: IricomAPIList = {
 
     try {
       const response: AxiosResponse<Account> = await axios.request(config);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getVideo: async (tokenInfo: TokenInfo | null, videoKey: string): Promise<Video> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendURL}/v1/videos/${videoKey}`,
+      method: 'GET',
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<Video> = await axios.request(config);
       return response.data;
     } catch (error) {
       throw error;

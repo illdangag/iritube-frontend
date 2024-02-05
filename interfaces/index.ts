@@ -44,3 +44,29 @@ export type Account = {
   nickname: string,
   auth: AccountAuth,
 }
+
+export enum VideoState {
+  ENABLED = 'ENABLED',
+}
+
+export enum VideoShare {
+  PUBLIC = 'PUBLIC',
+  URL = 'URL',
+  PRIVATE = 'PRIVATE',
+}
+
+export class Video {
+  public id: string;
+  public videoKey: string;
+  public title: string;
+  public description: string;
+  public duration: number;
+  public state: VideoState;
+  public share: VideoShare;
+  public tags: string[];
+
+  public get hlsPath (): string {
+    const backend: string = process.env.backendURL;
+    return `${backend}/v1/stream/${this.videoKey}/master.m3u8`;
+  }
+}
