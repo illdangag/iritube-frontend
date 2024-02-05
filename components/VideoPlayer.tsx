@@ -1,5 +1,5 @@
 import { useRef, useEffect, MouseEvent, useState, } from 'react';
-import { Box, VStack, CardBody, Text, Heading, Button, HStack, IconButton, Progress, } from '@chakra-ui/react';
+import { Box, VStack, Heading, HStack, IconButton, Progress, Fade, Flex, } from '@chakra-ui/react';
 import { MdPlayArrow, MdPause,  } from 'react-icons/md';
 
 import Hls from 'hls.js';
@@ -21,6 +21,8 @@ const VideoPlayer = ({
   const videoRef = useRef();
   const [videoState, setVideoState,] = useState<VideoState>(VideoState.PAUSE);
   const [videoProgress, setVideoProgress,] = useState<number>(0);
+  const [showCenterPlay, setShowCenterPlay,] = useState<boolean>(false);
+  const [showCenterPause, setShowCenterPause,] = useState<boolean>(false);
 
   useEffect(() => {
     const hls = new Hls({
@@ -55,12 +57,20 @@ const VideoPlayer = ({
     void (videoRef.current as HTMLVideoElement).play()
       .then(() => {
         setVideoState(VideoState.PLAY);
+        setShowCenterPlay(true);
+        setTimeout(() => {
+          setShowCenterPlay(false);
+        }, 400);
       });
   };
 
   const pause = () => {
     (videoRef.current as HTMLVideoElement).pause();
     setVideoState(VideoState.PAUSE);
+    setShowCenterPause(true);
+    setTimeout(() => {
+      setShowCenterPause(false);
+    }, 400);
   };
 
   const onContextMenu = (event: MouseEvent<HTMLVideoElement>) => {
@@ -90,6 +100,36 @@ const VideoPlayer = ({
           <VStack onClick={onClickVideo}>
             <video ref={videoRef} onContextMenu={onContextMenu}/>
           </VStack>
+          <Fade in={showCenterPlay}>
+            <Box position='absolute' top='50%' left='50%' transform='translate(-50%, -50%)'>
+              <IconButton
+                opacity={0.4}
+                backgroundColor='#495057'
+                aria-label=''
+                isRound={true}
+                size='xl'
+                colorScheme='gray'
+                fontSize='3rem'
+                padding='0.8rem'
+                icon={<MdPlayArrow/>}
+              />
+            </Box>
+          </Fade>
+          <Fade in={showCenterPause}>
+            <Box position='absolute' top='50%' left='50%' transform='translate(-50%, -50%)'>
+              <IconButton
+                opacity={0.4}
+                backgroundColor='#495057'
+                aria-label=''
+                isRound={true}
+                size='xl'
+                colorScheme='gray'
+                fontSize='3rem'
+                padding='0.8rem'
+                icon={<MdPause/>}
+              />
+            </Box>
+          </Fade>
           <VStack position='absolute' bottom='0' padding='0.5rem' width='100%' alignItems='row'>
             <Box><Progress height='0.2rem' value={videoProgress}/></Box>
             <HStack>
@@ -115,7 +155,6 @@ const VideoPlayer = ({
         <Heading size='md'>{video.title}</Heading>
       </VStack>
     </Box>
-
   </div>;
 };
 
