@@ -3,10 +3,10 @@ import { GetServerSideProps, } from 'next/types';
 import {} from '@chakra-ui/react';
 
 import { EmptyLayout, } from '@root/layouts';
-import { VideoPlayer, } from '@root/components'
+import { VideoPlayer, } from '@root/components';
 import { TokenInfo, Video, } from '@root/interfaces';
 import iritubeAPI from '@root/utils/iritubeAPI';
-import { getTokenInfoByCookies } from '@root/utils';
+import { getTokenInfoByCookies, } from '@root/utils';
 
 type Props = {
   video: Video | null,
@@ -37,9 +37,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
       props: {
         video: null,
-      }
-    }
+      },
+    };
   }
-}
+};
 
 export default VideosPage;
