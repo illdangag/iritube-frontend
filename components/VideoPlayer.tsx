@@ -93,69 +93,76 @@ const VideoPlayer = ({
     pause();
   };
 
-  return <div>
-    <Box>
-      <VStack alignItems='row'>
-        <Box position='relative'>
-          <VStack onClick={onClickVideo}>
-            <video ref={videoRef} onContextMenu={onContextMenu}/>
-          </VStack>
-          <Fade in={showCenterPlay}>
-            <Box position='absolute' top='50%' left='50%' transform='translate(-50%, -50%)'>
-              <IconButton
-                opacity={0.4}
-                backgroundColor='#495057'
-                aria-label=''
-                isRound={true}
-                size='xl'
-                colorScheme='gray'
-                fontSize='3rem'
-                padding='0.8rem'
-                icon={<MdPlayArrow/>}
-              />
-            </Box>
-          </Fade>
-          <Fade in={showCenterPause}>
-            <Box position='absolute' top='50%' left='50%' transform='translate(-50%, -50%)'>
-              <IconButton
-                opacity={0.4}
-                backgroundColor='#495057'
-                aria-label=''
-                isRound={true}
-                size='xl'
-                colorScheme='gray'
-                fontSize='3rem'
-                padding='0.8rem'
-                icon={<MdPause/>}
-              />
-            </Box>
-          </Fade>
-          <VStack position='absolute' bottom='0' padding='0.5rem' width='100%' alignItems='row'>
-            <Box><Progress height='0.2rem' value={videoProgress}/></Box>
-            <HStack>
-              {videoState === VideoState.PAUSE && <IconButton
-                aria-label='play'
-                size='sm'
-                fontSize='1.4rem'
-                variant='ghost'
-                icon={<MdPlayArrow/>}
-                onClick={onClickPlayButton}
-              />}
-              {videoState === VideoState.PLAY && <IconButton
-                aria-label='pause'
-                size='sm'
-                fontSize='1.4rem'
-                variant='ghost'
-                icon={<MdPause/>}
-                onClick={onClickPauseButton}
-              />}
-            </HStack>
-          </VStack>
-        </Box>
-        <Heading size='md'>{video.title}</Heading>
-      </VStack>
-    </Box>
-  </div>;
+  const onClickProgress = (event: MouseEvent<HTMLDivElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const selectProgress: number = (event.clientX - rect.left) / rect.width;
+    (videoRef.current as HTMLVideoElement).currentTime = selectProgress * video.duration;
+  };
+
+  return <Box>
+    <VStack alignItems='row'>
+      <Box position='relative'>
+        <VStack>
+          <video ref={videoRef} onContextMenu={onContextMenu}/>
+        </VStack>
+        <Fade in={showCenterPlay}>
+          <Box position='absolute' top='50%' left='50%' transform='translate(-50%, -50%)'>
+            <IconButton
+              opacity={0.4}
+              backgroundColor='#495057'
+              aria-label=''
+              isRound={true}
+              size='xl'
+              colorScheme='gray'
+              fontSize='3rem'
+              padding='0.8rem'
+              icon={<MdPlayArrow/>}
+            />
+          </Box>
+        </Fade>
+        <Fade in={showCenterPause}>
+          <Box position='absolute' top='50%' left='50%' transform='translate(-50%, -50%)'>
+            <IconButton
+              opacity={0.4}
+              backgroundColor='#495057'
+              aria-label=''
+              isRound={true}
+              size='xl'
+              colorScheme='gray'
+              fontSize='3rem'
+              padding='0.8rem'
+              icon={<MdPause/>}
+            />
+          </Box>
+        </Fade>
+        <Box position='absolute' top='0' left='0' width='100%' height='100%' onClick={onClickVideo}/>
+        <VStack position='absolute' bottom='0' padding='0.5rem' width='100%' alignItems='row'>
+          <Flex flexDirection='column' justifyContent='center' height='1rem' cursor='pointer' position='relative' onClick={onClickProgress}>
+            <Progress height='0.2rem' value={videoProgress}/>
+          </Flex>
+          <HStack>
+            {videoState === VideoState.PAUSE && <IconButton
+              aria-label='play'
+              size='sm'
+              fontSize='1.4rem'
+              variant='ghost'
+              icon={<MdPlayArrow/>}
+              onClick={onClickPlayButton}
+            />}
+            {videoState === VideoState.PLAY && <IconButton
+              aria-label='pause'
+              size='sm'
+              fontSize='1.4rem'
+              variant='ghost'
+              icon={<MdPause/>}
+              onClick={onClickPauseButton}
+            />}
+          </HStack>
+        </VStack>
+      </Box>
+      <Heading size='md'>{video.title}</Heading>
+    </VStack>
+  </Box>;
 };
 
 export default VideoPlayer;
