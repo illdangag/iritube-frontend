@@ -14,9 +14,6 @@ type Props = {
 
 const VideosPage = (props: Props) => {
   const video: Video = Object.assign(new Video(), props.video);
-
-  console.log(video);
-
   return <EmptyLayout>
     {video && <VideoPlayer video={video}/>}
   </EmptyLayout>;

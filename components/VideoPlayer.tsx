@@ -1,10 +1,11 @@
 import { useRef, useEffect, MouseEvent, useState, } from 'react';
-import { Box, VStack, Heading, HStack, IconButton, Progress, Fade, Flex, } from '@chakra-ui/react';
+import { Box, VStack, Heading, HStack, IconButton, Progress, Fade, Flex, Text, } from '@chakra-ui/react';
 import { MdPlayArrow, MdPause,  } from 'react-icons/md';
 
 import Hls from 'hls.js';
 
 import { Video, } from '@root/interfaces';
+import { hasUMDWorker } from 'hls.js/src/demux/inject-worker';
 
 type Props = {
   video: Video,
@@ -23,6 +24,8 @@ const VideoPlayer = ({
   const [videoProgress, setVideoProgress,] = useState<number>(0);
   const [showCenterPlay, setShowCenterPlay,] = useState<boolean>(false);
   const [showCenterPause, setShowCenterPause,] = useState<boolean>(false);
+  const [totalTime, setTotalTime,] = useState<string>('');
+  const [currentTime, setCurrentTime,] = useState<string>('');
 
   useEffect(() => {
     const hls = new Hls({
@@ -33,8 +36,10 @@ const VideoPlayer = ({
 
     let interval = null;
     hls.on(Hls.Events.MANIFEST_LOADED, () => {
+      setTotalTime(convertTime(video.duration));
       interval = setInterval(() => {
         const videoElement: HTMLVideoElement = videoRef.current as HTMLVideoElement;
+        setCurrentTime(convertTime(videoElement.currentTime));
         const progress: number =  Math.round(videoElement.currentTime / video.duration * 100);
         setVideoProgress(progress);
 
@@ -52,6 +57,18 @@ const VideoPlayer = ({
       }
     };
   }, [video,]);
+
+  /**
+   * @param duration 초 단위
+   */
+  const convertTime = (duration: number): string => {
+    const time: number = Math.round(duration);
+    const hour: number = Math.floor(time / 3600);
+    const minute: number = Math.floor((time - hour * 3600) / 60);
+    const second: number = Math.floor(time - hour * 3600 - minute * 60);
+
+    return (hour > 0 ? hour + ':' : '') + String(minute).padStart(2, '0') + ':' + String(second).padStart(2, '0');
+  };
 
   const play = () => {
     void (videoRef.current as HTMLVideoElement).play()
@@ -136,7 +153,9 @@ const VideoPlayer = ({
           </Box>
         </Fade>
         <Box position='absolute' top='0' left='0' width='100%' height='100%' onClick={onClickVideo}/>
-        <VStack position='absolute' bottom='0' padding='0.5rem' width='100%' alignItems='row'>
+        <VStack css={{
+          'background-image': 'linear-gradient(to top, #00000055, #ffffff00)',
+        }} position='absolute' bottom='0' padding='0.5rem' width='100%' alignItems='row'>
           <Flex flexDirection='column' justifyContent='center' height='1rem' cursor='pointer' position='relative' onClick={onClickProgress}>
             <Progress height='0.2rem' value={videoProgress}/>
           </Flex>
@@ -146,7 +165,10 @@ const VideoPlayer = ({
               size='sm'
               fontSize='1.4rem'
               variant='ghost'
-              icon={<MdPlayArrow/>}
+              _hover={{
+                backgroundColor: '#00000033',
+              }}
+              icon={<MdPlayArrow color='#ffffff'/>}
               onClick={onClickPlayButton}
             />}
             {videoState === VideoState.PLAY && <IconButton
@@ -154,9 +176,13 @@ const VideoPlayer = ({
               size='sm'
               fontSize='1.4rem'
               variant='ghost'
-              icon={<MdPause/>}
+              _hover={{
+                backgroundColor: '#00000033',
+              }}
+              icon={<MdPause color='#ffffff'/>}
               onClick={onClickPauseButton}
             />}
+            <Text color='#ffffff' fontSize='0.8rem'>{`${currentTime} / ${totalTime}`}</Text>
           </HStack>
         </VStack>
       </Box>
