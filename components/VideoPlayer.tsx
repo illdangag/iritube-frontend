@@ -1,8 +1,9 @@
-import { MouseEvent, useEffect, useRef, useState, } from 'react';
+import React, { MouseEvent, useEffect, useRef, useState, } from 'react';
 import {
-  Box, Fade, Flex, Heading, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Progress, Text, VStack,
+  Box, Fade, Flex, Heading, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Progress, Slider,
+  SliderFilledTrack, SliderThumb, SliderTrack, Text, VStack,
 } from '@chakra-ui/react';
-import { MdOutlineSettings, MdPause, MdPlayArrow, } from 'react-icons/md';
+import { MdOutlineSettings, MdPause, MdPlayArrow, MdVolumeOff, MdVolumeUp, } from 'react-icons/md';
 
 import Hls, { Level, } from 'hls.js';
 import { Video, } from '@root/interfaces';
@@ -37,13 +38,23 @@ const VideoPlayer = (props: Props) => {
 
   const [levelList, setLevelList,] = useState<Level[]>([]);
   const [currentLevel, setCurrentLevel,] = useState<number>(-1);
+  const [existAudio, setExistAudio,] = useState<boolean>(false);
+  const [volume, setVolume,] = useState<number>(0.5);
 
   hls.on(Hls.Events.MANIFEST_LOADED, (_event, data) => {
     setLevelList(hls.levels);
     setTotalTime(convertTime(video.duration));
   });
 
+  hls.on(Hls.Events.LEVEL_SWITCHED, () => {
+    const videoElement: HTMLVideoElement = videoRef.current as HTMLVideoElement;
+    setExistAudio(hasAudio(videoElement));
+  });
+
   useEffect(() => {
+    const videoElement: HTMLVideoElement = videoRef.current as HTMLVideoElement;
+    videoElement.volume = volume;
+
     hls.loadSource(video.hlsPath);
     hls.attachMedia(videoRef.current);
 
@@ -78,6 +89,12 @@ const VideoPlayer = (props: Props) => {
     const second: number = Math.floor(time - hour * 3600 - minute * 60);
 
     return (hour > 0 ? hour + ':' : '') + String(minute).padStart(2, '0') + ':' + String(second).padStart(2, '0');
+  };
+
+  const hasAudio = (video: any): boolean => {
+    return video.mozHasAudio ||
+      Boolean(video.webkitAudioDecodedByteCount) ||
+      Boolean(video.audioTracks && video.audioTracks.length);
   };
 
   const play = () => {
@@ -122,6 +139,18 @@ const VideoPlayer = (props: Props) => {
 
   const onClickPauseButton = () => {
     pause();
+  };
+
+  const onChangeVolume = (value: number) => {
+    const videoElement: HTMLVideoElement = videoRef.current as HTMLVideoElement;
+    videoElement.volume = value / 100;
+    setVolume(value / 100);
+  };
+
+  const onClickVolume = () => {
+    const videoElement: HTMLVideoElement = videoRef.current as HTMLVideoElement;
+    videoElement.volume = 0;
+    setVolume(0);
   };
 
   const onClickProgress = (event: MouseEvent<HTMLDivElement>) => {
@@ -198,6 +227,36 @@ const VideoPlayer = (props: Props) => {
                 onClick={onClickPauseButton}
               />}
               <Text color='#ffffff' fontSize='0.8rem'>{`${currentTime} / ${totalTime}`}</Text>
+              {!existAudio && <IconButton
+                aria-label='notExistAudio'
+                size='sm'
+                fontSize='1.4rem'
+                variant='ghost'
+                _hover={{
+                  backgroundColor: '#00000033',
+                }}
+                isDisabled
+                icon={<MdVolumeOff color='#ffffff'/>}
+              />}
+              {existAudio && <IconButton
+                aria-label='audioCountols'
+                size='sm'
+                fontSize='1.4rem'
+                variant='ghost'
+                _hover={{
+                  backgroundColor: '#00000033',
+                }}
+                icon={volume > 0 ? <MdVolumeUp color='#ffffff'/> : <MdVolumeOff color='#ffffff'/>}
+                onClick={onClickVolume}
+              />}
+              {existAudio && <Box width='4rem'>
+                <Slider aria-label='slider-ex-1' defaultValue={(videoRef.current as HTMLVideoElement).volume * 100} value={volume * 100} onChange={onChangeVolume}>
+                  <SliderTrack>
+                    <SliderFilledTrack/>
+                  </SliderTrack>
+                  <SliderThumb/>
+                </Slider>
+              </Box>}
             </HStack>
             <HStack>
               {currentLevel > -1 && <Text fontSize='0.8rem'>{levelList[currentLevel].height}</Text>}
