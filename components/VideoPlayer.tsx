@@ -1,26 +1,25 @@
 import { useRef, useEffect, MouseEvent, useState, } from 'react';
-import { Box, VStack, Heading, HStack, IconButton, Progress, Fade, Flex, Text, } from '@chakra-ui/react';
+import { Box, VStack, Heading, HStack, IconButton, Progress, Fade, Flex, Text, BoxProps, } from '@chakra-ui/react';
 import { MdPlayArrow, MdPause,  } from 'react-icons/md';
 
 import Hls from 'hls.js';
-
 import { Video, } from '@root/interfaces';
-import { hasUMDWorker } from 'hls.js/src/demux/inject-worker';
 
-type Props = {
+interface Props extends BoxProps {
   video: Video,
-};
+}
 
-enum VideoState {
+enum State {
   PLAY = 'PLAY',
   PAUSE = 'PAUSE',
 }
 
-const VideoPlayer = ({
-  video,
-}: Props) => {
+const VideoPlayer = (props: Props) => {
+  const video: Video = props.video;
+  const boxProps: BoxProps = props as BoxProps;
+
   const videoRef = useRef();
-  const [videoState, setVideoState,] = useState<VideoState>(VideoState.PAUSE);
+  const [videoState, setVideoState,] = useState<State>(State.PAUSE);
   const [videoProgress, setVideoProgress,] = useState<number>(0);
   const [showCenterPlay, setShowCenterPlay,] = useState<boolean>(false);
   const [showCenterPause, setShowCenterPause,] = useState<boolean>(false);
@@ -44,9 +43,9 @@ const VideoPlayer = ({
         setVideoProgress(progress);
 
         if (videoElement.paused) {
-          setVideoState(VideoState.PAUSE);
+          setVideoState(State.PAUSE);
         } else {
-          setVideoState(VideoState.PLAY);
+          setVideoState(State.PLAY);
         }
       }, 50);
     });
@@ -73,7 +72,7 @@ const VideoPlayer = ({
   const play = () => {
     void (videoRef.current as HTMLVideoElement).play()
       .then(() => {
-        setVideoState(VideoState.PLAY);
+        setVideoState(State.PLAY);
         setShowCenterPlay(true);
         setTimeout(() => {
           setShowCenterPlay(false);
@@ -83,7 +82,7 @@ const VideoPlayer = ({
 
   const pause = () => {
     (videoRef.current as HTMLVideoElement).pause();
-    setVideoState(VideoState.PAUSE);
+    setVideoState(State.PAUSE);
     setShowCenterPause(true);
     setTimeout(() => {
       setShowCenterPause(false);
@@ -95,7 +94,7 @@ const VideoPlayer = ({
   };
 
   const onClickVideo = () => {
-    if (videoState === VideoState.PLAY) {
+    if (videoState === State.PLAY) {
       pause();
     } else {
       play();
@@ -116,7 +115,7 @@ const VideoPlayer = ({
     (videoRef.current as HTMLVideoElement).currentTime = selectProgress * video.duration;
   };
 
-  return <Box>
+  return <Box {...boxProps}>
     <VStack alignItems='row'>
       <Box position='relative'>
         <VStack>
@@ -154,13 +153,13 @@ const VideoPlayer = ({
         </Fade>
         <Box position='absolute' top='0' left='0' width='100%' height='100%' onClick={onClickVideo}/>
         <VStack css={{
-          'background-image': 'linear-gradient(to top, #00000055, #ffffff00)',
+          'background-image': 'linear-gradient(to top, #00000040, #ffffff00)',
         }} position='absolute' bottom='0' padding='0.5rem' width='100%' alignItems='row'>
           <Flex flexDirection='column' justifyContent='center' height='1rem' cursor='pointer' position='relative' onClick={onClickProgress}>
             <Progress height='0.2rem' value={videoProgress}/>
           </Flex>
           <HStack>
-            {videoState === VideoState.PAUSE && <IconButton
+            {videoState === State.PAUSE && <IconButton
               aria-label='play'
               size='sm'
               fontSize='1.4rem'
@@ -171,7 +170,7 @@ const VideoPlayer = ({
               icon={<MdPlayArrow color='#ffffff'/>}
               onClick={onClickPlayButton}
             />}
-            {videoState === VideoState.PLAY && <IconButton
+            {videoState === State.PLAY && <IconButton
               aria-label='pause'
               size='sm'
               fontSize='1.4rem'

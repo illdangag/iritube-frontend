@@ -1,3 +1,5 @@
 import EmptyLayout from './EmptyLayout';
+import HeaderLayout from './HeaderLayout';
+import MainLayout from './MainLayout';
 
-export { EmptyLayout, };
+export { EmptyLayout, HeaderLayout, MainLayout, };

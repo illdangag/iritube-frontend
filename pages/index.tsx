@@ -1,8 +1,10 @@
+import { MainLayout, } from '@root/layouts';
+
 const IndexPage = () => {
   return (
-    <div>
-      INDEX
-    </div>
+    <MainLayout>
+      INDEX PAGE
+    </MainLayout>
   );
 };
 

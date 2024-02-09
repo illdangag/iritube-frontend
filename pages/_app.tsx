@@ -1,5 +1,5 @@
-// react
 import './global.scss';
+// react
 import { ChakraProvider, extendTheme, } from '@chakra-ui/react';
 // store
 import { RecoilRoot, } from 'recoil';
@@ -12,7 +12,7 @@ const theme = extendTheme({
   styles: {
     global: {
       body: {
-        bg: 'gray.100',
+        bg: '#212529',
       },
     },
   },

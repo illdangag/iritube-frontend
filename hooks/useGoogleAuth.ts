@@ -5,11 +5,11 @@ import { Account, TokenInfo, } from '../interfaces';
 import { FirebaseApp, FirebaseOptions, initializeApp, } from 'firebase/app';
 import { Auth, getAuth, GoogleAuthProvider, signInWithPopup, UserCredential, } from 'firebase/auth';
 // store
-import { BrowserStorage, getTokenExpiredDate, } from '../utils';
+import { BrowserStorage, getTokenExpiredDate, } from '@root/utils';
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '../recoil';
+import { myAccountAtom, } from '@root/recoil';
 // util
-import iritubeAPI from '../utils/iritubeAPI';
+import iritubeAPI from '@root/utils/iritubeAPI';
 
 export enum GoogleAuthState {
   READY,

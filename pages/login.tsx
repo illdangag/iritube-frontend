@@ -4,7 +4,7 @@ import { useRouter, } from 'next/router';
 import { Button, Card, CardBody, CardHeader, Center, Container, Flex, Heading, Spacer, useToast, } from '@chakra-ui/react';
 import { FcGoogle, } from 'react-icons/fc';
 
-import { EmptyLayout, } from '../layouts';
+import { EmptyLayout, } from '@root/layouts';
 
 import { GoogleAuthState, useGoogleAuth, } from '@root/hooks';
 import { getTokenInfoByCookies, } from '@root/utils';
@@ -23,6 +23,8 @@ const LoginPage = () => {
   const [authState, requestGoogleAuth,] = useGoogleAuth();
   const [pageState, setPageState,] = useState<PageState>(PageState.READY);
 
+  const { success, } = router.query;
+
   useEffect(() => {
     if (authState === GoogleAuthState.SUCCESS) {
       setPageState(PageState.SUCCESS);
@@ -33,7 +35,11 @@ const LoginPage = () => {
         duration: 3000,
       });
 
-      void router.replace('/');
+      if (typeof success === 'string') {
+        void router.replace(decodeURIComponent(success));
+      } else {
+        void router.replace('/');
+      }
     } else if (authState === GoogleAuthState.FAIL) {
       setPageState(PageState.FAIL);
     }

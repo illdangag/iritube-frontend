@@ -1,9 +1,7 @@
-import {} from 'react';
 import { GetServerSideProps, } from 'next/types';
-import {} from '@chakra-ui/react';
-
-import { EmptyLayout, } from '@root/layouts';
+import { MainLayout, } from '@root/layouts';
 import { VideoPlayer, } from '@root/components';
+
 import { TokenInfo, Video, } from '@root/interfaces';
 import iritubeAPI from '@root/utils/iritubeAPI';
 import { getTokenInfoByCookies, } from '@root/utils';
@@ -14,9 +12,10 @@ type Props = {
 
 const VideosPage = (props: Props) => {
   const video: Video = Object.assign(new Video(), props.video);
-  return <EmptyLayout>
+
+  return <MainLayout>
     {video && <VideoPlayer video={video}/>}
-  </EmptyLayout>;
+  </MainLayout>;
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -25,6 +24,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   try {
     const video: Video = await iritubeAPI.getVideo(tokenInfo, videoKey);
+
     return {
       props: {
         video: JSON.parse(JSON.stringify(video)),
