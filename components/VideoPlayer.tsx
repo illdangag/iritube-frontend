@@ -1,11 +1,13 @@
-import { useRef, useEffect, MouseEvent, useState, } from 'react';
-import { Box, VStack, Heading, HStack, IconButton, Progress, Fade, Flex, Text, BoxProps, } from '@chakra-ui/react';
-import { MdPlayArrow, MdPause,  } from 'react-icons/md';
+import { MouseEvent, useEffect, useRef, useState, } from 'react';
+import {
+  Box, Fade, Flex, Heading, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Progress, Text, VStack,
+} from '@chakra-ui/react';
+import { MdOutlineSettings, MdPause, MdPlayArrow, } from 'react-icons/md';
 
-import Hls from 'hls.js';
+import Hls, { Level, } from 'hls.js';
 import { Video, } from '@root/interfaces';
 
-interface Props extends BoxProps {
+type Props = {
   video: Video,
 }
 
@@ -14,9 +16,16 @@ enum State {
   PAUSE = 'PAUSE',
 }
 
+const hls = new Hls({
+  autoStartLoad: true,
+  debug: false,
+  enableWorker: true,
+  lowLatencyMode: true,
+  backBufferLength: 90,
+});
+
 const VideoPlayer = (props: Props) => {
   const video: Video = props.video;
-  const boxProps: BoxProps = props as BoxProps;
 
   const videoRef = useRef();
   const [videoState, setVideoState,] = useState<State>(State.PAUSE);
@@ -26,29 +35,31 @@ const VideoPlayer = (props: Props) => {
   const [totalTime, setTotalTime,] = useState<string>('');
   const [currentTime, setCurrentTime,] = useState<string>('');
 
+  const [levelList, setLevelList,] = useState<Level[]>([]);
+  const [currentLevel, setCurrentLevel,] = useState<number>(-1);
+
+  hls.on(Hls.Events.MANIFEST_LOADED, (_event, data) => {
+    setLevelList(hls.levels);
+    setTotalTime(convertTime(video.duration));
+  });
+
   useEffect(() => {
-    const hls = new Hls({
-      autoStartLoad: true,
-    });
     hls.loadSource(video.hlsPath);
     hls.attachMedia(videoRef.current);
 
-    let interval = null;
-    hls.on(Hls.Events.MANIFEST_LOADED, () => {
-      setTotalTime(convertTime(video.duration));
-      interval = setInterval(() => {
-        const videoElement: HTMLVideoElement = videoRef.current as HTMLVideoElement;
-        setCurrentTime(convertTime(videoElement.currentTime));
-        const progress: number =  Math.round(videoElement.currentTime / video.duration * 100);
-        setVideoProgress(progress);
+    const interval = setInterval(() => {
+      const videoElement: HTMLVideoElement = videoRef.current as HTMLVideoElement;
+      setCurrentTime(convertTime(videoElement.currentTime));
+      const progress: number =  Math.round(videoElement.currentTime / video.duration * 100);
+      setVideoProgress(progress);
 
-        if (videoElement.paused) {
-          setVideoState(State.PAUSE);
-        } else {
-          setVideoState(State.PLAY);
-        }
-      }, 50);
-    });
+      if (videoElement.paused) {
+        setVideoState(State.PAUSE);
+      } else {
+        setVideoState(State.PLAY);
+      }
+      setCurrentLevel(hls.currentLevel);
+    }, 50);
 
     return () => {
       if (interval) {
@@ -89,6 +100,10 @@ const VideoPlayer = (props: Props) => {
     }, 400);
   };
 
+  const setQuality = (level: Level) => {
+    hls.currentLevel = levelList.indexOf(level);
+  };
+
   const onContextMenu = (event: MouseEvent<HTMLVideoElement>) => {
     event.preventDefault(); // disable video element context menu
   };
@@ -115,9 +130,9 @@ const VideoPlayer = (props: Props) => {
     (videoRef.current as HTMLVideoElement).currentTime = selectProgress * video.duration;
   };
 
-  return <Box {...boxProps}>
+  return <Box>
     <VStack alignItems='row'>
-      <Box position='relative'>
+      <Box position='relative' backgroundColor='black' borderRadius='1rem'>
         <VStack>
           <video ref={videoRef} onContextMenu={onContextMenu}/>
         </VStack>
@@ -153,35 +168,62 @@ const VideoPlayer = (props: Props) => {
         </Fade>
         <Box position='absolute' top='0' left='0' width='100%' height='100%' onClick={onClickVideo}/>
         <VStack css={{
-          'background-image': 'linear-gradient(to top, #00000040, #ffffff00)',
-        }} position='absolute' bottom='0' padding='0.5rem' width='100%' alignItems='row'>
+          backgroundImage: 'linear-gradient(to top, #00000040, #ffffff00)',
+        }} position='absolute' bottom='0' padding='0.5rem' width='100%' alignItems='row' borderBottomRadius='1rem'>
           <Flex flexDirection='column' justifyContent='center' height='1rem' cursor='pointer' position='relative' onClick={onClickProgress}>
             <Progress height='0.2rem' value={videoProgress}/>
           </Flex>
-          <HStack>
-            {videoState === State.PAUSE && <IconButton
-              aria-label='play'
-              size='sm'
-              fontSize='1.4rem'
-              variant='ghost'
-              _hover={{
-                backgroundColor: '#00000033',
-              }}
-              icon={<MdPlayArrow color='#ffffff'/>}
-              onClick={onClickPlayButton}
-            />}
-            {videoState === State.PLAY && <IconButton
-              aria-label='pause'
-              size='sm'
-              fontSize='1.4rem'
-              variant='ghost'
-              _hover={{
-                backgroundColor: '#00000033',
-              }}
-              icon={<MdPause color='#ffffff'/>}
-              onClick={onClickPauseButton}
-            />}
-            <Text color='#ffffff' fontSize='0.8rem'>{`${currentTime} / ${totalTime}`}</Text>
+          <HStack justifyContent='space-between'>
+            <HStack>
+              {videoState === State.PAUSE && <IconButton
+                aria-label='play'
+                size='sm'
+                fontSize='1.4rem'
+                variant='ghost'
+                _hover={{
+                  backgroundColor: '#00000033',
+                }}
+                icon={<MdPlayArrow color='#ffffff'/>}
+                onClick={onClickPlayButton}
+              />}
+              {videoState === State.PLAY && <IconButton
+                aria-label='pause'
+                size='sm'
+                fontSize='1.4rem'
+                variant='ghost'
+                _hover={{
+                  backgroundColor: '#00000033',
+                }}
+                icon={<MdPause color='#ffffff'/>}
+                onClick={onClickPauseButton}
+              />}
+              <Text color='#ffffff' fontSize='0.8rem'>{`${currentTime} / ${totalTime}`}</Text>
+            </HStack>
+            <HStack>
+              {currentLevel > -1 && <Text fontSize='0.8rem'>{levelList[currentLevel].height}</Text>}
+              <Menu>
+                <MenuButton
+                  as={IconButton}
+                  icon={<MdOutlineSettings color='#ffffff'/>}
+                  aria-label='quality'
+                  size='sm'
+                  fontSize='1.4rem'
+                  variant='ghost'
+                  _hover={{
+                    backgroundColor: '#00000033',
+                  }}
+                >
+                </MenuButton>
+                <MenuList>
+                  {levelList.map((level, index) => <MenuItem
+                    key={'' + level.height + index}
+                    onClick={() => setQuality(level)}
+                  >
+                    {level.height}
+                  </MenuItem>)}
+                </MenuList>
+              </Menu>
+            </HStack>
           </HStack>
         </VStack>
       </Box>

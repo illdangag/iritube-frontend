@@ -2852,10 +2852,10 @@ hasown@^2.0.0:
   dependencies:
     function-bind "^1.1.2"
 
-hls.js@^1.5.3:
-  version "1.5.3"
-  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.5.3.tgz#548a4de3b9bdb9f12985cc2f07d206c0f2e74d12"
-  integrity sha512-gonnYpZ5bxuVdwpcbzfylUlNZ8917LjACUjpWXiaeo8zPAIDfPcMZjEQPy6CeeRSJbcg1P+aVqwxrXr2J+SeUg==
+hls.js@^1.5.4:
+  version "1.5.4"
+  resolved "https://registry.yarnpkg.com/hls.js/-/hls.js-1.5.4.tgz#74eec8d3f9bb249044173754d81efe5cdb298a0d"
+  integrity sha512-MB+e+tcBl+A/EamWvsvx7d/3m9JOLi3wbLaXyZdHlscgXkhiX5zajJxnt7lzn/w9ONxs5qaFTp/kkIMI9fD4KA==
 
 hoist-non-react-statics@^3.3.1:
   version "3.3.2"
