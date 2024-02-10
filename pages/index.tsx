@@ -1,5 +1,6 @@
 import { GetServerSideProps, } from 'next';
 import { MainLayout, } from '@root/layouts';
+import { VideoListView, } from '@root/components';
 
 import { TokenInfo, VideoList, } from '@root/interfaces';
 import { getTokenInfoByCookies, } from '@root/utils';
@@ -10,12 +11,11 @@ type Props = {
 }
 
 const IndexPage = (props: Props) => {
-  const videoList: VideoList = Object.assign(new VideoList(), props.videoList);
-  console.log(videoList);
+  const videoList: VideoList = VideoList.getInstance(props.videoList);
 
   return (
     <MainLayout>
-      INDEX PAGE
+      <VideoListView videoList={videoList}/>
     </MainLayout>
   );
 };

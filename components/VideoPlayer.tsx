@@ -47,11 +47,6 @@ const VideoPlayer = (props: Props) => {
     setTotalTime(convertTime(video.duration));
   });
 
-  hls.on(Hls.Events.LEVEL_SWITCHED, () => {
-    const videoElement: HTMLVideoElement = videoRef.current as HTMLVideoElement;
-    setExistAudio(hasAudio(videoElement));
-  });
-
   useEffect(() => {
     const videoElement: HTMLVideoElement = videoRef.current as HTMLVideoElement;
     videoElement.volume = volume;
@@ -61,6 +56,8 @@ const VideoPlayer = (props: Props) => {
 
     const interval = setInterval(() => {
       const videoElement: HTMLVideoElement = videoRef.current as HTMLVideoElement;
+      setExistAudio(hasAudio(videoElement));
+
       setCurrentTime(convertTime(videoElement.currentTime));
       const progress: number =  Math.round(videoElement.currentTime / video.duration * 100);
       setVideoProgress(progress);
@@ -71,7 +68,7 @@ const VideoPlayer = (props: Props) => {
         setVideoState(State.PLAY);
       }
       setCurrentLevel(hls.currentLevel);
-    }, 50);
+    }, 100);
 
     return () => {
       if (interval) {
@@ -173,8 +170,8 @@ const VideoPlayer = (props: Props) => {
 
   return <Box>
     <VStack alignItems='row'>
-      <Box position='relative' backgroundColor='black'>
-        <VStack>
+      <Box position='relative' backgroundColor='black' borderRadius='0.4rem' overflow='hidden'>
+        <VStack aspectRatio='16/9'>
           <video ref={videoRef} onContextMenu={onContextMenu}/>
         </VStack>
         <Fade in={showCenterPlay}>
@@ -210,7 +207,7 @@ const VideoPlayer = (props: Props) => {
         <Box position='absolute' top='0' left='0' width='100%' height='100%' onClick={onClickVideo}/>
         <VStack css={{
           backgroundImage: 'linear-gradient(to top, #00000040, #ffffff00)',
-        }} position='absolute' bottom='0' padding='0.5rem' width='100%' alignItems='row' borderBottomRadius='1rem'>
+        }} position='absolute' bottom='0' padding='0.5rem' width='100%' alignItems='row'>
           <Flex flexDirection='column' justifyContent='center' height='1rem' cursor='pointer' position='relative' onClick={onClickProgress}>
             <Progress height='0.2rem' value={videoProgress}/>
           </Flex>

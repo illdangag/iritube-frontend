@@ -95,7 +95,10 @@ const IritubeAPI: IricomAPIList = {
 
     try {
       const response: AxiosResponse<any> = await axios.request(config);
-      return Object.assign(new VideoList(), response.data);
+      const videos: Video[] = response.data.videos.map(item => Object.assign(new Video(), item));
+      const videoList: VideoList = Object.assign(new VideoList(), response.data);
+      videoList.videos = videos;
+      return videoList;
     } catch (error) {
       throw error;
     }

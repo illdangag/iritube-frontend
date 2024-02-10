@@ -36,11 +36,11 @@ export class TokenInfo {
 
 export abstract class ListResponse {
   public total: number;
-  public skip: number;
+  public offset: number;
   public limit: number;
 
   public get currentPage (): number {
-    return (this.skip / this.limit) + 1;
+    return (this.offset / this.limit) + 1;
   }
 
   public get totalPage (): number {
@@ -112,8 +112,17 @@ export class Video {
     const backend: string = process.env.backendURL;
     return `${backend}/v1/stream/${this.videoKey}/master.m3u8`;
   }
+
+  public static getInstance (object: any): Video {
+    return Object.assign(new Video(), object);
+  }
 }
 
 export class VideoList extends ListResponse {
-  private videos: Video[];
+  public videos: Video[];
+
+  public static getInstance (object: any): VideoList {
+    object.videos = object.videos.map(item => Video.getInstance(item));
+    return Object.assign(new VideoList(), object);
+  }
 }
