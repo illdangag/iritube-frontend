@@ -40,6 +40,7 @@ const VideoPlayer = (props: Props) => {
   const [currentLevel, setCurrentLevel,] = useState<number>(-1);
   const [existAudio, setExistAudio,] = useState<boolean>(false);
   const [volume, setVolume,] = useState<number>(0.5);
+  const [mute, setMute,] = useState<boolean>(false);
 
   hls.on(Hls.Events.MANIFEST_LOADED, (_event, data) => {
     setLevelList(hls.levels);
@@ -143,14 +144,25 @@ const VideoPlayer = (props: Props) => {
 
   const onChangeVolume = (value: number) => {
     const videoElement: HTMLVideoElement = videoRef.current as HTMLVideoElement;
+
+    if (mute) {
+      setMute(false);
+    }
+
     videoElement.volume = value / 100;
     setVolume(value / 100);
   };
 
   const onClickVolume = () => {
     const videoElement: HTMLVideoElement = videoRef.current as HTMLVideoElement;
-    videoElement.volume = 0;
-    setVolume(0);
+
+    if (mute) {
+      videoElement.volume = volume;
+      setMute(false);
+    } else {
+      videoElement.volume = 0;
+      setMute(true);
+    }
   };
 
   const onClickProgress = (event: MouseEvent<HTMLDivElement>) => {
@@ -161,7 +173,7 @@ const VideoPlayer = (props: Props) => {
 
   return <Box>
     <VStack alignItems='row'>
-      <Box position='relative' backgroundColor='black' borderRadius='1rem'>
+      <Box position='relative' backgroundColor='black'>
         <VStack>
           <video ref={videoRef} onContextMenu={onContextMenu}/>
         </VStack>
@@ -246,11 +258,16 @@ const VideoPlayer = (props: Props) => {
                 _hover={{
                   backgroundColor: '#00000033',
                 }}
-                icon={volume > 0 ? <MdVolumeUp color='#ffffff'/> : <MdVolumeOff color='#ffffff'/>}
+                icon={mute || volume === 0 ? <MdVolumeOff color='#ffffff'/> : <MdVolumeUp color='#ffffff'/>}
                 onClick={onClickVolume}
               />}
               {existAudio && <Box width='4rem'>
-                <Slider aria-label='slider-ex-1' defaultValue={(videoRef.current as HTMLVideoElement).volume * 100} value={volume * 100} onChange={onChangeVolume}>
+                <Slider
+                  aria-label='volumnSlider'
+                  defaultValue={(videoRef.current as HTMLVideoElement).volume * 100}
+                  value={mute ? 0 : volume * 100}
+                  onChange={onChangeVolume}
+                >
                   <SliderTrack>
                     <SliderFilledTrack/>
                   </SliderTrack>
