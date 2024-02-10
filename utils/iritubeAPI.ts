@@ -1,15 +1,21 @@
-import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
+import axios, { Axios, AxiosRequestConfig, AxiosResponse, } from 'axios';
 
-import { TokenInfo, Account, Video, } from '../interfaces';
+import { TokenInfo, Account, Video, VideoList, } from '../interfaces';
 import process from 'process';
 
 const apiKey: string = process.env.apiKey as string;
 const backendURL: string = process.env.backendURL as string;
 
 type IricomAPIList = {
+  // 인증
   refreshToken: (tokenInfo: TokenInfo) => Promise<TokenInfo>,
+
+  // 계정
   getMyAccount: (tokenInfo: TokenInfo) => Promise<Account>,
+
+  // 동영상
   getVideo: (tokenInfo: TokenInfo | null, videoKey: string) => Promise<Video>,
+  getRecommendVideoList: (tokenInfo: TokenInfo | null, offset: number, limit: number) => Promise<VideoList>,
 };
 
 function setToken (config: AxiosRequestConfig, tokenInfo: TokenInfo | null) {
@@ -71,6 +77,25 @@ const IritubeAPI: IricomAPIList = {
     try {
       const response: AxiosResponse<Video> = await axios.request(config);
       return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getRecommendVideoList: async (tokenInfo: TokenInfo | null, offset: number, limit: number): Promise<VideoList> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendURL}/v1/recommend/videos`,
+      method: 'GET',
+      params: {
+        offset,
+        limit,
+      },
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<any> = await axios.request(config);
+      return Object.assign(new VideoList(), response.data);
     } catch (error) {
       throw error;
     }

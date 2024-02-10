@@ -34,6 +34,49 @@ export class TokenInfo {
   }
 }
 
+export abstract class ListResponse {
+  public total: number;
+  public skip: number;
+  public limit: number;
+
+  public get currentPage (): number {
+    return (this.skip / this.limit) + 1;
+  }
+
+  public get totalPage (): number {
+    return Math.ceil(this.total / this.limit);
+  }
+
+  public getPaginationList (maxSize: number): number[] {
+    const leftPadding: number = Math.floor((maxSize - 1) / 2);
+    const rightPadding: number = Math.ceil((maxSize - 1) / 2);
+
+    let startPage: number = this.currentPage - leftPadding;
+    let endPage: number = this.currentPage + rightPadding;
+
+    if (startPage < 1) {
+      endPage += startPage * -1 + 1;
+    }
+
+    if (this.totalPage - endPage < 0) {
+      startPage += (this.totalPage - endPage);
+    }
+
+    if (startPage < 1) {
+      startPage = 1;
+    }
+
+    endPage = Math.min(endPage, this.totalPage);
+
+    const resultList: number[] = [];
+    for (let index = startPage; index <= endPage; index++) {
+      resultList.push(index);
+    }
+
+    return resultList;
+  }
+}
+
 export enum AccountAuth {
   SYSTEM_ADMIN = 'SYSTEM_ADMIN',
   ACCOUNT = 'ACCOUNT',
@@ -69,4 +112,8 @@ export class Video {
     const backend: string = process.env.backendURL;
     return `${backend}/v1/stream/${this.videoKey}/master.m3u8`;
   }
+}
+
+export class VideoList extends ListResponse {
+  private videos: Video[];
 }

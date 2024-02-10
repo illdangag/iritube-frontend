@@ -1,11 +1,39 @@
+import { GetServerSideProps, } from 'next';
 import { MainLayout, } from '@root/layouts';
 
-const IndexPage = () => {
+import { TokenInfo, VideoList, } from '@root/interfaces';
+import { getTokenInfoByCookies, } from '@root/utils';
+import iritubeAPI from '@root/utils/iritubeAPI';
+
+type Props = {
+  videoList: VideoList | null,
+}
+
+const IndexPage = (props: Props) => {
+  const videoList: VideoList = Object.assign(new VideoList(), props.videoList);
+  console.log(videoList);
+
   return (
     <MainLayout>
       INDEX PAGE
     </MainLayout>
   );
+};
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+
+  try {
+    const videoList: VideoList = await iritubeAPI.getRecommendVideoList(tokenInfo, 0, 20);
+
+    return {
+      props: {
+        videoList: JSON.parse(JSON.stringify(videoList)),
+      },
+    };
+  } catch {
+    // TODO 예외 처리
+  }
 };
 
 export default IndexPage;

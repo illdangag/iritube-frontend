@@ -9,7 +9,7 @@ type Props = {
 
 const MainLayout = ({
   children,
-  title = 'Welcome | ititube',
+  title = 'Welcome | iritube',
 }: Props) => {
   return <EmptyLayout title={title}>
     <HeaderLayout/>
