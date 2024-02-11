@@ -1,5 +1,5 @@
 import { GetServerSideProps, } from 'next/types';
-import { Box, Card, CardBody, } from '@chakra-ui/react';
+import { Box, Card, CardBody, Input, VStack, } from '@chakra-ui/react';
 import { MainLayout, } from '@root/layouts';
 
 import { VideoPlayer, } from '@root/components';
@@ -29,7 +29,12 @@ const VideosPage = (props: Props) => {
           존재하지 않는 동영상입니다.
         </CardBody>
       </Card>}
-      {state === State.ENABLE_VIDEO && <VideoPlayer video={video}/>}
+      {state === State.ENABLE_VIDEO && <VStack>
+        <VideoPlayer video={video}/>
+        <Box width='100%' onKeyUp={(event) => event.stopPropagation()}>
+          <Input/>
+        </Box>
+      </VStack>}
     </Box>
   </MainLayout>;
 };
