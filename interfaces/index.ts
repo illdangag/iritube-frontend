@@ -119,6 +119,56 @@ export class Video {
   public static getInstance (object: any): Video {
     return Object.assign(new Video(), object);
   }
+
+  public getUpdateDate (): string {
+    const now: number = new Date().getTime();
+
+    let ago: number = (this.createDate - now) / 1000;
+    let unit: Intl.RelativeTimeFormatUnit;
+
+    if ((ago * -1) < 60) {
+      return '조금 전';
+    } else if ((ago * -1) < 60 * 60) {
+      ago = ago / (60);
+      unit = 'minute';
+    } else if ((ago * -1) < 60 * 60 * 24) {
+      ago = ago / (60 * 60);
+      unit = 'hour';
+    } else if ((ago * -1) < 60 * 60 * 24 * 30) {
+      ago = ago / (60 * 60 * 24);
+      unit = 'day';
+    } else if ((ago * -1) < 60 * 60 * 24 * 30 * 12) {
+      ago = ago / (60 * 60 * 24 * 30);
+      unit = 'month';
+    } else { // 몇개월 전
+      ago = ago / (60 * 60 * 24 * 30 * 12);
+      unit = 'year';
+    }
+
+    return new Intl.RelativeTimeFormat('ko-KR').format(Math.round(ago), unit);
+  }
+
+  public getViewCount (): string {
+    return new Intl.NumberFormat('ko-KR', {
+      notation: 'compact',
+    }).format(this.viewCount)  + '회';
+  }
+
+  public getDurationText (): string {
+    let duration: number = Math.floor(this.duration);
+
+    const hour: number = Math.floor(duration / 3600);
+    const minute: number = Math.floor((duration - hour * 3600) / 60);
+    const second: number = Math.floor((duration - hour * 3600 - minute * 60))
+
+    let result: string = '';
+
+    if (hour > 0) {
+      result = hour + ':';
+    }
+
+    return result + String(minute).padStart(2, '0') + ':' + String(second).padStart(2, '0');
+  }
 }
 
 export class VideoList extends ListResponse {

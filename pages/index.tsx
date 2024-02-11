@@ -5,6 +5,7 @@ import { VideoListView, } from '@root/components';
 import { TokenInfo, VideoList, } from '@root/interfaces';
 import { getTokenInfoByCookies, } from '@root/utils';
 import iritubeAPI from '@root/utils/iritubeAPI';
+import { Box } from '@chakra-ui/react';
 
 type Props = {
   videoList: VideoList | null,
@@ -15,7 +16,9 @@ const IndexPage = (props: Props) => {
 
   return (
     <MainLayout>
-      <VideoListView videoList={videoList}/>
+      <Box paddingBottom='1rem'>
+        <VideoListView videoList={videoList}/>
+      </Box>
     </MainLayout>
   );
 };

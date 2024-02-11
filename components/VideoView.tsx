@@ -14,57 +14,8 @@ type Props = {
 const VideoView = ({
   video,
 }: Props) => {
-  const getViewCount = (video: Video): string => {
-    return new Intl.NumberFormat('ko-KR', {
-      notation: 'compact',
-    }).format(video.viewCount);
-  };
 
-  const getUploadDate = (video: Video): string => {
-    const now: number = new Date().getTime();
-
-    let ago: number = (video.createDate - now) / 1000;
-    let unit: Intl.RelativeTimeFormatUnit;
-
-    if ((ago * -1) < 60) {
-      return '조금 전';
-    } else if ((ago * -1) < 60 * 60) {
-      ago = ago / (60);
-      unit = 'minute';
-    } else if ((ago * -1) < 60 * 60 * 24) {
-      ago = ago / (60 * 60);
-      unit = 'hour';
-    } else if ((ago * -1) < 60 * 60 * 24 * 30) {
-      ago = ago / (60 * 60 * 24);
-      unit = 'day';
-    } else if ((ago * -1) < 60 * 60 * 24 * 30 * 12) {
-      ago = ago / (60 * 60 * 24 * 30);
-      unit = 'month';
-    } else { // 몇개월 전
-      ago = ago / (60 * 60 * 24 * 30 * 12);
-      unit = 'year';
-    }
-
-    return new Intl.RelativeTimeFormat('ko-KR').format(Math.round(ago), unit);
-  };
-
-  const getDuration = (video: Video): string => {
-    let duration: number = Math.floor(video.duration);
-
-    const hour: number = Math.floor(duration / 3600);
-    const minute: number = Math.floor((duration - hour * 3600) / 60);
-    const second: number = Math.floor((duration - hour * 3600 - minute * 60))
-
-    let result: string = '';
-
-    if (hour > 0) {
-      result = hour + ':';
-    }
-
-    return result + String(minute).padStart(2, '0') + ':' + String(second).padStart(2, '0');
-  };
-
-  return <Card backgroundColor='none'>
+  return <Card backgroundColor='none' variant='ghost'>
     <CardBody padding={0}>
       <LinkBox>
         <Box borderRadius='0.375rem' overflow='hidden' backgroundColor='black' aspectRatio='16/9' position='relative'>
@@ -86,7 +37,7 @@ const VideoView = ({
               backgroundColor='#00000044'
               fontSize='xs'
             >
-              {getDuration(video)}
+              {video.getDurationText()}
             </Text>
           </LinkOverlay>
         </Box>
@@ -99,12 +50,12 @@ const VideoView = ({
         </Link>
         <Text fontSize='xs' as='span'>{video.account.nickname}</Text>
         <HStack gap={0}>
-          <Text fontSize='xs' as='span'>{'조회수 ' + getViewCount(video) + '회'}</Text>
+          <Text fontSize='xs' as='span'>{'조회수 ' + video.getViewCount()}</Text>
           <Text fontSize='xs' as='span' _before={{
             content: '\"•\"',
             paddingLeft: '0.4rem',
             paddingRight: '0.4rem',
-          }}>{getUploadDate(video)}</Text>
+          }}>{video.getUpdateDate()}</Text>
         </HStack>
       </VStack>
     </CardFooter>

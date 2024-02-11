@@ -1,7 +1,7 @@
 import React, { MouseEvent, useEffect, useRef, useState, } from 'react';
 import {
   Box, Fade, Flex, Heading, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Progress, Slider,
-  SliderFilledTrack, SliderThumb, SliderTrack, Text, VStack,
+  SliderFilledTrack, SliderThumb, SliderTrack, Text, VStack, Card, CardBody,
 } from '@chakra-ui/react';
 import { MdOutlineSettings, MdPause, MdPlayArrow, MdVolumeOff, MdVolumeUp, } from 'react-icons/md';
 
@@ -25,8 +25,9 @@ const hls = new Hls({
   backBufferLength: 90,
 });
 
-const VideoPlayer = (props: Props) => {
-  const video: Video = props.video;
+const VideoPlayer = ({
+  video,
+}: Props) => {
 
   const videoRef = useRef();
   const [videoState, setVideoState,] = useState<State>(State.PAUSE);
@@ -56,6 +57,10 @@ const VideoPlayer = (props: Props) => {
 
     const interval = setInterval(() => {
       const videoElement: HTMLVideoElement = videoRef.current as HTMLVideoElement;
+      if (!videoElement) {
+        return;
+      }
+
       setExistAudio(hasAudio(videoElement));
 
       setCurrentTime(convertTime(videoElement.currentTime));
@@ -168,11 +173,14 @@ const VideoPlayer = (props: Props) => {
     (videoRef.current as HTMLVideoElement).currentTime = selectProgress * video.duration;
   };
 
-  return <Box>
+  return <Box width='100%' height='100%'>
     <VStack alignItems='row'>
-      <Box position='relative' backgroundColor='black' borderRadius='0.4rem' overflow='hidden'>
+      <Box position='relative' backgroundColor='black' borderRadius='0.375rem' overflow='hidden'>
         <VStack aspectRatio='16/9'>
-          <video ref={videoRef} onContextMenu={onContextMenu}/>
+          <video style={{
+            width: '100%',
+            height: '100%',
+          }} ref={videoRef} onContextMenu={onContextMenu}/>
         </VStack>
         <Fade in={showCenterPlay}>
           <Box position='absolute' top='50%' left='50%' transform='translate(-50%, -50%)'>
@@ -300,7 +308,17 @@ const VideoPlayer = (props: Props) => {
           </HStack>
         </VStack>
       </Box>
-      <Heading size='md'>{video.title}</Heading>
+      <VStack alignItems='start'>
+        <Heading size='md'>{video.title}</Heading>
+        <Card width='100%'>
+          <CardBody padding='0.5rem'>
+            <VStack alignItems='start'>
+              <Text fontSize='sm'>{video.getViewCount() + ' ' + video.getUpdateDate()}</Text>
+              <Text fontSize='sm'>{video.description}</Text>
+            </VStack>
+          </CardBody>
+        </Card>
+      </VStack>
     </VStack>
   </Box>;
 };

@@ -1,5 +1,5 @@
 import { GetServerSideProps, } from 'next/types';
-import { Box, } from '@chakra-ui/react';
+import { Box, Card, CardBody, } from '@chakra-ui/react';
 import { MainLayout, } from '@root/layouts';
 
 import { VideoPlayer, } from '@root/components';
@@ -11,13 +11,26 @@ type Props = {
   video: Video | null,
 };
 
+enum State {
+  NOT_EXIST_VIDEO = 'NOT_EXIST_VIDEO',
+  ENABLE_VIDEO = 'ENABLE_VIDEO',
+}
+
 const VideosPage = (props: Props) => {
+  const state: State = props.video !== null ? State.ENABLE_VIDEO : State.NOT_EXIST_VIDEO;
+  // const state: State = props.video === null ? State.ENABLE_VIDEO : State.NOT_EXIST_VIDEO;
+
   const video: Video = Object.assign(new Video(), props.video);
 
   return <MainLayout>
-    {video && <Box>
-      <VideoPlayer video={video}/>
-    </Box>}
+    <Box>
+      {state === State.NOT_EXIST_VIDEO && <Card height='100%' aspectRatio='16/9'>
+        <CardBody>
+          존재하지 않는 동영상입니다.
+        </CardBody>
+      </Card>}
+      {state === State.ENABLE_VIDEO && <VideoPlayer video={video}/>}
+    </Box>
   </MainLayout>;
 };
 
