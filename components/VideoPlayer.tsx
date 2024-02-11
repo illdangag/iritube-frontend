@@ -59,7 +59,7 @@ const VideoPlayer = (props: Props) => {
       setExistAudio(hasAudio(videoElement));
 
       setCurrentTime(convertTime(videoElement.currentTime));
-      const progress: number =  Math.round(videoElement.currentTime / video.duration * 100);
+      const progress: number =  Math.floor(videoElement.currentTime / video.duration * 100);
       setVideoProgress(progress);
 
       if (videoElement.paused) {
@@ -81,7 +81,7 @@ const VideoPlayer = (props: Props) => {
    * @param duration 초 단위
    */
   const convertTime = (duration: number): string => {
-    const time: number = Math.round(duration);
+    const time: number = Math.floor(duration);
     const hour: number = Math.floor(time / 3600);
     const minute: number = Math.floor((time - hour * 3600) / 60);
     const second: number = Math.floor(time - hour * 3600 - minute * 60);
@@ -90,9 +90,9 @@ const VideoPlayer = (props: Props) => {
   };
 
   const hasAudio = (video: any): boolean => {
-    return video.mozHasAudio ||
+    return video && (video.mozHasAudio ||
       Boolean(video.webkitAudioDecodedByteCount) ||
-      Boolean(video.audioTracks && video.audioTracks.length);
+      Boolean(video.audioTracks && video.audioTracks.length));
   };
 
   const play = () => {

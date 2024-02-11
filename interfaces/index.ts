@@ -101,12 +101,15 @@ export enum VideoShare {
 export class Video {
   public id: string;
   public videoKey: string;
+  public account: Account;
   public title: string;
   public description: string;
+  public createDate: number;
   public duration: number;
   public state: VideoState;
   public share: VideoShare;
   public tags: string[];
+  public viewCount: number;
 
   public get hlsPath (): string {
     const backend: string = process.env.backendURL;
