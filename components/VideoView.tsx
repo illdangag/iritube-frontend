@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect, useState, } from 'react';
 import NextLink from 'next/link';
 import {
   Box, Card, CardBody, CardFooter, Text, Image, LinkBox, LinkOverlay, Link, HStack, VStack,
@@ -14,6 +14,11 @@ type Props = {
 const VideoView = ({
   video,
 }: Props) => {
+  const [updateDate, setUpdateDate,] = useState<string>('');
+
+  useEffect(() => {
+    setUpdateDate(video.getUpdateDate());
+  }, []);
 
   return <Card backgroundColor='none' variant='ghost'>
     <CardBody padding={0}>
@@ -55,7 +60,7 @@ const VideoView = ({
             content: '\"•\"',
             paddingLeft: '0.4rem',
             paddingRight: '0.4rem',
-          }}>{video.getUpdateDate()}</Text>
+          }}>{updateDate}</Text>
         </HStack>
       </VStack>
     </CardFooter>
