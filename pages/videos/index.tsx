@@ -1,8 +1,8 @@
 import { GetServerSideProps, } from 'next/types';
 import { Box, Card, CardBody, Input, VStack, } from '@chakra-ui/react';
 import { MainLayout, } from '@root/layouts';
-
 import { VideoPlayer, } from '@root/components';
+
 import { TokenInfo, Video, } from '@root/interfaces';
 import iritubeAPI from '@root/utils/iritubeAPI';
 import { getTokenInfoByCookies, } from '@root/utils';

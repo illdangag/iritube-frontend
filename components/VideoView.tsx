@@ -18,7 +18,7 @@ const VideoView = ({
   return <Card backgroundColor='none' variant='ghost'>
     <CardBody padding={0}>
       <LinkBox>
-        <Box borderRadius='0.375rem' overflow='hidden' backgroundColor='black' aspectRatio='16/9' position='relative'>
+        <Box borderRadius='lg' overflow='hidden' backgroundColor='black' aspectRatio='16/9' position='relative'>
           <LinkOverlay as={NextLink} href={`/videos?key=${video.videoKey}`}>
             <Image
               src={`${process.env.backendURL}/v1/thumbnail/${video.videoKey}`}

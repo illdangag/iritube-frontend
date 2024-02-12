@@ -178,7 +178,7 @@ const VideoPlayer = ({
 
   return <Box width='100%' height='100%'>
     <VStack alignItems='row'>
-      <Box position='relative' backgroundColor='black' borderRadius='0.375rem' overflow='hidden'>
+      <Box position='relative' backgroundColor='black' borderRadius='lg' overflow='hidden'>
         <VStack aspectRatio='16/9'>
           <video style={{
             width: '100%',
