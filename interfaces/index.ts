@@ -159,7 +159,7 @@ export class Video {
 
     const hour: number = Math.floor(duration / 3600);
     const minute: number = Math.floor((duration - hour * 3600) / 60);
-    const second: number = Math.floor((duration - hour * 3600 - minute * 60))
+    const second: number = Math.floor((duration - hour * 3600 - minute * 60));
 
     let result: string = '';
 

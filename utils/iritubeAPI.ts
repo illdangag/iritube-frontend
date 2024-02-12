@@ -1,4 +1,4 @@
-import axios, { Axios, AxiosRequestConfig, AxiosResponse, } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
 
 import { TokenInfo, Account, Video, VideoList, } from '../interfaces';
 import process from 'process';
@@ -12,6 +12,7 @@ type IricomAPIList = {
 
   // 계정
   getMyAccount: (tokenInfo: TokenInfo) => Promise<Account>,
+  updateMyAccount: (tokenInfo: TokenInfo, nickname: string | null) => Promise<Account>,
 
   // 동영상
   getVideo: (tokenInfo: TokenInfo | null, videoKey: string) => Promise<Video>,
@@ -63,6 +64,26 @@ const IritubeAPI: IricomAPIList = {
       const response: AxiosResponse<Account> = await axios.request(config);
       return response.data;
     } catch (error) {
+      throw error;
+    }
+  },
+
+  updateMyAccount: async (tokenInfo: TokenInfo, nickname: string | null): Promise<Account> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendURL}/v1/infos/account`,
+      method: 'PATCH',
+      data: {},
+    };
+    setToken(config, tokenInfo);
+
+    if (nickname !== null) {
+      config.data['nickname'] = nickname;
+    }
+
+    try {
+      const response: AxiosResponse<Account> = await axios.request(config);
+      return response.data;
+    } catch (error){
       throw error;
     }
   },

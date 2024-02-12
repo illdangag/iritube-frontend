@@ -18,7 +18,6 @@ enum State {
 
 const VideosPage = (props: Props) => {
   const state: State = props.video !== null ? State.ENABLE_VIDEO : State.NOT_EXIST_VIDEO;
-  // const state: State = props.video === null ? State.ENABLE_VIDEO : State.NOT_EXIST_VIDEO;
 
   const video: Video = Object.assign(new Video(), props.video);
 

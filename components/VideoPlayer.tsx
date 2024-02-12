@@ -43,7 +43,7 @@ const VideoPlayer = ({
   const [volume, setVolume,] = useState<number>(0.5);
   const [isMute, setIsMute,] = useState<boolean>(false);
 
-  hls.on(Hls.Events.MANIFEST_LOADED, (_event, data) => {
+  hls.on(Hls.Events.MANIFEST_LOADED, () => {
     setLevelList(hls.levels);
     setTotalTime(convertTime(video.duration));
   });

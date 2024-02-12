@@ -6,7 +6,7 @@ import { Box, } from '@chakra-ui/react';
 // etc
 import { Account, TokenInfo, } from '@root/interfaces';
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { accountAtom, } from '@root/recoil';
 import { BrowserStorage, } from '@root/utils';
 import iritubeAPI from '@root/utils/iritubeAPI';
 
@@ -19,7 +19,7 @@ const EmptyLayout = ({
   children,
   title = 'Welcome | iritube',
 }: Props) => {
-  const setAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setAccount = useSetRecoilState<Account | null>(accountAtom);
 
   useEffect(() => {
     const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
@@ -30,7 +30,10 @@ const EmptyLayout = ({
           setAccount(account);
         });
     } else {
-      setAccount(null);
+      setAccount({
+        id: '',
+        nickname: '',
+      } as Account);
     }
 
   }, []);
@@ -40,7 +43,12 @@ const EmptyLayout = ({
       <Head>
         <title>{title}</title>
       </Head>
-      <Box paddingLeft='0.8rem' paddingRight='0.8rem' height='100%'>
+      {/*<Box paddingLeft='0.8rem' paddingRight='0.8rem' height='100%'>*/}
+      <Box
+        paddingLeft='1rem'
+        paddingRight='1rem'
+        // maxWidth={'68rem'}
+      >
         {children}
       </Box>
     </>

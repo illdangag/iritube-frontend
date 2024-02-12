@@ -30,7 +30,7 @@ const LoginPage = () => {
       setPageState(PageState.SUCCESS);
 
       toast({
-        title: 'Success login',
+        title: '로그인 하였습니다',
         status: 'success',
         duration: 3000,
       });
@@ -57,7 +57,7 @@ const LoginPage = () => {
         <Card maxWidth='32rem' marginLeft='auto' marginRight='auto' variant='outline'>
           <CardHeader>
             <Flex flexDirection='column' align='center'>
-              <Heading size='md' color='gray.600'>Sign in to Iritube</Heading>
+              <Heading size='md' color='gray.600'>Iritube에 로그인</Heading>
             </Flex>
           </CardHeader>
           <CardBody>

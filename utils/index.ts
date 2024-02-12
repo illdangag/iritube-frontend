@@ -69,6 +69,10 @@ export function getTokenInfoByCookies (context: GetServerSidePropsContext): Prom
   });
 }
 
+export function removeTokenInfoByCookies (context: GetServerSidePropsContext): void {
+  context.req.cookies.tokenInfo = null;
+}
+
 export function getTokenInfo (): Promise<TokenInfo | null> {
   return new Promise((resolve, reject) => {
     const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();

@@ -7,7 +7,7 @@ import { Auth, getAuth, GoogleAuthProvider, signInWithPopup, UserCredential, } f
 // store
 import { BrowserStorage, getTokenExpiredDate, } from '@root/utils';
 import { useSetRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { accountAtom, } from '@root/recoil';
 // util
 import iritubeAPI from '@root/utils/iritubeAPI';
 
@@ -19,7 +19,7 @@ export enum GoogleAuthState {
 }
 
 function useGoogleAuth (): [GoogleAuthState, () => Promise<void>] {
-  const setMyAccount = useSetRecoilState<Account | null>(myAccountAtom);
+  const setMyAccount = useSetRecoilState<Account | null>(accountAtom);
   const [state, setState,] = useState<GoogleAuthState>(GoogleAuthState.READY);
 
   const projectId: string = process.env.projectId as string;

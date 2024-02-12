@@ -1,10 +1,10 @@
 import { atom, } from 'recoil';
 import { v4, } from 'uuid';
-import { Account, } from '../interfaces';
+import { Account, } from '@root/interfaces';
 
-const myAccountAtom = atom<Account | null>({
-  key: 'myAccountAtom/' + v4(),
+const accountAtom = atom<Account | null>({
+  key: 'accountAtom/' + v4(),
   default: null,
 });
 
-export { myAccountAtom, };
+export { accountAtom, };

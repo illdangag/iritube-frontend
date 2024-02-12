@@ -1,11 +1,11 @@
 import { GetServerSideProps, } from 'next';
+import { Box, } from '@chakra-ui/react';
 import { MainLayout, } from '@root/layouts';
 import { VideoListView, } from '@root/components';
 
 import { TokenInfo, VideoList, } from '@root/interfaces';
 import { getTokenInfoByCookies, } from '@root/utils';
 import iritubeAPI from '@root/utils/iritubeAPI';
-import { Box } from '@chakra-ui/react';
 
 type Props = {
   videoList: VideoList | null,

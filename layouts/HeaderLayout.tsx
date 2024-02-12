@@ -4,7 +4,7 @@ import NextLink from 'next/link';
 import { Flex, Box, Image, Link, Avatar, Button, Menu, MenuButton, MenuList, MenuItem, } from '@chakra-ui/react';
 
 import { useRecoilState, } from 'recoil';
-import { myAccountAtom, } from '@root/recoil';
+import { accountAtom, } from '@root/recoil';
 import { Account, TokenInfo, } from '@root/interfaces';
 import { BrowserStorage, } from '@root/utils';
 
@@ -22,7 +22,7 @@ const HeaderLayout = ({
   const router = useRouter();
 
   const [state, setState,] = useState<State>(State.INIT);
-  const [account, setAccount,] = useRecoilState<Account | null>(myAccountAtom);
+  const [account, setAccount,] = useRecoilState<Account | null>(accountAtom);
 
   useEffect(() => {
     const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
@@ -32,15 +32,18 @@ const HeaderLayout = ({
   }, []);
 
   useEffect(() => {
-    if (account !== null) {
+    if (account && account.id) {
       setState(State.LOGIN);
-    } else {
+    } else if (account) {
       setState(State.LOGOUT);
     }
   }, [account,]);
 
   const logout = () => {
-    setAccount(null);
+    setAccount({
+      id: '',
+      nickname: '',
+    } as Account);
     BrowserStorage.setTokenInfo(null);
     setState(State.LOGOUT);
     void router.push('/');
@@ -53,7 +56,7 @@ const HeaderLayout = ({
       </Link>
     </Box>
     {state === State.LOGOUT && <Link as={NextLink} href={`/login?success=${encodeURIComponent(router.asPath)}`} size='sm'>
-      <Button size='sm'>login</Button>
+      <Button size='sm' variant='outline'>로그인</Button>
     </Link>}
     {state === State.LOGIN && account && <Box>
       <Menu>
@@ -61,7 +64,10 @@ const HeaderLayout = ({
           <Avatar name={account.nickname} size='sm'/>
         </MenuButton>
         <MenuList>
-          <MenuItem onClick={logout}>Logout</MenuItem>
+          <NextLink href='/info/accounts'>
+            <MenuItem>내 정보</MenuItem>
+          </NextLink>
+          <MenuItem onClick={logout}>로그아웃</MenuItem>
         </MenuList>
       </Menu>
     </Box>}
