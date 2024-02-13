@@ -64,7 +64,7 @@ const HeaderLayout = ({
           <Avatar name={account.nickname} size='sm'/>
         </MenuButton>
         <MenuList>
-          <NextLink href='/info/accounts'>
+          <NextLink href='/accounts'>
             <MenuItem>내 정보</MenuItem>
           </NextLink>
           <NextLink href='/videos/upload'>

@@ -4,14 +4,16 @@ import { VideoList, } from '@root/interfaces';
 
 type Props = {
   videoList: VideoList,
+  type?: 'thumbnail' | 'detail'
 }
 
 const VideoListView = ({
   videoList,
+  type = 'thumbnail',
 }: Props) => {
 
-  return <VStack alignItems='stretch'>
-    <Grid
+  const getThumbnailType = () => {
+    return <Grid
       gridTemplateColumns={{
         'base': 'repeat(1, 1fr)',
         'sm': 'repeat(2, 1fr)',
@@ -19,14 +21,25 @@ const VideoListView = ({
         'xl': 'repeat(4, 1fr)',
         '2xl': 'repeat(5, 1fr)',
       }}
-      // gridTemplateRows='auto'
-      // gridAutoRows='1fr'
       gap={6}
     >
       {videoList.videos.map((item, index) => <GridItem key={index}>
-        <VideoView video={item}/>
+        <VideoView video={item} type={type}/>
       </GridItem>)}
-    </Grid>
+    </Grid>;
+  };
+
+  const getDetailType = () => {
+    return <VStack alignItems='stretch'>
+      {videoList.videos.map((item, index) => <Box key={index}>
+        <VideoView video={item} type={type}/>
+      </Box>)}
+    </VStack>;
+  };
+
+  return <VStack alignItems='stretch'>
+    {type === 'thumbnail' && getThumbnailType()}
+    {type === 'detail' && getDetailType()}
     <Box>
       <Pagination page={0} listResponse={videoList}/>
     </Box>

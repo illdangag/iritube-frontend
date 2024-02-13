@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
 
-import { TokenInfo, Account, Video, VideoList, } from '../interfaces';
+import { Account, TokenInfo, Video, VideoList, } from '../interfaces';
 import process from 'process';
 
 const apiKey: string = process.env.apiKey as string;
@@ -13,6 +13,7 @@ type IricomAPIList = {
   // 계정
   getMyAccount: (tokenInfo: TokenInfo) => Promise<Account>,
   updateMyAccount: (tokenInfo: TokenInfo, nickname: string | null) => Promise<Account>,
+  getMyVideoList: (tokenInfo: TokenInfo, offset: number, limit: number) => Promise<VideoList>,
 
   // 동영상
   uploadVideo: (tokenInfo: TokenInfo, file: File, title: string, description: string) => Promise<Video>,
@@ -56,7 +57,7 @@ const IritubeAPI: IricomAPIList = {
 
   getMyAccount: async (tokenInfo: TokenInfo): Promise<Account> => {
     const config: AxiosRequestConfig = {
-      url: `${backendURL}/v1/infos/account`,
+      url: `${backendURL}/v1/infos/accounts`,
       method: 'GET',
     };
     setToken(config, tokenInfo);
@@ -71,7 +72,7 @@ const IritubeAPI: IricomAPIList = {
 
   updateMyAccount: async (tokenInfo: TokenInfo, nickname: string | null): Promise<Account> => {
     const config: AxiosRequestConfig = {
-      url: `${backendURL}/v1/infos/account`,
+      url: `${backendURL}/v1/infos/accounts`,
       method: 'PATCH',
       data: {},
     };
@@ -85,6 +86,25 @@ const IritubeAPI: IricomAPIList = {
       const response: AxiosResponse<Account> = await axios.request(config);
       return response.data;
     } catch (error){
+      throw error;
+    }
+  },
+
+  getMyVideoList: async (tokenInfo: TokenInfo, offset: number, limit: number): Promise<VideoList> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendURL}/v1/infos/accounts/videos`,
+      method: 'GET',
+      params: {
+        offset,
+        limit,
+      },
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<any> = await axios.request(config);
+      return VideoList.getInstance(response.data);
+    } catch (error) {
       throw error;
     }
   },

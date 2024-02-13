@@ -55,7 +55,7 @@ const AccountEditPage = () => {
   return <MainLayout fullWidth={false}>
     <PageHeaderLayout
       title='내 정보'
-      descriptions={['내 계정의 정보를 조회합니다.',]}
+      descriptions={['내 계정의 정보를 조회합니다',]}
     />
     <VStack alignItems='stretch'>
       <Card>
@@ -86,7 +86,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
       redirect: {
         permanent: false,
-        destination: '/login?success=' + encodeURIComponent('/info/accounts/edit'),
+        destination: '/login?success=' + encodeURIComponent(context.resolvedUrl),
       },
     };
   }
@@ -101,7 +101,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     return {
       redirect: {
         permanent: false,
-        destination: '/login?success=' + encodeURIComponent('/info/accounts/edit'),
+        destination: '/login?success=' + encodeURIComponent(context.resolvedUrl),
       },
     };
   }

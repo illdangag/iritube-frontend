@@ -43,11 +43,10 @@ const EmptyLayout = ({
       <Head>
         <title>{title}</title>
       </Head>
-      {/*<Box paddingLeft='0.8rem' paddingRight='0.8rem' height='100%'>*/}
       <Box
         paddingLeft='1rem'
         paddingRight='1rem'
-        // maxWidth={'68rem'}
+        height='100%'
       >
         {children}
       </Box>

@@ -9,10 +9,12 @@ import process from 'process';
 
 type Props = {
   video: Video,
+  type?: 'thumbnail' | 'detail'
 }
 
 const VideoView = ({
   video,
+  type = 'thumbnail',
 }: Props) => {
   const [updateDate, setUpdateDate,] = useState<string>('');
 

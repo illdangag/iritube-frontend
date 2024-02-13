@@ -5,7 +5,7 @@ import {
   Box, Button, Card, CardBody, CardFooter, FormControl, FormLabel, Input, Text, Textarea, VStack,
 } from '@chakra-ui/react';
 import { useDropzone, } from 'react-dropzone';
-import { MainLayout, } from '@root/layouts';
+import { MainLayout, PageHeaderLayout, } from '@root/layouts';
 
 import { TokenInfo, } from '@root/interfaces';
 import { getTokenInfo, getTokenInfoByCookies, removeTokenInfoByCookies, } from '@root/utils';
@@ -44,7 +44,11 @@ const VideoUploadPage = (props: NextPage<Props>) => {
     setDescription(event.target.value);
   };
 
-  return <MainLayout fullWidth={false}>
+  return <MainLayout title='동영상 업로드 | iritube' fullWidth={false}>
+    <PageHeaderLayout
+      title='동영상 업로드'
+      descriptions={['새로운 동영상을 업로드합니다',]}
+    />
     <Card>
       <CardBody display='flex' flexDirection='column' gap={2}>
         <Box>

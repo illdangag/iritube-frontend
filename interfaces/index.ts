@@ -89,7 +89,11 @@ export type Account = {
 }
 
 export enum VideoState {
-  ENABLED = 'ENABLED',
+  EMPTY = 'EMPTY',
+  UPLOADED = 'UPLOADED',
+  CONVERTING = 'CONVERTING',
+  CONVERTED = 'CONVERTED',
+  FAIL_CONVERT = 'FAIL_CONVERT',
 }
 
 export enum VideoShare {
