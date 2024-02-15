@@ -1,10 +1,10 @@
 import { Box, VStack, Grid, GridItem, } from '@chakra-ui/react';
 import { VideoView, Pagination, } from '@root/components';
-import { VideoList, } from '@root/interfaces';
+import { VideoList, VideoViewType, } from '@root/interfaces';
 
 type Props = {
   videoList: VideoList,
-  type?: 'thumbnail' | 'detail'
+  type?: VideoViewType,
 }
 
 const VideoListView = ({

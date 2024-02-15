@@ -34,6 +34,8 @@ export class TokenInfo {
   }
 }
 
+export type VideoViewType = 'thumbnail' | 'detail';
+
 export abstract class ListResponse {
   public total: number;
   public offset: number;
