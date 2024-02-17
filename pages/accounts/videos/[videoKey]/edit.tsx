@@ -1,7 +1,7 @@
 import { useState, } from 'react';
 import { GetServerSideProps, } from 'next';
 import { useRouter, } from 'next/router';
-import { Button, Card, CardBody, } from '@chakra-ui/react';
+import { Card, CardBody, } from '@chakra-ui/react';
 import { MainLayout, PageHeaderLayout, } from '@root/layouts';
 import { VideoEditor, } from '@root/components';
 

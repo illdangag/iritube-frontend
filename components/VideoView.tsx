@@ -11,13 +11,15 @@ import * as CSS from 'csstype';
 import process from 'process';
 
 type Props = {
-  video: Video,
-  type?: VideoViewType,
+  video: Video;
+  type?: VideoViewType;
+  onDelete?: () => void;
 }
 
 const VideoView = ({
   video,
   type = 'thumbnail',
+  onDelete = () => {},
 }: Props) => {
   const [updateDate, setUpdateDate,] = useState<string>('');
 
@@ -141,9 +143,9 @@ const VideoView = ({
           </HStack>
           <Spacer/>
           <HStack>
-            <ButtonGroup size='xs' isAttached variant='outline'>
+            <ButtonGroup size='xs' variant='outline'>
               <Button as={NextLink} href={`/accounts/videos/${video.videoKey}/edit`}>수정</Button>
-              <Button as={NextLink} href='#'>삭제</Button>
+              <Button onClick={onDelete}>삭제</Button>
             </ButtonGroup>
           </HStack>
         </VStack>

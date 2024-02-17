@@ -1,5 +1,5 @@
 import { useState, } from 'react';
-import { GetServerSideProps, NextPage, } from 'next';
+import { GetServerSideProps, } from 'next';
 import { useRouter, } from 'next/router';
 import { Card, CardBody, } from '@chakra-ui/react';
 import { MainLayout, PageHeaderLayout, } from '@root/layouts';
@@ -9,14 +9,12 @@ import { TokenInfo, Video, } from '@root/interfaces';
 import { getTokenInfo, getTokenInfoByCookies, removeTokenInfoByCookies, } from '@root/utils';
 import iritubeAPI from '@root/utils/iritubeAPI';
 
-type Props = {};
-
 enum State {
   IDLE = 'IDLE',
   REQUEST = 'REQUEST',
 }
 
-const VideoUploadPage = (props: NextPage<Props>) => {
+const VideoUploadPage = () => {
   const router = useRouter();
   const [state, setState,] = useState<State>(State.IDLE);
 

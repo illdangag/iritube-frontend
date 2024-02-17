@@ -19,6 +19,7 @@ type IricomAPIList = {
   uploadVideo: (tokenInfo: TokenInfo, file: File, title: string, description: string) => Promise<Video>,
   getVideo: (tokenInfo: TokenInfo | null, videoKey: string) => Promise<Video>,
   updateVideo: (tokenInfo: TokenInfo, video: Video) => Promise<Video>,
+  deleteVideo: (tokenInfo: TokenInfo, videoKey: string) => Promise<Video>,
   getRecommendVideoList: (tokenInfo: TokenInfo | null, offset: number, limit: number) => Promise<VideoList>,
 };
 
@@ -153,6 +154,21 @@ const IritubeAPI: IricomAPIList = {
       url: `${backendURL}/v1/videos/${video.videoKey}`,
       method: 'PATCH',
       data: JSON.parse(JSON.stringify(video)),
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<Video> = await axios.request(config);
+      return Video.getInstance(response.data);
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  deleteVideo: async (tokenInfo: TokenInfo, videoKey: string): Promise<Video> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendURL}/v1/videos/${videoKey}`,
+      method: 'DELETE',
     };
     setToken(config, tokenInfo);
 
