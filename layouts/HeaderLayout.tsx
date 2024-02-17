@@ -67,8 +67,8 @@ const HeaderLayout = ({
           <NextLink href='/accounts'>
             <MenuItem>내 정보</MenuItem>
           </NextLink>
-          <NextLink href='/videos/upload'>
-            <MenuItem>동영상 올리기</MenuItem>
+          <NextLink href='/accounts/videos'>
+            <MenuItem>동영상 목록</MenuItem>
           </NextLink>
           <MenuItem onClick={logout}>로그아웃</MenuItem>
         </MenuList>

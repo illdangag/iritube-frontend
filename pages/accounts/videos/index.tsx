@@ -1,11 +1,12 @@
 import { GetServerSideProps, } from 'next';
-import { Box, } from '@chakra-ui/react';
+import { Box, Button, HStack, } from '@chakra-ui/react';
 import { MainLayout, PageHeaderLayout, } from '@root/layouts';
 import { VideoListView, } from '@root/components';
 
 import { TokenInfo, VideoList, } from '@root/interfaces';
 import { getTokenInfoByCookies, removeTokenInfoByCookies, } from '@root/utils';
 import iritubeAPI from '@root/utils/iritubeAPI';
+import NextLink from 'next/link';
 
 type Props = {
   videoList: VideoList,
@@ -18,6 +19,7 @@ const AccountsVideosPage = (props: Props) => {
     <PageHeaderLayout
       title='동영상 목록'
       descriptions={['업로드한 동영상 목록을 조회합니다',]}
+      rightContent={<Button size='sm' as={NextLink} href='/accounts/videos/upload'>동영상 업로드</Button>}
     />
     <Box paddingBottom='1rem'>
       <VideoListView videoList={videoList} type='detail'/>

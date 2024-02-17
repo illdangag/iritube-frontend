@@ -1,11 +1,12 @@
 import { useEffect, useState, } from 'react';
 import NextLink from 'next/link';
 import {
-  Badge,
-  Box, Button, ButtonGroup, Card, CardBody, CardFooter, HStack, Image, Link, LinkBox, LinkOverlay, Spacer, Text, VStack,
+  Badge, Box, Button, ButtonGroup, Card, CardBody, CardFooter, HStack, Image, Link, LinkBox, LinkOverlay, Spacer, Text,
+  VStack,
 } from '@chakra-ui/react';
+import { ThemeTypings, } from '@chakra-ui/styled-system';
 
-import { Video, VideoState, VideoViewType, } from '@root/interfaces';
+import { Video, VideoShare, VideoState, VideoViewType, } from '@root/interfaces';
 import * as CSS from 'csstype';
 import process from 'process';
 
@@ -26,7 +27,7 @@ const VideoView = ({
 
   const getVideoThumbnail = (aspectRatio: CSS.Property.AspectRatio) => {
     return <LinkBox>
-      <Box borderRadius='lg' overflow='hidden' backgroundColor='black' aspectRatio={aspectRatio} position='relative'>
+      <Box borderRadius='lg' overflow='hidden' backgroundColor='black' aspectRatio={aspectRatio} position='relative' minWidth='10rem'>
         <LinkOverlay as={NextLink} href={video.state === VideoState.CONVERTED ? `/videos?key=${video.videoKey}` : '#'}>
           <Image
             src={video.state === VideoState.CONVERTED ? `${process.env.backendURL}/v1/thumbnail/${video.videoKey}` : '/static/images/question-mark.png'}
@@ -76,6 +77,53 @@ const VideoView = ({
     </Card>;
   };
 
+  const getVideoShareText = (videoShare: VideoShare) => {
+    switch (videoShare) {
+      case VideoShare.PRIVATE:
+        return '비공개';
+      case VideoShare.PUBLIC:
+        return '공개';
+      case VideoShare.URL:
+        return '링크 공유';
+    }
+  };
+
+  const getVideoShareBadge = (videoShare: VideoShare) => {
+    return <Badge colorScheme='gray'>
+      {getVideoShareText(videoShare)}
+    </Badge>;
+  };
+
+  const getVideoStateText = (videoState: VideoState) => {
+    switch (videoState) {
+      case VideoState.EMPTY:
+        return '동영상 파일 없음';
+      case VideoState.CONVERTED:
+        return '변환 완료';
+      case VideoState.CONVERTING:
+        return '변환중';
+      case VideoState.FAIL_CONVERT:
+        return '변환 실패';
+      case VideoState.UPLOADED:
+        return '변환 대기';
+    }
+  };
+
+  const getVideoStateBadge = (videoState: VideoState) => {
+    let colorScheme: ThemeTypings['colorSchemes'] = 'gray';
+
+    if (videoState === VideoState.FAIL_CONVERT) {
+      colorScheme = 'red';
+    }
+
+    return <Badge
+      variant='solid'
+      colorScheme={colorScheme}
+    >
+      {getVideoStateText(videoState)}
+    </Badge>;
+  };
+
   const getDetailType = () => {
     return <Card>
       <CardBody display='flex' gap='0.5rem'>
@@ -88,13 +136,13 @@ const VideoView = ({
           </Link>
           <Text fontSize='small'>{video.description}</Text>
           <HStack>
-            <Badge>{video.share}</Badge>
-            <Badge>{video.state}</Badge>
+            {getVideoShareBadge(video.share)}
+            {getVideoStateBadge(video.state)}
           </HStack>
           <Spacer/>
           <HStack>
-            <ButtonGroup size='xs' isAttached>
-              <Button as={NextLink} href='#'>수정</Button>
+            <ButtonGroup size='xs' isAttached variant='outline'>
+              <Button as={NextLink} href={`/accounts/videos/${video.videoKey}/edit`}>수정</Button>
               <Button as={NextLink} href='#'>삭제</Button>
             </ButtonGroup>
           </HStack>
