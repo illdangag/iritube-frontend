@@ -1,9 +1,10 @@
 import { useEffect, useState, } from 'react';
 import { GetServerSideProps, } from 'next';
 import { useRouter, } from 'next/router';
-import { Button, Card, CardBody, CardHeader, Center, Container, Flex, Heading, Spacer, useToast, } from '@chakra-ui/react';
+import {
+  Button, Card, CardBody, CardHeader, Center, Container, Flex, Heading, Spacer, useToast,
+} from '@chakra-ui/react';
 import { FcGoogle, } from 'react-icons/fc';
-
 import { EmptyLayout, } from '@root/layouts';
 
 import { GoogleAuthState, useGoogleAuth, } from '@root/hooks';
@@ -11,7 +12,7 @@ import { getTokenInfoByCookies, } from '@root/utils';
 import { TokenInfo, } from '@root/interfaces';
 
 enum PageState {
-  READY,
+  IDLE,
   REQUEST,
   SUCCESS,
   FAIL,
@@ -21,7 +22,7 @@ const LoginPage = () => {
   const router = useRouter();
   const toast = useToast();
   const [authState, requestGoogleAuth,] = useGoogleAuth();
-  const [pageState, setPageState,] = useState<PageState>(PageState.READY);
+  const [pageState, setPageState,] = useState<PageState>(PageState.IDLE);
 
   const { success, } = router.query;
 
@@ -50,14 +51,14 @@ const LoginPage = () => {
     void requestGoogleAuth();
   };
 
-  return <EmptyLayout>
+  return <EmptyLayout title='Login | iritube'>
     <Flex flexDirection='column' height='100%'>
       <Spacer/>
       <Container>
         <Card maxWidth='32rem' marginLeft='auto' marginRight='auto' variant='outline'>
           <CardHeader>
             <Flex flexDirection='column' align='center'>
-              <Heading size='md' color='gray.600'>Iritube에 로그인</Heading>
+              <Heading size='md'>Iritube에 로그인</Heading>
             </Flex>
           </CardHeader>
           <CardBody>

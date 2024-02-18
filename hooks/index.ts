@@ -1,3 +1,11 @@
-import useGoogleAuth, { GoogleAuthState, } from './useGoogleAuth';
+import useGoogleAuth from './useGoogleAuth';
+import useEmailAuth from './useEmailAuth';
 
-export { useGoogleAuth, GoogleAuthState, };
+enum GoogleAuthState {
+  READY,
+  REQUEST,
+  SUCCESS,
+  FAIL,
+}
+
+export { GoogleAuthState, useGoogleAuth, useEmailAuth, };
