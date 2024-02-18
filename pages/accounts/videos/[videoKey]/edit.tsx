@@ -34,7 +34,7 @@ const AccountsVideosEditPage = (props: Props) => {
     }
   };
 
-  return <MainLayout>
+  return <MainLayout fullWidth={false}>
     <PageHeaderLayout
       title='동영상 정보 수정'
       descriptions={['동영상의 제목, 설명 등을 수정합니다.',]}

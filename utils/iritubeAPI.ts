@@ -16,10 +16,11 @@ type IricomAPIList = {
   getMyVideoList: (tokenInfo: TokenInfo, offset: number, limit: number) => Promise<VideoList>,
 
   // 동영상
-  uploadVideo: (tokenInfo: TokenInfo, file: File, title: string, description: string) => Promise<Video>,
+  uploadVideo: (tokenInfo: TokenInfo, video: Video, file: File) => Promise<Video>,
   getVideo: (tokenInfo: TokenInfo | null, videoKey: string) => Promise<Video>,
   updateVideo: (tokenInfo: TokenInfo, video: Video) => Promise<Video>,
   deleteVideo: (tokenInfo: TokenInfo, videoKey: string) => Promise<Video>,
+
   getRecommendVideoList: (tokenInfo: TokenInfo | null, offset: number, limit: number) => Promise<VideoList>,
 };
 
@@ -111,7 +112,7 @@ const IritubeAPI: IricomAPIList = {
     }
   },
 
-  uploadVideo: async (tokenInfo: TokenInfo, file: File, title: string, description: string): Promise<Video> => {
+  uploadVideo: async (tokenInfo: TokenInfo, video: Video, file: File): Promise<Video> => {
     const config: AxiosRequestConfig = {
       url: `${backendURL}/v1/videos`,
       method: 'POST',
@@ -120,10 +121,7 @@ const IritubeAPI: IricomAPIList = {
 
     const formData: FormData = new FormData();
     formData.append('video', file);
-    formData.append('request', JSON.stringify({
-      title: title,
-      description: description,
-    }));
+    formData.append('request', JSON.stringify(video));
     config.data = formData;
 
     try {

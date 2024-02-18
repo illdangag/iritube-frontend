@@ -22,7 +22,7 @@ const VideoUploadPage = () => {
     setState(State.REQUEST);
     try {
       const tokenInfo: TokenInfo = await getTokenInfo();
-      await iritubeAPI.uploadVideo(tokenInfo, file, video.title, video.description);
+      await iritubeAPI.uploadVideo(tokenInfo, video, file);
       void router.push('/');
     } catch {
       setState(State.IDLE);

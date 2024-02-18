@@ -1,10 +1,13 @@
-import { ChangeEvent, useState, } from 'react';
+import { ChangeEvent, useState, KeyboardEvent, } from 'react';
 import {
-  Box, Button, FormControl, FormLabel, HStack, Input, Text, Textarea, VStack,
+  Box, Button, FormControl, FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, Tag, TagCloseButton, TagLabel,
+  Text, Textarea,
+  VStack,
 } from '@chakra-ui/react';
 import { useDropzone, } from 'react-dropzone';
 
-import { Video, } from '@root/interfaces';
+import { Video, VideoShare, } from '@root/interfaces';
+import { validateIndexedDBOpenable } from '@firebase/util';
 
 type Props = {
   defaultVideo?: Video,
@@ -20,8 +23,12 @@ const VideoEditor = ({
   const { acceptedFiles, getRootProps, getInputProps, } = useDropzone({
     disabled: disabled,
   });
+
   const [title, setTitle,] = useState<string>(defaultVideo ? defaultVideo.title : '');
   const [description, setDescription,] = useState<string>(defaultVideo ? defaultVideo.description : '');
+  const [share, setShare,] = useState<VideoShare>(defaultVideo ? defaultVideo.share : VideoShare.PUBLIC);
+  const [tag, setTag,] = useState<string>('');
+  const [tagList, setTagList,] = useState<string[]>(defaultVideo ? defaultVideo.tags : []);
 
   const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
@@ -31,10 +38,37 @@ const VideoEditor = ({
     setDescription(event.target.value);
   };
 
-  const onClickUpload = async () => {
+  const onChangeShare = (nextValue: VideoShare) => {
+    setShare(nextValue);
+  };
+
+  const onChangeTag = (event: ChangeEvent<HTMLInputElement>) => {
+    setTag(event.target.value);
+  };
+
+  const onKeyUpTag = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter' && tag !== '') {
+      const newTagList = [
+        ...tagList,
+        tag.trim(),
+      ];
+      const distinctTagList = newTagList.filter((tag, index) => newTagList.indexOf(tag) === index);
+      setTagList(distinctTagList);
+      setTag('');
+    }
+  };
+
+  const onClickTagDelete = (deleteTag: string) => {
+    const newTagList = tagList.filter((tag) => tag !== deleteTag);
+    setTagList(newTagList);
+  };
+
+  const onClickConfirm = async () => {
     const video = new Video();
     video.title = title;
     video.description = description;
+    video.share = share;
+    video.tags = tagList;
 
     if (defaultVideo) {
       video.videoKey = defaultVideo.videoKey;
@@ -62,12 +96,33 @@ const VideoEditor = ({
         <FormLabel>설명</FormLabel>
         <Textarea resize='none' value={description} disabled={disabled} onChange={onChangeDescription}/>
       </FormControl>
+      <FormControl>
+        <FormLabel>태그</FormLabel>
+        <Input type='text' value={tag} disabled={disabled} onChange={onChangeTag} onKeyUp={onKeyUpTag}/>
+        <FormHelperText>'Enter'버튼을 눌러 태그를 추가하세요</FormHelperText>
+        <HStack alignItems='start' marginTop='0.4rem'>
+          {tagList.map((tag, index) => <Tag key={index} marginRight='0.4rem' marginBottom='0.4rem'>
+            <TagLabel>{tag}</TagLabel>
+            <TagCloseButton onClick={() => onClickTagDelete(tag)}/>
+          </Tag>)}
+        </HStack>
+      </FormControl>
+      <FormControl>
+        <FormLabel>공유</FormLabel>
+        <RadioGroup value={share} isDisabled={disabled} onChange={onChangeShare}>
+          <HStack>
+            <Radio value={VideoShare.PUBLIC}>공개</Radio>
+            <Radio value={VideoShare.URL}>링크 공유</Radio>
+            <Radio value={VideoShare.PRIVATE}>비공개</Radio>
+          </HStack>
+        </RadioGroup>
+      </FormControl>
     </VStack>
     <HStack paddingTop='0' justifyContent='end'>
       <Button
         size='sm'
         isDisabled={disabled || (!defaultVideo && acceptedFiles.length === 0) || title === ''}
-        onClick={onClickUpload}
+        onClick={onClickConfirm}
       >
         {!defaultVideo ? '업로드' : '수정'}
       </Button>
