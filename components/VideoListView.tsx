@@ -1,5 +1,5 @@
 import { useState, } from 'react';
-import { Box, VStack, Grid, GridItem, } from '@chakra-ui/react';
+import { Box, VStack, Grid, GridItem, Card, CardBody, Image, Text, } from '@chakra-ui/react';
 import { VideoView, Pagination, } from '@root/components';
 import { VideoDeleteAlert, } from '@root/components/alerts';
 
@@ -71,6 +71,12 @@ const VideoListView = ({
 
   return <>
     <VStack alignItems='stretch'>
+      {videoList && videoList.videos.length === 0 && <Card>
+        <CardBody display='flex' flexDirection='column' alignItems='center' gap='1rem'>
+          <Image src='/static/images/inbox.png' maxWidth='8rem'/>
+          <Text fontWeight={500}>동영상이 존재하지 않습니다</Text>
+        </CardBody>
+      </Card>}
       {type === 'thumbnail' && getThumbnailType()}
       {type === 'detail' && getDetailType()}
       <Box>
