@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
 
-import { Account, TokenInfo, Video, VideoList, } from '../interfaces';
+import { Account, PlayList, PlayListList, TokenInfo, Video, VideoList, } from '../interfaces';
 import process from 'process';
 
 const apiKey: string = process.env.apiKey as string;
@@ -14,12 +14,16 @@ type IricomAPIList = {
   getMyAccount: (tokenInfo: TokenInfo) => Promise<Account>,
   updateMyAccount: (tokenInfo: TokenInfo, nickname: string | null) => Promise<Account>,
   getMyVideoList: (tokenInfo: TokenInfo, offset: number, limit: number) => Promise<VideoList>,
+  getMyPlayListList: (tokenInfo: TokenInfo, offset: number, limit: number) => Promise<PlayListList>,
 
   // 동영상
   uploadVideo: (tokenInfo: TokenInfo, video: Video, file: File) => Promise<Video>,
   getVideo: (tokenInfo: TokenInfo | null, videoKey: string) => Promise<Video>,
   updateVideo: (tokenInfo: TokenInfo, video: Video) => Promise<Video>,
   deleteVideo: (tokenInfo: TokenInfo, videoKey: string) => Promise<Video>,
+
+  // 재생 목록
+  createPlayList: (tokenInfo: TokenInfo, title: string) => Promise<PlayList>,
 
   getRecommendVideoList: (tokenInfo: TokenInfo | null, offset: number, limit: number) => Promise<VideoList>,
 };
@@ -112,6 +116,25 @@ const IritubeAPI: IricomAPIList = {
     }
   },
 
+  getMyPlayListList: async (tokenInfo: TokenInfo, offset: number, limit: number): Promise<PlayListList> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendURL}/v1/infos/accounts/playlists`,
+      method: 'GET',
+      params: {
+        offset,
+        limit,
+      },
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<any> = await axios.request(config);
+      return PlayListList.getInstance(response.data);
+    } catch (error) {
+      throw error;
+    }
+  },
+
   uploadVideo: async (tokenInfo: TokenInfo, video: Video, file: File): Promise<Video> => {
     const config: AxiosRequestConfig = {
       url: `${backendURL}/v1/videos`,
@@ -173,6 +196,24 @@ const IritubeAPI: IricomAPIList = {
     try {
       const response: AxiosResponse<Video> = await axios.request(config);
       return Video.getInstance(response.data);
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  createPlayList: async (tokenInfo: TokenInfo, title: string): Promise<PlayList> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendURL}/v1/playlists`,
+      method: 'POST',
+      data: {
+        title,
+      },
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<PlayList> = await axios.request(config);
+      return response.data;
     } catch (error) {
       throw error;
     }

@@ -1,3 +1,6 @@
+import { Simulate } from 'react-dom/test-utils';
+import play = Simulate.play;
+
 export class TokenInfo {
   public token: string;
   public refreshToken: string;
@@ -183,5 +186,24 @@ export class VideoList extends ListResponse {
   public static getInstance (object: any): VideoList {
     object.videos = object.videos.map(item => Video.getInstance(item));
     return Object.assign(new VideoList(), object);
+  }
+}
+
+export type PlayList = {
+  id: string,
+  playListKey: string,
+  title: string,
+  videos: Video[],
+}
+
+export class PlayListList extends ListResponse {
+  public playLists: PlayList[];
+
+  public static getInstance (object: any): PlayListList {
+    object.playLists = object.playLists.map(playList => {
+      playList.videos = playList.videos.map(video => Video.getInstance(video));
+      return playList;
+    });
+    return Object.assign(new PlayListList(), object);
   }
 }
