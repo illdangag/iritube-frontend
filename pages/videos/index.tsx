@@ -1,7 +1,9 @@
+import { useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
-import { Box, Card, CardBody, Input, VStack, } from '@chakra-ui/react';
+import { Box, Card, CardBody, Heading, HStack, VStack, Text, Button, Spacer, } from '@chakra-ui/react';
 import { MainLayout, } from '@root/layouts';
 import { VideoPlayer, } from '@root/components';
+import { MdPlaylistAdd, } from 'react-icons/md';
 
 import { TokenInfo, Video, } from '@root/interfaces';
 import iritubeAPI from '@root/utils/iritubeAPI';
@@ -12,14 +14,19 @@ type Props = {
 };
 
 enum State {
-  NOT_EXIST_VIDEO = 'NOT_EXIST_VIDEO',
-  ENABLE_VIDEO = 'ENABLE_VIDEO',
+  NOT_EXIST_VIDEO,
+  ENABLE_VIDEO,
 }
 
 const VideosPage = (props: Props) => {
   const state: State = props.video !== null ? State.ENABLE_VIDEO : State.NOT_EXIST_VIDEO;
-
   const video: Video = Object.assign(new Video(), props.video);
+
+  const [openAddPlayListAlert, setOpenAddPlayListAlert,] = useState<boolean>(false);
+
+  const onClickAddPlayListButton = () => {
+    setOpenAddPlayListAlert(true);
+  };
 
   return <MainLayout>
     <Box>
@@ -28,11 +35,28 @@ const VideosPage = (props: Props) => {
           존재하지 않는 동영상입니다.
         </CardBody>
       </Card>}
-      {state === State.ENABLE_VIDEO && <VStack>
+      {state === State.ENABLE_VIDEO && <VStack alignItems='flex-start'>
         <VideoPlayer video={video}/>
-        <Box width='100%' onKeyUp={(event) => event.stopPropagation()}>
-          <Input/>
-        </Box>
+        <VStack width='100%' alignItems='flex-start'>
+          <Heading size='md' marginTop='0.75rem' marginBottom='0.75rem'>{video.title}</Heading>
+          <Card width='100%'>
+            <CardBody>
+              <VStack alignItems='flex-start' gap={0}>
+                <HStack width='100%'>
+                  <Text fontWeight={700}>{'조회수 ' + video.getViewCount() + ' ' + video.getUpdateDate()}</Text>
+                  <Spacer/>
+                  <Button size='xs' variant='outline' leftIcon={<MdPlaylistAdd/>} onClick={onClickAddPlayListButton}>재생 목록 추가</Button>
+                </HStack>
+                <HStack>
+                  {video.tags.map((tag, index) => <Text key={index} color='blue.400'>#{tag}</Text>)}
+                </HStack>
+                <Box marginTop='0.75rem'>
+                  <Text>{video.description}</Text>
+                </Box>
+              </VStack>
+            </CardBody>
+          </Card>
+        </VStack>
       </VStack>}
     </Box>
   </MainLayout>;
