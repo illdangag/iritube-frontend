@@ -37,6 +37,13 @@ const PlayListCreateAlert = ({
     setTitle('');
   }, []);
 
+  useEffect(() => {
+    if (open) {
+      setState(Status.IDLE);
+      setTitle('');
+    }
+  }, [open,]);
+
   const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value.trim());
   };

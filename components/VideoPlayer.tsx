@@ -80,7 +80,7 @@ const VideoPlayer = ({
         clearInterval(interval);
       }
     };
-  }, [video,]);
+  }, []);
 
   /**
    * @param duration 초 단위

@@ -1,6 +1,3 @@
-import { Simulate } from 'react-dom/test-utils';
-import play = Simulate.play;
-
 export class TokenInfo {
   public token: string;
   public refreshToken: string;

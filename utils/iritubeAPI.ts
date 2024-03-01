@@ -24,6 +24,8 @@ type IricomAPIList = {
 
   // 재생 목록
   createPlayList: (tokenInfo: TokenInfo, title: string) => Promise<PlayList>,
+  getPlayList: (tokenInfo: TokenInfo | null, playListKey: string) => Promise<PlayList>,
+  updatePlayList: (tokenInfo: TokenInfo, playListKey: string, title: string | null, videoKeyList: string[] | null) => Promise<PlayList>,
 
   getRecommendVideoList: (tokenInfo: TokenInfo | null, offset: number, limit: number) => Promise<VideoList>,
 };
@@ -210,6 +212,45 @@ const IritubeAPI: IricomAPIList = {
       },
     };
     setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<PlayList> = await axios.request(config);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getPlayList: async (tokenInfo: TokenInfo | null, playListKey: string): Promise<PlayList> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendURL}/v1/playlists/${playListKey}`,
+      method: 'GET',
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<PlayList> = await axios.request(config);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  updatePlayList: async (tokenInfo: TokenInfo, playListKey: string, title: string | null, videoKeyList: string[] | null): Promise<PlayList> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendURL}/v1/playlists/${playListKey}`,
+      method: 'PATCH',
+      data: {},
+    };
+    setToken(config, tokenInfo);
+
+    if (title) {
+      config.data.title = title;
+    }
+
+    if (videoKeyList) {
+      config.data.videoKeys = videoKeyList;
+    }
 
     try {
       const response: AxiosResponse<PlayList> = await axios.request(config);

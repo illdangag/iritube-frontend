@@ -7,7 +7,6 @@ import {
 import { useDropzone, } from 'react-dropzone';
 
 import { Video, VideoShare, } from '@root/interfaces';
-import { validateIndexedDBOpenable } from '@firebase/util';
 
 type Props = {
   defaultVideo?: Video,

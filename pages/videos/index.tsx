@@ -3,6 +3,7 @@ import { GetServerSideProps, } from 'next/types';
 import { Box, Card, CardBody, Heading, HStack, VStack, Text, Button, Spacer, } from '@chakra-ui/react';
 import { MainLayout, } from '@root/layouts';
 import { VideoPlayer, } from '@root/components';
+import { PlayListVideoAddAlert, } from '@root/components/alerts';
 import { MdPlaylistAdd, } from 'react-icons/md';
 
 import { TokenInfo, Video, } from '@root/interfaces';
@@ -26,6 +27,14 @@ const VideosPage = (props: Props) => {
 
   const onClickAddPlayListButton = () => {
     setOpenAddPlayListAlert(true);
+  };
+
+  const onClosePlayListVideoAddAlert = () => {
+    setOpenAddPlayListAlert(false);
+  };
+
+  const onConfirmPlayListVideoAddAlert = () => {
+    setOpenAddPlayListAlert(false);
   };
 
   return <MainLayout>
@@ -59,6 +68,12 @@ const VideosPage = (props: Props) => {
         </VStack>
       </VStack>}
     </Box>
+    {state === State.ENABLE_VIDEO && <PlayListVideoAddAlert
+      open={openAddPlayListAlert}
+      video={video}
+      onClose={onClosePlayListVideoAddAlert}
+      onConfirm={onConfirmPlayListVideoAddAlert}
+    />}
   </MainLayout>;
 };
 
