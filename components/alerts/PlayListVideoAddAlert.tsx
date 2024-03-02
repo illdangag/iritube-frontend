@@ -74,7 +74,7 @@ const PlayListVideoAddAlert = ({
   };
 
   return <>
-    <AlertDialog leastDestructiveRef={closeRef} isOpen={open && !openPlayListCreateAlert} onClose={onClose}>
+    <AlertDialog leastDestructiveRef={closeRef} isOpen={open} onClose={onClose}>
       <AlertDialogOverlay/>
       <AlertDialogContent>
         <AlertDialogHeader>재생 목록</AlertDialogHeader>

@@ -83,6 +83,10 @@ const HeaderLayout = ({
     setOpenPlayListCreateAlert(false);
   };
 
+  const onClickPlayList = () => {
+    setOpenMenu(false);
+  };
+
   return <>
     <Flex flexDirection='row' justifyContent='space-between' alignItems='center' paddingTop='0.8rem' paddingBottom='0.8rem'>
       <HStack>
@@ -142,6 +146,9 @@ const HeaderLayout = ({
               size='sm'
               variant='ghost'
               justifyContent='start'
+              as={NextLink}
+              href={`/videos?pk=${playList.playListKey}`}
+              onClick={onClickPlayList}
             >
               {playList.title}
             </Button>)}

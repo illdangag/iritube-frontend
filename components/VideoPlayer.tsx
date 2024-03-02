@@ -27,8 +27,7 @@ const hls = new Hls({
 
 const VideoPlayer = ({
   video,
-}: Props) => {
-
+}: Props, ref) => {
   const videoRef = useRef();
   const [videoState, setVideoState,] = useState<State>(State.PAUSE);
   const [videoProgress, setVideoProgress,] = useState<number>(0);
@@ -80,7 +79,7 @@ const VideoPlayer = ({
         clearInterval(interval);
       }
     };
-  }, []);
+  }, [video,]);
 
   /**
    * @param duration 초 단위
@@ -176,7 +175,7 @@ const VideoPlayer = ({
     (videoRef.current as HTMLVideoElement).currentTime = selectProgress * video.duration;
   };
 
-  return <Box width='100%' height='100%'>
+  return <Box width='100%' height='100%' ref={ref}>
     <Box position='relative' backgroundColor='black' borderRadius='lg' overflow='hidden'>
       <VStack aspectRatio='16/9'>
         <video style={{
@@ -313,4 +312,4 @@ const VideoPlayer = ({
   </Box>;
 };
 
-export default VideoPlayer;
+export default React.forwardRef(VideoPlayer);

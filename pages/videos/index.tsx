@@ -1,29 +1,49 @@
-import { useState, } from 'react';
+import { useState, useEffect, useRef, } from 'react';
 import { GetServerSideProps, } from 'next/types';
-import { Box, Card, CardBody, Heading, HStack, VStack, Text, Button, Spacer, } from '@chakra-ui/react';
+import { Box, Card, CardBody, Heading, HStack, VStack, Text, Button, Spacer, Flex, } from '@chakra-ui/react';
 import { MainLayout, } from '@root/layouts';
-import { VideoPlayer, } from '@root/components';
+import { VideoPlayer, PlayListVideoListView, } from '@root/components';
 import { PlayListVideoAddAlert, } from '@root/components/alerts';
 import { MdPlaylistAdd, } from 'react-icons/md';
 
-import { TokenInfo, Video, } from '@root/interfaces';
+import { PlayList, TokenInfo, Video, } from '@root/interfaces';
 import iritubeAPI from '@root/utils/iritubeAPI';
 import { getTokenInfoByCookies, } from '@root/utils';
+import { throttle, } from 'lodash';
 
 type Props = {
+  states: State[],
   video: Video | null,
+  playList: PlayList | null,
 };
 
 enum State {
   NOT_EXIST_VIDEO,
-  ENABLE_VIDEO,
+  NOT_EXIST_PLAY_LIST,
 }
 
 const VideosPage = (props: Props) => {
-  const state: State = props.video !== null ? State.ENABLE_VIDEO : State.NOT_EXIST_VIDEO;
+  const stateList: State[] = props.states;
   const video: Video = Object.assign(new Video(), props.video);
+  const playList: PlayList | null = props.playList;
 
+  const videoRef = useRef<HTMLDivElement>(null);
   const [openAddPlayListAlert, setOpenAddPlayListAlert,] = useState<boolean>(false);
+  const [videoPlayerHeight, setVideoPlayerHeight,] = useState<number>(-1);
+
+  useEffect(() => {
+    const windowResizeCallback = throttle(() => {
+      setVideoPlayerHeight(videoRef.current.offsetHeight);
+    }, 100);
+
+    windowResizeCallback();
+
+    window.addEventListener('resize', windowResizeCallback);
+
+    return () => {
+      window.removeEventListener('resize', windowResizeCallback);
+    };
+  }, []);
 
   const onClickAddPlayListButton = () => {
     setOpenAddPlayListAlert(true);
@@ -39,13 +59,38 @@ const VideosPage = (props: Props) => {
 
   return <MainLayout>
     <Box>
-      {state === State.NOT_EXIST_VIDEO && <Card height='100%' aspectRatio='16/9'>
+      {stateList.indexOf(State.NOT_EXIST_VIDEO) > -1 && <Card height='100%' aspectRatio='16/9'>
         <CardBody>
           존재하지 않는 동영상입니다.
         </CardBody>
       </Card>}
-      {state === State.ENABLE_VIDEO && <VStack alignItems='flex-start'>
-        <VideoPlayer video={video}/>
+      {stateList.indexOf(State.NOT_EXIST_VIDEO) === -1 && <VStack alignItems='flex-start'>
+        <Flex width='100%' gap='1rem' alignItems='stretch'
+          flexDirection={{
+            'base': 'column',
+            'lg': 'row',
+          }}
+        >
+          <VideoPlayer video={video} ref={videoRef}/>
+          {playList && <Box>
+            <PlayListVideoListView
+              width={{
+                'base': '100%',
+                'lg': '20rem',
+              }}
+              height={{
+                'base': 'none',
+                'lg': videoPlayerHeight,
+              }}
+              maxHeight={{
+                'base': '18rem',
+                'lg': 'none',
+              }}
+              playList={playList}
+              video={video}
+            />
+          </Box>}
+        </Flex>
         <VStack width='100%' alignItems='flex-start'>
           <Heading size='md' marginTop='0.75rem' marginBottom='0.75rem'>{video.title}</Heading>
           <Card width='100%'>
@@ -68,7 +113,7 @@ const VideosPage = (props: Props) => {
         </VStack>
       </VStack>}
     </Box>
-    {state === State.ENABLE_VIDEO && <PlayListVideoAddAlert
+    {stateList.indexOf(State.NOT_EXIST_VIDEO) === -1 && <PlayListVideoAddAlert
       open={openAddPlayListAlert}
       video={video}
       onClose={onClosePlayListVideoAddAlert}
@@ -79,23 +124,53 @@ const VideosPage = (props: Props) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
-  const videoKey: string = context.query.key as string;
+  const videoKey: string | null = context.query.vk ? context.query.vk as string : null;
+  const playListKey: string | null = context.query.pk ? context.query.pk as string : null;
 
-  try {
-    const video: Video = await iritubeAPI.getVideo(tokenInfo, videoKey);
+  const stateList: State[] = [];
+  let video: Video | null = null;
+  let playList: PlayList | null = null;
 
-    return {
-      props: {
-        video: JSON.parse(JSON.stringify(video)),
-      },
-    };
-  } catch {
+  if (videoKey === null && playListKey === null) {
     return {
       props: {
         video: null,
+        playList: null,
+        states: [State.NOT_EXIST_VIDEO, State.NOT_EXIST_PLAY_LIST,],
       },
     };
   }
+
+  if (playListKey !== null) {
+    try {
+      playList = await iritubeAPI.getPlayList(tokenInfo, playListKey);
+    } catch (error) { // 재생 목록이 올바르지 않은 경우
+      stateList.push(State.NOT_EXIST_PLAY_LIST);
+    }
+  }
+
+  if (videoKey === null && playList && playList.videos && playList.videos.length > 0) {
+    return {
+      redirect: {
+        permanent: false,
+        destination: '/videos?vk=' + playList.videos[0].videoKey + '&pk=' + playList.playListKey,
+      },
+    };
+  }
+
+  try {
+    video = await iritubeAPI.getVideo(tokenInfo, videoKey);
+  } catch (error) {
+    stateList.push(State.NOT_EXIST_VIDEO);
+  }
+
+  return {
+    props: {
+      video: JSON.parse(JSON.stringify(video)),
+      playList,
+      states: stateList,
+    },
+  };
 };
 
 export default VideosPage;

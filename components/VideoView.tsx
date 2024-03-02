@@ -30,7 +30,7 @@ const VideoView = ({
   const getVideoThumbnail = (aspectRatio: CSS.Property.AspectRatio) => {
     return <LinkBox>
       <Box borderRadius='lg' overflow='hidden' backgroundColor='black' aspectRatio={aspectRatio} position='relative' minWidth='10rem'>
-        <LinkOverlay as={NextLink} href={video.state === VideoState.CONVERTED ? `/videos?key=${video.videoKey}` : '#'}>
+        <LinkOverlay as={NextLink} href={video.state === VideoState.CONVERTED ? `/videos?vk=${video.videoKey}` : '#'}>
           <Image
             src={video.state === VideoState.CONVERTED ? `${process.env.backendURL}/v1/thumbnail/${video.videoKey}` : '/static/images/question-mark.png'}
             alt='thumbnail'
@@ -62,7 +62,7 @@ const VideoView = ({
       </CardBody>
       <CardFooter paddingTop='0.5rem' paddingRight='0' paddingBottom='0' paddingLeft='0'>
         <VStack width='100%' alignItems='start' gap={0.4}>
-          <Link as={NextLink} _hover={{ textDecoration: 'none', }} href={video.state === VideoState.CONVERTED ? `/videos?key=${video.videoKey}` : '#'}>
+          <Link as={NextLink} _hover={{ textDecoration: 'none', }} href={video.state === VideoState.CONVERTED ? `/videos?vk=${video.videoKey}` : '#'}>
             <Text as='b'>{video.title}</Text>
           </Link>
           <Text fontSize='xs' as='span'>{video.account.nickname}</Text>
@@ -133,7 +133,7 @@ const VideoView = ({
           {getVideoThumbnail('4/3')}
         </Box>
         <VStack alignItems='start'>
-          <Link as={NextLink} _hover={{ textDecoration: 'none', }} href={video.state === VideoState.CONVERTED ? `/videos?key=${video.videoKey}` : '#'}>
+          <Link as={NextLink} _hover={{ textDecoration: 'none', }} href={video.state === VideoState.CONVERTED ? `/videos?vk=${video.videoKey}` : '#'}>
             <Text as='b'>{video.title}</Text>
           </Link>
           <Text fontSize='small'>{video.description}</Text>
