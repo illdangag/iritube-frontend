@@ -1,4 +1,4 @@
-import React, { MouseEvent, useEffect, useRef, useState, } from 'react';
+import { MouseEvent, useEffect, useRef, useState, memo, forwardRef, } from 'react';
 import {
   Box, Fade, Flex, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Progress, Slider,
   SliderFilledTrack, SliderThumb, SliderTrack, Text, VStack,
@@ -312,4 +312,8 @@ const VideoPlayer = ({
   </Box>;
 };
 
-export default React.forwardRef(VideoPlayer);
+const equalComparison = (prevProps: Props, nextProps: Props): boolean => {
+  return prevProps.video.videoKey === nextProps.video.videoKey;
+};
+
+export default memo(forwardRef(VideoPlayer), equalComparison);

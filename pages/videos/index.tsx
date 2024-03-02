@@ -37,7 +37,6 @@ const VideosPage = (props: Props) => {
     }, 100);
 
     windowResizeCallback();
-
     window.addEventListener('resize', windowResizeCallback);
 
     return () => {
@@ -92,7 +91,8 @@ const VideosPage = (props: Props) => {
           </Box>}
         </Flex>
         <VStack width='100%' alignItems='flex-start'>
-          <Heading size='md' marginTop='0.75rem' marginBottom='0.75rem'>{video.title}</Heading>
+          <Heading size='md' marginTop='0.75rem' marginBottom='0'>{video.title}</Heading>
+          <Text fontSize='sm' fontWeight={700}>{video.account.nickname}</Text>
           <Card width='100%'>
             <CardBody>
               <VStack alignItems='flex-start' gap={0}>

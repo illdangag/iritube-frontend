@@ -191,6 +191,7 @@ export type PlayList = {
   playListKey: string,
   title: string,
   videos: Video[],
+  account: Account,
 }
 
 export class PlayListList extends ListResponse {
