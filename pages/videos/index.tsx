@@ -76,7 +76,7 @@ const VideosPage = (props: Props) => {
     void router.push('/videos?vk=' + nextVideoKey + '&pk=' + playList.playListKey);
   };
 
-  return <MainLayout>
+  return <MainLayout title={video.title + ' | Iritube'}>
     <Box>
       {stateList.indexOf(State.NOT_EXIST_VIDEO) > -1 && <Card height='100%' aspectRatio='16/9'>
         <CardBody>
