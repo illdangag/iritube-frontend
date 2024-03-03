@@ -3,7 +3,8 @@ import {
   Box, Fade, Flex, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Progress, Slider,
   SliderFilledTrack, SliderThumb, SliderTrack, Text, VStack,
 } from '@chakra-ui/react';
-import { MdOutlineSettings, MdPause, MdPlayArrow, MdVolumeOff, MdVolumeUp, } from 'react-icons/md';
+import { MdOutlineSettings, MdPause, MdPlayArrow, MdVolumeOff, MdVolumeUp, MdSkipNext, MdSkipPrevious,
+} from 'react-icons/md';
 
 import Hls, { Level, } from 'hls.js';
 import { Video, } from '@root/interfaces';
@@ -12,6 +13,8 @@ type Props = {
   video: Video;
   autoPlay?: boolean;
   onEnded?: ReactEventHandler<HTMLVideoElement>;
+  onPrevious?: () => void;
+  onNext?: () => void;
 }
 
 enum State {
@@ -31,6 +34,8 @@ const VideoPlayer = ({
   video,
   autoPlay = false,
   onEnded = () => {},
+  onPrevious,
+  onNext,
 }: Props, ref) => {
   const videoRef = useRef();
   const [videoState, setVideoState,] = useState<State>(State.PAUSE);
@@ -229,6 +234,17 @@ const VideoPlayer = ({
         </Flex>
         <HStack justifyContent='space-between'>
           <HStack>
+            {onPrevious && <IconButton
+              aria-label='pause'
+              size='sm'
+              fontSize='1.4rem'
+              variant='ghost'
+              _hover={{
+                backgroundColor: '#00000033',
+              }}
+              icon={<MdSkipPrevious color='#ffffff'/>}
+              onClick={onPrevious}
+            />}
             {videoState === State.PAUSE && <IconButton
               aria-label='play'
               size='sm'
@@ -250,6 +266,17 @@ const VideoPlayer = ({
               }}
               icon={<MdPause color='#ffffff'/>}
               onClick={onClickPauseButton}
+            />}
+            {onNext && <IconButton
+              aria-label='pause'
+              size='sm'
+              fontSize='1.4rem'
+              variant='ghost'
+              _hover={{
+                backgroundColor: '#00000033',
+              }}
+              icon={<MdSkipNext color='#ffffff'/>}
+              onClick={onNext}
             />}
             <Text color='#ffffff' fontSize='0.8rem'>{`${currentTime} / ${totalTime}`}</Text>
             {!existAudio && <IconButton

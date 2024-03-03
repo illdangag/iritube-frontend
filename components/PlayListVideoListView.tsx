@@ -38,7 +38,8 @@ const PlayListVideoListView = (props: Props) => {
         <Heading fontSize='md'>{playList.title}</Heading>
         <HStack>
           <Text fontSize='xs'>{playList.account.nickname}</Text>
-          <Text fontSize='xs' opacity='0.8'>{' - ' + (getCurrentVideoIndex() + 1) + ' / ' + playList.videos.length}</Text>
+          <Text fontSize='xs' opacity='0.8'>-</Text>
+          <Text fontSize='xs' opacity='0.8'>{(getCurrentVideoIndex() + 1) + ' / ' + playList.videos.length}</Text>
         </HStack>
       </VStack>
     </CardHeader>

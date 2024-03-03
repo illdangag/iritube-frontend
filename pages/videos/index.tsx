@@ -60,6 +60,18 @@ const VideosPage = (props: Props) => {
   };
 
   const onEndedVideoPlayer = () => {
+    pushNextVideo();
+  };
+
+  const onPreviousVideo = () => {
+    pushPreviousVideo();
+  };
+
+  const onNextVideo = () => {
+    pushNextVideo();
+  };
+
+  const pushNextVideo = () => {
     if (!playList) {
       return;
     }
@@ -73,6 +85,22 @@ const VideosPage = (props: Props) => {
     }
 
     const nextVideoKey: string = playList.videos[currentVideoIndex + 1].videoKey;
+    void router.push('/videos?vk=' + nextVideoKey + '&pk=' + playList.playListKey);
+  };
+
+  const pushPreviousVideo = () => {
+    if (!playList) {
+      return;
+    }
+
+    const currentVideoIndex: number = playList.videos
+      .findIndex((item) => item.videoKey === video.videoKey);
+
+    if (currentVideoIndex === 0) {
+      return;
+    }
+
+    const nextVideoKey: string = playList.videos[currentVideoIndex - 1].videoKey;
     void router.push('/videos?vk=' + nextVideoKey + '&pk=' + playList.playListKey);
   };
 
@@ -90,7 +118,8 @@ const VideosPage = (props: Props) => {
             'lg': 'row',
           }}
         >
-          <VideoPlayer video={video} ref={videoRef} autoPlay={true} onEnded={onEndedVideoPlayer}/>
+          {!playList && <VideoPlayer video={video} ref={videoRef} autoPlay={true} onEnded={onEndedVideoPlayer}/>}
+          {playList && <VideoPlayer video={video} ref={videoRef} autoPlay={true} onEnded={onEndedVideoPlayer} onPrevious={onPreviousVideo} onNext={onNextVideo}/>}
           {playList && <Box>
             <PlayListVideoListView
               width={{
