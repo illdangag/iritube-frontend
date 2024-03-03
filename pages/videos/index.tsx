@@ -36,7 +36,7 @@ const VideosPage = (props: Props) => {
       setVideoPlayerHeight(videoRef.current.offsetHeight);
     }, 100);
 
-    windowResizeCallback();
+    setVideoPlayerHeight(videoRef.current ? videoRef.current.offsetHeight : -1);
     window.addEventListener('resize', windowResizeCallback);
 
     return () => {

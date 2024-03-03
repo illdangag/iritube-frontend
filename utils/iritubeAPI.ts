@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
 
-import { Account, PlayList, PlayListList, TokenInfo, Video, VideoList, } from '../interfaces';
+import { Account, IritubeError, PlayList, PlayListList, TokenInfo, Video, VideoList, } from '../interfaces';
 import process from 'process';
 
 const apiKey: string = process.env.apiKey as string;
@@ -75,7 +75,7 @@ const IritubeAPI: IricomAPIList = {
       const response: AxiosResponse<Account> = await axios.request(config);
       return response.data;
     } catch (error) {
-      throw error;
+      throw new IritubeError(error);
     }
   },
 
@@ -95,7 +95,7 @@ const IritubeAPI: IricomAPIList = {
       const response: AxiosResponse<Account> = await axios.request(config);
       return response.data;
     } catch (error){
-      throw error;
+      throw new IritubeError(error);
     }
   },
 
@@ -114,7 +114,7 @@ const IritubeAPI: IricomAPIList = {
       const response: AxiosResponse<any> = await axios.request(config);
       return VideoList.getInstance(response.data);
     } catch (error) {
-      throw error;
+      throw new IritubeError(error);
     }
   },
 
@@ -133,7 +133,7 @@ const IritubeAPI: IricomAPIList = {
       const response: AxiosResponse<any> = await axios.request(config);
       return PlayListList.getInstance(response.data);
     } catch (error) {
-      throw error;
+      throw new IritubeError(error);
     }
   },
 
@@ -153,7 +153,7 @@ const IritubeAPI: IricomAPIList = {
       const response: AxiosResponse<Video> = await axios.request(config);
       return response.data;
     } catch (error) {
-      throw error;
+      throw new IritubeError(error);
     }
   },
 
@@ -168,7 +168,7 @@ const IritubeAPI: IricomAPIList = {
       const response: AxiosResponse<Video> = await axios.request(config);
       return Video.getInstance(response.data);
     } catch (error) {
-      throw error;
+      throw new IritubeError(error);
     }
   },
 
@@ -184,7 +184,7 @@ const IritubeAPI: IricomAPIList = {
       const response: AxiosResponse<Video> = await axios.request(config);
       return Video.getInstance(response.data);
     } catch (error) {
-      throw error;
+      throw new IritubeError(error);
     }
   },
 
@@ -199,7 +199,7 @@ const IritubeAPI: IricomAPIList = {
       const response: AxiosResponse<Video> = await axios.request(config);
       return Video.getInstance(response.data);
     } catch (error) {
-      throw error;
+      throw new IritubeError(error);
     }
   },
 
@@ -217,7 +217,7 @@ const IritubeAPI: IricomAPIList = {
       const response: AxiosResponse<PlayList> = await axios.request(config);
       return response.data;
     } catch (error) {
-      throw error;
+      throw new IritubeError(error);
     }
   },
 
@@ -232,7 +232,7 @@ const IritubeAPI: IricomAPIList = {
       const response: AxiosResponse<PlayList> = await axios.request(config);
       return response.data;
     } catch (error) {
-      throw error;
+      throw new IritubeError(error);
     }
   },
 
@@ -256,7 +256,7 @@ const IritubeAPI: IricomAPIList = {
       const response: AxiosResponse<PlayList> = await axios.request(config);
       return response.data;
     } catch (error) {
-      throw error;
+      throw new IritubeError(error);
     }
   },
 
@@ -278,7 +278,7 @@ const IritubeAPI: IricomAPIList = {
       videoList.videos = videos;
       return videoList;
     } catch (error) {
-      throw error;
+      throw new IritubeError(error);
     }
   },
 };

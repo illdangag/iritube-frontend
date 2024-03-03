@@ -1,3 +1,5 @@
+import { AxiosError, } from 'axios';
+
 export class TokenInfo {
   public token: string;
   public refreshToken: string;
@@ -76,6 +78,41 @@ export abstract class ListResponse {
     }
 
     return resultList;
+  }
+}
+
+export enum IritubeErrorCode {
+  DUPLICATE_VIDEO_IN_PLAYLIST = '05000001',
+  UNKNOWN_ERROR = '99999999',
+}
+
+export class IritubeError extends Error {
+  private _httpState: number;
+  private _code: IritubeErrorCode;
+  private _message: string;
+
+  constructor (axiosError: AxiosError) {
+    const code: string = axiosError.response.data['code'] as string;
+    const message: string = axiosError.response.data['message'] as string;
+    const httpState: number = axiosError.response.status;
+
+    super(message);
+
+    this._code = code as IritubeErrorCode;
+    this._message = message;
+    this._httpState = httpState;
+  }
+
+  get httpState () {
+    return this._httpState;
+  }
+
+  get code () {
+    return this._code;
+  }
+
+  get message () {
+    return this._message;
   }
 }
 
