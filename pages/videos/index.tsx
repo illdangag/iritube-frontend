@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, } from 'react';
 import { GetServerSideProps, } from 'next/types';
+import { useRouter, } from 'next/router';
 import { Box, Card, CardBody, Heading, HStack, VStack, Text, Button, Spacer, Flex, } from '@chakra-ui/react';
 import { MainLayout, } from '@root/layouts';
 import { VideoPlayer, PlayListVideoListView, } from '@root/components';
@@ -26,6 +27,8 @@ const VideosPage = (props: Props) => {
   const stateList: State[] = props.states;
   const video: Video = Object.assign(new Video(), props.video);
   const playList: PlayList | null = props.playList;
+
+  const router = useRouter();
 
   const videoRef = useRef<HTMLDivElement>(null);
   const [openAddPlayListAlert, setOpenAddPlayListAlert,] = useState<boolean>(false);
@@ -56,6 +59,23 @@ const VideosPage = (props: Props) => {
     setOpenAddPlayListAlert(false);
   };
 
+  const onEndedVideoPlayer = () => {
+    if (!playList) {
+      return;
+    }
+
+    const videoLength: number = playList.videos.length;
+    const currentVideoIndex: number = playList.videos
+      .findIndex((item) => item.videoKey === video.videoKey);
+
+    if (videoLength - 1 === currentVideoIndex) {
+      return;
+    }
+
+    const nextVideoKey: string = playList.videos[currentVideoIndex + 1].videoKey;
+    void router.push('/videos?vk=' + nextVideoKey + '&pk=' + playList.playListKey);
+  };
+
   return <MainLayout>
     <Box>
       {stateList.indexOf(State.NOT_EXIST_VIDEO) > -1 && <Card height='100%' aspectRatio='16/9'>
@@ -70,7 +90,7 @@ const VideosPage = (props: Props) => {
             'lg': 'row',
           }}
         >
-          <VideoPlayer video={video} ref={videoRef}/>
+          <VideoPlayer video={video} ref={videoRef} autoPlay={true} onEnded={onEndedVideoPlayer}/>
           {playList && <Box>
             <PlayListVideoListView
               width={{

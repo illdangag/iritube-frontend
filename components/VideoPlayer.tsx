@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useRef, useState, memo, forwardRef, } from 'react';
+import { MouseEvent, useEffect, useRef, useState, memo, forwardRef, ReactEventHandler, } from 'react';
 import {
   Box, Fade, Flex, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Progress, Slider,
   SliderFilledTrack, SliderThumb, SliderTrack, Text, VStack,
@@ -9,7 +9,9 @@ import Hls, { Level, } from 'hls.js';
 import { Video, } from '@root/interfaces';
 
 type Props = {
-  video: Video,
+  video: Video;
+  autoPlay?: boolean;
+  onEnded?: ReactEventHandler<HTMLVideoElement>;
 }
 
 enum State {
@@ -27,6 +29,8 @@ const hls = new Hls({
 
 const VideoPlayer = ({
   video,
+  autoPlay = false,
+  onEnded = () => {},
 }: Props, ref) => {
   const videoRef = useRef();
   const [videoState, setVideoState,] = useState<State>(State.PAUSE);
@@ -63,7 +67,7 @@ const VideoPlayer = ({
       setExistAudio(hasAudio(videoElement));
 
       setCurrentTime(convertTime(videoElement.currentTime));
-      const progress: number =  Math.floor(videoElement.currentTime / video.duration * 100);
+      const progress: number =  Math.ceil(videoElement.currentTime / video.duration * 100);
       setVideoProgress(progress);
 
       if (videoElement.paused) {
@@ -99,7 +103,7 @@ const VideoPlayer = ({
       Boolean(video.audioTracks && video.audioTracks.length));
   };
 
-  const play = () => {
+  const playVideo = () => {
     void (videoRef.current as HTMLVideoElement).play()
       .then(() => {
         setVideoState(State.PLAY);
@@ -110,7 +114,7 @@ const VideoPlayer = ({
       });
   };
 
-  const pause = () => {
+  const pauseVideo = () => {
     (videoRef.current as HTMLVideoElement).pause();
     setVideoState(State.PAUSE);
     setShowCenterPause(true);
@@ -119,7 +123,7 @@ const VideoPlayer = ({
     }, 400);
   };
 
-  const mute = () => {
+  const muteVideo = () => {
     const videoElement: HTMLVideoElement = videoRef.current as HTMLVideoElement;
 
     if (isMute) {
@@ -144,24 +148,24 @@ const VideoPlayer = ({
 
   const onClickVideo = () => {
     if (videoState === State.PLAY) {
-      pause();
+      pauseVideo();
     } else {
-      play();
+      playVideo();
     }
   };
 
   const onClickPlayButton = () => {
-    play();
+    playVideo();
   };
 
   const onClickPauseButton = () => {
-    pause();
+    pauseVideo();
   };
 
   const onChangeVolume = (value: number) => {
     const videoElement: HTMLVideoElement = videoRef.current as HTMLVideoElement;
     if (isMute) {
-      mute();
+      muteVideo();
     }
 
     videoElement.volume = value / 100;
@@ -169,7 +173,7 @@ const VideoPlayer = ({
   };
 
   const onClickVolume = () => {
-    mute();
+    muteVideo();
   };
 
   const onClickProgress = (event: MouseEvent<HTMLDivElement>) => {
@@ -184,7 +188,7 @@ const VideoPlayer = ({
         <video style={{
           width: '100%',
           height: '100%',
-        }} ref={videoRef} onContextMenu={onContextMenu}/>
+        }} ref={videoRef} autoPlay={autoPlay} onContextMenu={onContextMenu} onEnded={onEnded}/>
       </VStack>
       <Fade in={showCenterPlay}>
         <Box position='absolute' top='50%' left='50%' transform='translate(-50%, -50%)'>
