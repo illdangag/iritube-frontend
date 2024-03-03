@@ -132,7 +132,10 @@ const VideoPlayer = ({
   };
 
   const setQuality = (level: Level) => {
-    hls.currentLevel = levelList.indexOf(level);
+    const selectedLevel: number = levelList.indexOf(level);
+    if (hls.currentLevel !== selectedLevel) { // 현재 재생중인 품질과 선택한 품질이 서로 다른 경우
+      hls.currentLevel = selectedLevel;
+    }
   };
 
   const onContextMenu = (event: MouseEvent<HTMLVideoElement>) => {
