@@ -3,7 +3,8 @@ import {
   Box, Fade, Flex, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Progress, Slider,
   SliderFilledTrack, SliderThumb, SliderTrack, Text, VStack,
 } from '@chakra-ui/react';
-import { MdOutlineSettings, MdPause, MdPlayArrow, MdVolumeOff, MdVolumeUp, MdSkipNext, MdSkipPrevious,
+import {
+  MdOutlineSettings, MdPause, MdPlayArrow, MdVolumeOff, MdVolumeUp, MdSkipNext, MdSkipPrevious, MdOutlineCrop32,
 } from 'react-icons/md';
 
 import Hls, { Level, } from 'hls.js';
@@ -15,6 +16,8 @@ type Props = {
   onEnded?: ReactEventHandler<HTMLVideoElement>;
   onPrevious?: () => void;
   onNext?: () => void;
+  onWide?: () => void;
+  onNarrow?: () => void;
 }
 
 enum State {
@@ -36,6 +39,8 @@ const VideoPlayer = ({
   onEnded = () => {},
   onPrevious,
   onNext,
+  onWide,
+  onNarrow,
 }: Props, ref) => {
   const videoRef = useRef();
   const [videoState, setVideoState,] = useState<State>(State.PAUSE);
@@ -50,6 +55,7 @@ const VideoPlayer = ({
   const [existAudio, setExistAudio,] = useState<boolean>(false);
   const [volume, setVolume,] = useState<number>(0.5);
   const [isMute, setIsMute,] = useState<boolean>(false);
+  const [wide, setWide,] = useState<boolean>(false);
 
   hls.on(Hls.Events.MANIFEST_LOADED, () => {
     setLevelList(hls.levels);
@@ -187,6 +193,16 @@ const VideoPlayer = ({
     (videoRef.current as HTMLVideoElement).currentTime = selectProgress * video.duration;
   };
 
+  const onWideVideo = () => {
+    setWide(true);
+    onWide();
+  };
+
+  const onNarrowVideo = () => {
+    setWide(false);
+    onNarrow();
+  };
+
   return <Box width='100%' height='100%' ref={ref}>
     <Box position='relative' backgroundColor='black' borderRadius='lg' overflow='hidden'>
       <VStack aspectRatio='16/9'>
@@ -235,7 +251,7 @@ const VideoPlayer = ({
         <HStack justifyContent='space-between'>
           <HStack>
             {onPrevious && <IconButton
-              aria-label='pause'
+              aria-label='previuse'
               size='sm'
               fontSize='1.4rem'
               variant='ghost'
@@ -246,7 +262,7 @@ const VideoPlayer = ({
               onClick={onPrevious}
             />}
             {videoState === State.PAUSE && <IconButton
-              aria-label='play'
+              aria-label='pause'
               size='sm'
               fontSize='1.4rem'
               variant='ghost'
@@ -268,7 +284,7 @@ const VideoPlayer = ({
               onClick={onClickPauseButton}
             />}
             {onNext && <IconButton
-              aria-label='pause'
+              aria-label='next'
               size='sm'
               fontSize='1.4rem'
               variant='ghost'
@@ -316,6 +332,28 @@ const VideoPlayer = ({
             </Box>}
           </HStack>
           <HStack>
+            {!wide && onWide && <IconButton
+              aria-label='wide'
+              size='sm'
+              fontSize='1.4rem'
+              variant='ghost'
+              _hover={{
+                backgroundColor: '#00000033',
+              }}
+              icon={<MdOutlineCrop32 color='#ffffff'/>}
+              onClick={onWideVideo}
+            />}
+            {wide && onNarrow && <IconButton
+              aria-label='wide'
+              size='sm'
+              fontSize='1.4rem'
+              variant='ghost'
+              _hover={{
+                backgroundColor: '#00000033',
+              }}
+              icon={<MdOutlineCrop32 color='#ffffff'/>}
+              onClick={onNarrowVideo}
+            />}
             {currentLevel > -1 && <Text fontSize='0.8rem'>{levelList[currentLevel].height}</Text>}
             <Menu>
               <MenuButton

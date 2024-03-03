@@ -33,6 +33,7 @@ const VideosPage = (props: Props) => {
   const videoRef = useRef<HTMLDivElement>(null);
   const [openAddPlayListAlert, setOpenAddPlayListAlert,] = useState<boolean>(false);
   const [videoPlayerHeight, setVideoPlayerHeight,] = useState<number>(-1);
+  const [wide, setWide,] = useState<boolean>(false);
 
   useEffect(() => {
     const windowResizeCallback = throttle(() => {
@@ -46,6 +47,10 @@ const VideosPage = (props: Props) => {
       window.removeEventListener('resize', windowResizeCallback);
     };
   }, []);
+
+  useEffect(() => {
+    setVideoPlayerHeight(videoRef.current ? videoRef.current.offsetHeight : -1);
+  }, [wide,]);
 
   const onClickAddPlayListButton = () => {
     setOpenAddPlayListAlert(true);
@@ -69,6 +74,14 @@ const VideosPage = (props: Props) => {
 
   const onNextVideo = () => {
     pushNextVideo();
+  };
+
+  const onWideVideo = () => {
+    setWide(true);
+  };
+
+  const onNarrowVideo = () => {
+    setWide(false);
   };
 
   const pushNextVideo = () => {
@@ -115,16 +128,30 @@ const VideosPage = (props: Props) => {
         <Flex width='100%' gap='1rem' alignItems='stretch'
           flexDirection={{
             'base': 'column',
-            'lg': 'row',
+            'lg': wide ? 'column' : 'row',
           }}
         >
-          {!playList && <VideoPlayer video={video} ref={videoRef} autoPlay={true} onEnded={onEndedVideoPlayer}/>}
-          {playList && <VideoPlayer video={video} ref={videoRef} autoPlay={true} onEnded={onEndedVideoPlayer} onPrevious={onPreviousVideo} onNext={onNextVideo}/>}
+          {!playList && <VideoPlayer
+            video={video}
+            ref={videoRef}
+            autoPlay={true}
+            onEnded={onEndedVideoPlayer}
+          />}
+          {playList && <VideoPlayer
+            video={video}
+            ref={videoRef}
+            autoPlay={true}
+            onEnded={onEndedVideoPlayer}
+            onPrevious={onPreviousVideo}
+            onNext={onNextVideo}
+            onWide={onWideVideo}
+            onNarrow={onNarrowVideo}
+          />}
           {playList && <Box>
             <PlayListVideoListView
               width={{
                 'base': '100%',
-                'lg': '20rem',
+                'lg': wide ? '100%' : '20rem',
               }}
               height={{
                 'base': 'none',
@@ -132,7 +159,7 @@ const VideosPage = (props: Props) => {
               }}
               maxHeight={{
                 'base': '18rem',
-                'lg': 'none',
+                'lg': wide ? '18rem' : 'none',
               }}
               playList={playList}
               video={video}
