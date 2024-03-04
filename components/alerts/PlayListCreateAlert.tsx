@@ -45,7 +45,7 @@ const PlayListCreateAlert = ({
   }, [open,]);
 
   const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value.trim());
+    setTitle(event.target.value);
   };
 
   const onClickCreate = async () => {
@@ -53,7 +53,7 @@ const PlayListCreateAlert = ({
 
     try {
       const tokenInfo: TokenInfo = await getTokenInfo();
-      await iritubeAPI.createPlayList(tokenInfo, title);
+      await iritubeAPI.createPlayList(tokenInfo, title.trim());
       const playListList: PlayListList = await iritubeAPI.getMyPlayListList(tokenInfo, 0, 10);
       setPlayListList(playListList);
       onConfirm();
