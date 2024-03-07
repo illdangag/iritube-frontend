@@ -5,16 +5,17 @@ import { ChakraProvider, extendTheme, } from '@chakra-ui/react';
 import { RecoilRoot, } from 'recoil';
 
 const theme = extendTheme({
+  semanticTokens: {
+    colors: {
+      'chakra-body-bg': {
+        // _light: '#f8f9fa',
+        // _dark: '#212529',
+      },
+    },
+  },
   fonts: {
     heading: '\'Noto Sans KR\', Roboto, sans-serif',
     body: '\'Noto Sans KR\', Roboto, sans-serif',
-  },
-  styles: {
-    global: {
-      body: {
-        bg: '#212529',
-      },
-    },
   },
   breakpoints: {
     sm: '30rem', // 480px

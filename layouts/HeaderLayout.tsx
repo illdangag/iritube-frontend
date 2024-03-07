@@ -37,12 +37,12 @@ const HeaderLayout = ({
     const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
     if (tokenInfo === null) {
       setState(State.LOGOUT);
+    } else {
+      void iritubeAPI.getMyPlayListList(tokenInfo, 0, 10)
+        .then(playListList => {
+          setPlayListList(playListList);
+        });
     }
-
-    void iritubeAPI.getMyPlayListList(tokenInfo, 0, 10)
-      .then(playListList => {
-        setPlayListList(playListList);
-      });
   }, []);
 
   useEffect(() => {
@@ -90,7 +90,7 @@ const HeaderLayout = ({
   return <>
     <Flex flexDirection='row' justifyContent='space-between' alignItems='center' paddingTop='0.8rem' paddingBottom='0.8rem'>
       <HStack>
-        <IconButton aria-label='menu' icon={<MdMenu/>} variant='ghost' onClick={onClickMenuButton}/>
+        {state === State.LOGIN && <IconButton aria-label='menu' icon={<MdMenu/>} variant='ghost' onClick={onClickMenuButton}/>}
         <Link as={NextLink} marginRight='auto' href='/' _hover={{ textDecoration: 'none', }}>
           <Image src='/static/images/main.png' boxSize='2rem'/>
         </Link>
@@ -115,52 +115,54 @@ const HeaderLayout = ({
         </Menu>
       </Box>}
     </Flex>
-    <Drawer placement='left' isOpen={isOpenMenu} onClose={onCloseMenu}>
-      <DrawerOverlay/>
-      <DrawerContent>
-        <DrawerBody>
-          <VStack marginTop='1rem' alignItems='stretch'>
-            <HStack paddingLeft='0.75rem' justifyContent='space-between'>
-              <Heading fontSize='sm'>재생 목록</Heading>
-              <IconButton
-                aria-label='add play list'
-                icon={<MdAdd/>}
+    {state === State.LOGIN && <>
+      <Drawer placement='left' isOpen={isOpenMenu} onClose={onCloseMenu}>
+        <DrawerOverlay/>
+        <DrawerContent>
+          <DrawerBody>
+            <VStack marginTop='1rem' alignItems='stretch'>
+              <HStack paddingLeft='0.75rem' justifyContent='space-between'>
+                <Heading fontSize='sm'>재생 목록</Heading>
+                <IconButton
+                  aria-label='add play list'
+                  icon={<MdAdd/>}
+                  size='sm'
+                  variant='ghost'
+                  onClick={onClickPlayListCreateButton}
+                />
+              </HStack>
+              <Divider/>
+              {playListList && playListList.total === 0 && <>
+                <Button
+                  size='sm'
+                  variant='outline'
+                  leftIcon={<MdAdd/>}
+                  onClick={onClickPlayListCreateButton}
+                >
+                  재생 목록 추가
+                </Button>
+              </>}
+              {playListList && playListList.total > 0 && playListList.playLists.map((playList, index) => <Button
+                key={index}
                 size='sm'
                 variant='ghost'
-                onClick={onClickPlayListCreateButton}
-              />
-            </HStack>
-            <Divider/>
-            {playListList && playListList.total === 0 && <>
-              <Button
-                size='sm'
-                variant='outline'
-                leftIcon={<MdAdd/>}
-                onClick={onClickPlayListCreateButton}
+                justifyContent='start'
+                as={NextLink}
+                href={`/videos?pk=${playList.playListKey}`}
+                onClick={onClickPlayList}
               >
-                재생 목록 추가
-              </Button>
-            </>}
-            {playListList && playListList.total > 0 && playListList.playLists.map((playList, index) => <Button
-              key={index}
-              size='sm'
-              variant='ghost'
-              justifyContent='start'
-              as={NextLink}
-              href={`/videos?pk=${playList.playListKey}`}
-              onClick={onClickPlayList}
-            >
-              {playList.title}
-            </Button>)}
-          </VStack>
-        </DrawerBody>
-      </DrawerContent>
-    </Drawer>
-    <PlayListCreateAlert
-      open={openPlayListCreateAlert}
-      onClose={onClosePlayListCreateAlert}
-      onConfirm={onConfirmPlayListCreateAlert}
-    />
+                {playList.title}
+              </Button>)}
+            </VStack>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
+      <PlayListCreateAlert
+        open={openPlayListCreateAlert}
+        onClose={onClosePlayListCreateAlert}
+        onConfirm={onConfirmPlayListCreateAlert}
+      />
+    </>}
   </>;
 };
 
