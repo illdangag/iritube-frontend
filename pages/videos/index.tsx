@@ -50,7 +50,7 @@ const VideosPage = (props: Props) => {
 
   useEffect(() => {
     setVideoPlayerHeight(videoRef.current ? videoRef.current.offsetHeight : -1);
-  }, [wide,]);
+  }, [wide, playList,]);
 
   const onClickAddPlayListButton = () => {
     setOpenAddPlayListAlert(true);
@@ -155,7 +155,7 @@ const VideosPage = (props: Props) => {
               }}
               height={{
                 'base': 'none',
-                'lg': videoPlayerHeight,
+                'lg': wide ? 'none' : videoPlayerHeight,
               }}
               maxHeight={{
                 'base': '18rem',
