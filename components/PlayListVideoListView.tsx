@@ -5,13 +5,12 @@ import {
 } from '@chakra-ui/react';
 import { MdPlayArrow, } from 'react-icons/md';
 
-import { PlayList, TokenInfo, Video, VideoShare, } from '@root/interfaces';
+import { PlayList, TokenInfo, VideoShare, } from '@root/interfaces';
 import iritubeAPI from '@root/utils/iritubeAPI';
 import { getTokenInfo, } from '@root/utils';
 
 interface Props extends CardProps {
   playList: PlayList;
-  // video: Video;
   videoKey: string;
 }
 
@@ -22,7 +21,6 @@ type ThumbnailData = {
 
 const PlayListVideoListView = (props: Props) => {
   const playList: PlayList = props.playList;
-  // const video: Video = props.video;
   const videoKey: string = props.videoKey;
 
   const [thumbnailMap, setThumbnailMap,] = useState<Map<string, string>>(new Map());
@@ -82,6 +80,17 @@ const PlayListVideoListView = (props: Props) => {
     return playList.videos.findIndex(item => item.videoKey === videoKey);
   };
 
+  const getVideoThumbnailElement = (videoKey: string) => {
+    return <Box width='4rem' aspectRatio={4 / 3} position='relative' overflow='hidden' borderRadius='md'>
+      <Image
+        src={thumbnailMap && thumbnailMap.get(videoKey) || '/static/images/transparent.png'}
+        alt='thumbnail'
+        position='absolute'
+        top='50%' left='50%' transform='translate(-50%, -50%)'
+      />
+    </Box>;
+  };
+
   return <Card paddingBottom='1rem' paddingRight='1rem' {...getCardProps()}>
     <CardHeader>
       <VStack alignItems='flex-start'>
@@ -100,20 +109,15 @@ const PlayListVideoListView = (props: Props) => {
             <VStack width='1.25rem'>
               {videoKey === playListVideo.videoKey ? <Text fontSize='xs'><MdPlayArrow width='0.2rem'/></Text> : <Text fontSize='xs'>{index + 1}</Text>}
             </VStack>
-            <LinkOverlay as={NextLink} href={`/videos?vk=${playListVideo.videoKey}&pk=${playList.playListKey}`}>
-              <Box width='4rem' aspectRatio={4 / 3} position='relative' overflow='hidden' borderRadius='md'>
-                <Image
-                  src={thumbnailMap && thumbnailMap.get(playListVideo.videoKey) || '/static/images/transparent.png'}
-                  alt='thumbnail'
-                  position='absolute'
-                  top='50%' left='50%' transform='translate(-50%, -50%)'
-                />
-              </Box>
-            </LinkOverlay>
+            {!playListVideo.id && getVideoThumbnailElement(playListVideo.videoKey)}
+            {playListVideo.id && <LinkOverlay as={NextLink} href={`/videos?vk=${playListVideo.videoKey}&pk=${playList.playListKey}`}>
+              {getVideoThumbnailElement(playListVideo.videoKey)}
+            </LinkOverlay>}
             <VStack height='100%' alignItems='flex-start' marginLeft='0.75rem'>
-              <LinkOverlay as={NextLink} href={`/videos?vk=${playListVideo.videoKey}&pk=${playList.playListKey}`}>
-                <Text fontSize='sm' fontWeight={500}>{playListVideo.share === VideoShare.PRIVATE ? '비공개 동영상' : playListVideo.title}</Text>
-              </LinkOverlay>
+              {!playListVideo.id && <Text fontSize='sm' fontWeight={500}>비공개 동영상</Text>}
+              {playListVideo.id && <LinkOverlay as={NextLink} href={`/videos?vk=${playListVideo.videoKey}&pk=${playList.playListKey}`}>
+                <Text fontSize='sm' fontWeight={500}>{playListVideo.title}</Text>
+              </LinkOverlay>}
               <Text fontSize='sm' fontWeight={500} opacity={0.6}>{playListVideo.account ? playListVideo.account.nickname : ''}</Text>
             </VStack>
           </HStack>

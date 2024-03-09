@@ -8,7 +8,8 @@ import {
 } from 'react-icons/md';
 
 import Hls, { Level, } from 'hls.js';
-import { Video, } from '@root/interfaces';
+import { TokenInfo, Video, } from '@root/interfaces';
+import { getTokenInfo } from '@root/utils';
 
 type Props = {
   video: Video;
@@ -24,14 +25,6 @@ enum State {
   PLAY = 'PLAY',
   PAUSE = 'PAUSE',
 }
-
-const hls = new Hls({
-  autoStartLoad: true,
-  debug: false,
-  enableWorker: true,
-  lowLatencyMode: true,
-  backBufferLength: 90,
-});
 
 const VideoPlayer = ({
   video,
@@ -56,6 +49,20 @@ const VideoPlayer = ({
   const [volume, setVolume,] = useState<number>(0.5);
   const [isMute, setIsMute,] = useState<boolean>(false);
   const [wide, setWide,] = useState<boolean>(false);
+
+  const hls = new Hls({
+    autoStartLoad: true,
+    debug: false,
+    enableWorker: true,
+    lowLatencyMode: true,
+    backBufferLength: 90,
+    xhrSetup: async (xhr, _url) => {
+      const tokenInfo: TokenInfo | null = await getTokenInfo();
+      if (tokenInfo) {
+        xhr.setRequestHeader('Authorization', 'Bearer ' + tokenInfo.token);
+      }
+    },
+  });
 
   hls.on(Hls.Events.MANIFEST_LOADED, () => {
     setLevelList(hls.levels);
