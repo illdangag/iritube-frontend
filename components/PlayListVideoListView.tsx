@@ -1,21 +1,71 @@
+import { useEffect, useState, } from 'react';
 import NextLink from 'next/link';
 import {
-  Box, Card, CardBody, Text, Image, VStack, HStack, CardHeader, Heading, LinkBox, LinkOverlay, CardProps,
+  Box, Card, CardBody, CardHeader, CardProps, Heading, HStack, Image, LinkBox, LinkOverlay, Text, VStack,
 } from '@chakra-ui/react';
-
 import { MdPlayArrow, } from 'react-icons/md';
 
-import { PlayList, Video, } from '@root/interfaces';
-import process from 'process';
+import { PlayList, TokenInfo, Video, VideoShare, } from '@root/interfaces';
+import iritubeAPI from '@root/utils/iritubeAPI';
+import { getTokenInfo, } from '@root/utils';
 
 interface Props extends CardProps {
   playList: PlayList;
-  video: Video;
+  // video: Video;
+  videoKey: string;
 }
+
+type ThumbnailData = {
+  videoKey: string;
+  data: string;
+};
 
 const PlayListVideoListView = (props: Props) => {
   const playList: PlayList = props.playList;
-  const video: Video = props.video;
+  // const video: Video = props.video;
+  const videoKey: string = props.videoKey;
+
+  const [thumbnailMap, setThumbnailMap,] = useState<Map<string, string>>(new Map());
+
+  useEffect(() => {
+    void initThumbnail();
+  }, [playList,]);
+
+  const initThumbnail = async () => {
+    const tokenInfo: TokenInfo | null = await getTokenInfo();
+    const promiseQueue: Promise<ThumbnailData>[] = [];
+
+    for (let playListVideo of playList.videos) {
+      promiseQueue.push(new Promise<ThumbnailData>(async (resolve, reject) => {
+        try {
+          const file: File = await iritubeAPI.getVideoThumbnail(tokenInfo, playListVideo.videoKey);
+          const fileReader: FileReader = new FileReader();
+          fileReader.addEventListener('load', (event) => {
+            const result: string = event.target.result as string;
+            resolve({
+              videoKey: playListVideo.videoKey,
+              data: result,
+            } as ThumbnailData);
+          });
+          fileReader.readAsDataURL(file);
+        } catch (error) {
+          resolve({
+            videoKey: playListVideo.videoKey,
+            data: '/static/images/transparent.png',
+          } as ThumbnailData);
+        }
+      }));
+    }
+
+    const promiseResult: ThumbnailData[] = await Promise.all(promiseQueue);
+
+    const newThumbnailMap: Map<string, string> = new Map<string, string>();
+    promiseResult.forEach(value => {
+      newThumbnailMap.set(value.videoKey, value.data);
+    });
+
+    setThumbnailMap(newThumbnailMap);
+  };
 
   const getCardProps = (): CardProps => {
     const cardProps: Props = {
@@ -23,13 +73,13 @@ const PlayListVideoListView = (props: Props) => {
     };
 
     delete cardProps.playList;
-    delete cardProps.video;
+    delete cardProps.videoKey;
 
     return cardProps as CardProps;
   };
 
   const getCurrentVideoIndex = (): number => {
-    return playList.videos.findIndex(item => item.videoKey === video.videoKey);
+    return playList.videos.findIndex(item => item.videoKey === videoKey);
   };
 
   return <Card paddingBottom='1rem' paddingRight='1rem' {...getCardProps()}>
@@ -45,15 +95,15 @@ const PlayListVideoListView = (props: Props) => {
     </CardHeader>
     <CardBody padding='0' height='100%' overflowY='auto'>
       <VStack width='100%' alignItems='stretch'>
-        {playList.videos.map((video, index) => <LinkBox key={index}>
+        {playList.videos.map((playListVideo, index) => <LinkBox key={index}>
           <HStack gap={0}>
             <VStack width='1.25rem'>
-              {getCurrentVideoIndex() === index ? <Text fontSize='xs'><MdPlayArrow width='0.2rem'/></Text> : <Text fontSize='xs'>{index + 1}</Text>}
+              {videoKey === playListVideo.videoKey ? <Text fontSize='xs'><MdPlayArrow width='0.2rem'/></Text> : <Text fontSize='xs'>{index + 1}</Text>}
             </VStack>
-            <LinkOverlay as={NextLink} href={`/videos?vk=${video.videoKey}&pk=${playList.playListKey}`}>
+            <LinkOverlay as={NextLink} href={`/videos?vk=${playListVideo.videoKey}&pk=${playList.playListKey}`}>
               <Box width='4rem' aspectRatio={4 / 3} position='relative' overflow='hidden' borderRadius='md'>
                 <Image
-                  src={`${process.env.backendURL}/v1/thumbnail/${video.videoKey}`}
+                  src={thumbnailMap && thumbnailMap.get(playListVideo.videoKey) || '/static/images/transparent.png'}
                   alt='thumbnail'
                   position='absolute'
                   top='50%' left='50%' transform='translate(-50%, -50%)'
@@ -61,10 +111,10 @@ const PlayListVideoListView = (props: Props) => {
               </Box>
             </LinkOverlay>
             <VStack height='100%' alignItems='flex-start' marginLeft='0.75rem'>
-              <LinkOverlay as={NextLink} href={`/videos?vk=${video.videoKey}&pk=${playList.playListKey}`}>
-                <Text fontSize='sm' fontWeight={500}>{video.title}</Text>
+              <LinkOverlay as={NextLink} href={`/videos?vk=${playListVideo.videoKey}&pk=${playList.playListKey}`}>
+                <Text fontSize='sm' fontWeight={500}>{playListVideo.share === VideoShare.PRIVATE ? '비공개 동영상' : playListVideo.title}</Text>
               </LinkOverlay>
-              <Text fontSize='sm' fontWeight={500} opacity={0.6}>{video.account.nickname}</Text>
+              <Text fontSize='sm' fontWeight={500} opacity={0.6}>{playListVideo.account ? playListVideo.account.nickname : ''}</Text>
             </VStack>
           </HStack>
         </LinkBox>)}

@@ -29,6 +29,7 @@ const VideosPage = (props: Props) => {
   const playList: PlayList | null = props.playList;
 
   const router = useRouter();
+  const videoKey: string = router.query.vk as string;
 
   const videoRef = useRef<HTMLDivElement>(null);
   const [openAddPlayListAlert, setOpenAddPlayListAlert,] = useState<boolean>(false);
@@ -119,25 +120,25 @@ const VideosPage = (props: Props) => {
 
   return <MainLayout title={video.title + ' | Iritube'}>
     <Box>
-      {stateList.indexOf(State.NOT_EXIST_VIDEO) > -1 && <Card height='100%' aspectRatio='16/9'>
-        <CardBody>
-          존재하지 않는 동영상입니다.
-        </CardBody>
-      </Card>}
-      {stateList.indexOf(State.NOT_EXIST_VIDEO) === -1 && <VStack alignItems='flex-start'>
+      <VStack alignItems='flex-start'>
         <Flex width='100%' gap='1rem' alignItems='stretch'
           flexDirection={{
             'base': 'column',
             'lg': wide ? 'column' : 'row',
           }}
         >
-          {!playList && <VideoPlayer
+          {stateList.indexOf(State.NOT_EXIST_VIDEO) > -1 && <Card height='100%' aspectRatio='16/9'>
+            <CardBody>
+              존재하지 않는 동영상입니다.
+            </CardBody>
+          </Card>}
+          {stateList.indexOf(State.NOT_EXIST_VIDEO) === -1 && !playList && <VideoPlayer
             video={video}
             ref={videoRef}
             autoPlay={true}
             onEnded={onEndedVideoPlayer}
           />}
-          {playList && <VideoPlayer
+          {stateList.indexOf(State.NOT_EXIST_VIDEO) === -1 && playList && <VideoPlayer
             video={video}
             ref={videoRef}
             autoPlay={true}
@@ -162,11 +163,11 @@ const VideosPage = (props: Props) => {
                 'lg': wide ? '18rem' : 'none',
               }}
               playList={playList}
-              video={video}
+              videoKey={videoKey}
             />
           </Box>}
         </Flex>
-        <VStack width='100%' alignItems='flex-start'>
+        {stateList.indexOf(State.NOT_EXIST_VIDEO) === -1 && <VStack width='100%' alignItems='flex-start'>
           <Heading size='md' marginTop='0.75rem' marginBottom='0'>{video.title}</Heading>
           <Text fontSize='sm' fontWeight={700}>{video.account.nickname}</Text>
           <Card width='100%'>
@@ -186,10 +187,10 @@ const VideosPage = (props: Props) => {
               </VStack>
             </CardBody>
           </Card>
-        </VStack>
-      </VStack>}
+        </VStack>}
+      </VStack>
     </Box>
-    {stateList.indexOf(State.NOT_EXIST_VIDEO) === -1 && <PlayListVideoAddAlert
+    {stateList.indexOf(State.NOT_EXIST_PLAY_LIST) === -1 && <PlayListVideoAddAlert
       open={openAddPlayListAlert}
       video={video}
       onClose={onClosePlayListVideoAddAlert}

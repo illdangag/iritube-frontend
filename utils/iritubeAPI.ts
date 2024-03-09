@@ -21,6 +21,7 @@ type IricomAPIList = {
   getVideo: (tokenInfo: TokenInfo | null, videoKey: string) => Promise<Video>,
   updateVideo: (tokenInfo: TokenInfo, video: Video) => Promise<Video>,
   deleteVideo: (tokenInfo: TokenInfo, videoKey: string) => Promise<Video>,
+  getVideoThumbnail: (tokenInfo: TokenInfo | null, videoKey: string) => Promise<File>,
 
   // 재생 목록
   createPlayList: (tokenInfo: TokenInfo, title: string) => Promise<PlayList>,
@@ -198,6 +199,23 @@ const IritubeAPI: IricomAPIList = {
     try {
       const response: AxiosResponse<Video> = await axios.request(config);
       return Video.getInstance(response.data);
+    } catch (error) {
+      throw new IritubeError(error);
+    }
+  },
+
+  getVideoThumbnail: async (tokenInfo: TokenInfo | null, videoKey: string): Promise<File> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendURL}/v1/thumbnail/${videoKey}`,
+      method: 'GET',
+      responseType: 'blob',
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<Blob> = await axios.request(config);
+      const mimeType = response.headers['content-type'];
+      return new File([response.data,], videoKey, { type: mimeType, });
     } catch (error) {
       throw new IritubeError(error);
     }
