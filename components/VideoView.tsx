@@ -1,4 +1,4 @@
-import { useEffect, useState, } from 'react';
+import { useEffect, useState, forwardRef, } from 'react';
 import NextLink from 'next/link';
 import {
   Badge, Box, Button, ButtonGroup, Card, CardBody, CardFooter, HStack, Image, Link, LinkBox, LinkOverlay, Spacer, Text,
@@ -21,7 +21,7 @@ const VideoView = ({
   video,
   type = 'thumbnail',
   onDelete = () => {},
-}: Props) => {
+}: Props, ref) => {
   const [updateDate, setUpdateDate,] = useState<string>('');
   const [imageURL, setImageURL,] = useState<string>('/static/images/transparent.png');
 
@@ -69,7 +69,7 @@ const VideoView = ({
   };
 
   const getThumbnailType = () => {
-    return <Card backgroundColor='none' variant='ghost'>
+    return <Card backgroundColor='none' variant='ghost' ref={ref}>
       <CardBody padding={0}>
         {getVideoThumbnail('16/9')}
       </CardBody>
@@ -147,7 +147,7 @@ const VideoView = ({
   };
 
   const getDetailType = () => {
-    return <Card>
+    return <Card ref={ref}>
       <CardBody display='flex' gap='0.5rem'>
         <Box width='10rem'>
           {getVideoThumbnail('4/3')}
@@ -179,6 +179,4 @@ const VideoView = ({
   </>;
 };
 
-export default VideoView;
-
-
+export default forwardRef(VideoView);

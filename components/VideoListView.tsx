@@ -1,4 +1,4 @@
-import { useState, } from 'react';
+import { useState, useRef, useEffect, } from 'react';
 import { Box, VStack, Grid, GridItem, Card, CardBody, Image, Text, } from '@chakra-ui/react';
 import { VideoView, Pagination, } from '@root/components';
 import { VideoDeleteAlert, } from '@root/components/alerts';
@@ -22,6 +22,23 @@ const VideoListView = ({
   const [deleteVideo, setDeleteVideo,] = useState<Video | null>(null);
   const [openDeleteAlert, setOpenDeleteAlert,] = useState<boolean>(false);
   const [loadingDeleteAlert, setLoadingDeleteAlert,] = useState<boolean>(false);
+
+  const lastVideoRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (item) => {
+        console.log('ob', item[0].isIntersecting);
+      },
+      {
+        threshold: 0.5,
+      });
+    observer.observe(lastVideoRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   const onDelete = (video: Video) => {
     setDeleteVideo(video);
@@ -56,7 +73,11 @@ const VideoListView = ({
       gap={6}
     >
       {videoList.videos.map((item, index) => <GridItem key={index}>
-        <VideoView video={item} type={type}/>
+        <VideoView
+          video={item}
+          type={type}
+          ref={index === videoList.videos.length - 1 ? lastVideoRef : undefined}
+        />
       </GridItem>)}
     </Grid>;
   };
@@ -64,7 +85,12 @@ const VideoListView = ({
   const getDetailType = () => {
     return <VStack alignItems='stretch'>
       {videoList.videos.map((video, index) => <Box key={index}>
-        <VideoView video={video} type={type} onDelete={() => onDelete(video)}/>
+        <VideoView
+          video={video}
+          type={type}
+          onDelete={() => onDelete(video)}
+          ref={index === videoList.videos.length - 1 ? lastVideoRef : undefined}
+        />
       </Box>)}
     </VStack>;
   };
