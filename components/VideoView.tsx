@@ -6,9 +6,10 @@ import {
 } from '@chakra-ui/react';
 import { ThemeTypings, } from '@chakra-ui/styled-system';
 
-import { Video, VideoShare, VideoState, VideoViewType, } from '@root/interfaces';
+import { TokenInfo, Video, VideoShare, VideoState, VideoViewType, } from '@root/interfaces';
 import * as CSS from 'csstype';
-import process from 'process';
+import { getTokenInfo, } from '@root/utils';
+import iritubeAPI from '@root/utils/iritubeAPI';
 
 type Props = {
   video: Video;
@@ -22,17 +23,29 @@ const VideoView = ({
   onDelete = () => {},
 }: Props) => {
   const [updateDate, setUpdateDate,] = useState<string>('');
+  const [imageURL, setImageURL,] = useState<string>('/static/images/transparent.png');
 
   useEffect(() => {
     setUpdateDate(video.getUpdateDate());
+    void initThumbnail();
   }, []);
+
+  const initThumbnail = async () => {
+    const tokenInfo: TokenInfo | null = await getTokenInfo();
+    try {
+      const imageData: string = await iritubeAPI.getVideoThumbnail(tokenInfo, video.videoKey);
+      setImageURL(imageData);
+    } catch (error) {
+      setImageURL('/static/images/black.jpg');
+    }
+  };
 
   const getVideoThumbnail = (aspectRatio: CSS.Property.AspectRatio) => {
     return <LinkBox>
       <Box borderRadius='lg' overflow='hidden' backgroundColor='black' aspectRatio={aspectRatio} position='relative' minWidth='10rem'>
         <LinkOverlay as={NextLink} href={video.state === VideoState.CONVERTED ? `/videos?vk=${video.videoKey}` : '#'}>
           <Image
-            src={video.state === VideoState.CONVERTED ? `${process.env.backendURL}/v1/thumbnail/${video.videoKey}` : '/static/images/question-mark.png'}
+            src={imageURL}
             alt='thumbnail'
             position='absolute'
             top='50%' left='50%' transform='translate(-50%, -50%)'

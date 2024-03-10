@@ -34,22 +34,17 @@ const PlayListVideoListView = (props: Props) => {
     const promiseQueue: Promise<ThumbnailData>[] = [];
 
     for (let playListVideo of playList.videos) {
-      promiseQueue.push(new Promise<ThumbnailData>(async (resolve, reject) => {
+      promiseQueue.push(new Promise<ThumbnailData>(async (resolve) => {
         try {
-          const file: File = await iritubeAPI.getVideoThumbnail(tokenInfo, playListVideo.videoKey);
-          const fileReader: FileReader = new FileReader();
-          fileReader.addEventListener('load', (event) => {
-            const result: string = event.target.result as string;
-            resolve({
-              videoKey: playListVideo.videoKey,
-              data: result,
-            } as ThumbnailData);
+          const imageData: string = await iritubeAPI.getVideoThumbnail(tokenInfo, playListVideo.videoKey);
+          resolve({
+            videoKey: playListVideo.videoKey,
+            data: imageData,
           });
-          fileReader.readAsDataURL(file);
         } catch (error) {
           resolve({
             videoKey: playListVideo.videoKey,
-            data: '/static/images/transparent.png',
+            data: '/static/images/black.jpg',
           } as ThumbnailData);
         }
       }));
@@ -83,7 +78,7 @@ const PlayListVideoListView = (props: Props) => {
   const getVideoThumbnailElement = (videoKey: string) => {
     return <Box width='4rem' aspectRatio={4 / 3} position='relative' overflow='hidden' borderRadius='md'>
       <Image
-        src={thumbnailMap && thumbnailMap.get(videoKey) || '/static/images/transparent.png'}
+        src={thumbnailMap && thumbnailMap.get(videoKey) || '/static/images/black.jpg'}
         alt='thumbnail'
         position='absolute'
         top='50%' left='50%' transform='translate(-50%, -50%)'

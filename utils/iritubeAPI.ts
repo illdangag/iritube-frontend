@@ -21,7 +21,7 @@ type IricomAPIList = {
   getVideo: (tokenInfo: TokenInfo | null, videoKey: string) => Promise<Video>,
   updateVideo: (tokenInfo: TokenInfo, video: Video) => Promise<Video>,
   deleteVideo: (tokenInfo: TokenInfo, videoKey: string) => Promise<Video>,
-  getVideoThumbnail: (tokenInfo: TokenInfo | null, videoKey: string) => Promise<File>,
+  getVideoThumbnail: (tokenInfo: TokenInfo | null, videoKey: string) => Promise<string>,
 
   // 재생 목록
   createPlayList: (tokenInfo: TokenInfo, title: string) => Promise<PlayList>,
@@ -204,7 +204,7 @@ const IritubeAPI: IricomAPIList = {
     }
   },
 
-  getVideoThumbnail: async (tokenInfo: TokenInfo | null, videoKey: string): Promise<File> => {
+  getVideoThumbnail: async (tokenInfo: TokenInfo | null, videoKey: string): Promise<string> => {
     const config: AxiosRequestConfig = {
       url: `${backendURL}/v1/thumbnail/${videoKey}`,
       method: 'GET',
@@ -212,10 +212,21 @@ const IritubeAPI: IricomAPIList = {
     };
     setToken(config, tokenInfo);
 
+    const fileToData = (file: File): Promise<string> => {
+      return new Promise((resolve) => {
+        const fileReader: FileReader = new FileReader();
+        fileReader.addEventListener('load', (event) => {
+          resolve(event.target.result as string);
+        });
+        fileReader.readAsDataURL(file);
+      });
+    };
+
     try {
       const response: AxiosResponse<Blob> = await axios.request(config);
       const mimeType = response.headers['content-type'];
-      return new File([response.data,], videoKey, { type: mimeType, });
+      const file: File = new File([response.data,], videoKey, { type: mimeType, });
+      return await fileToData(file);
     } catch (error) {
       throw new IritubeError(error);
     }
