@@ -26,6 +26,20 @@ enum State {
   PAUSE = 'PAUSE',
 }
 
+const hls = new Hls({
+  autoStartLoad: true,
+  debug: false,
+  enableWorker: true,
+  lowLatencyMode: true,
+  backBufferLength: 90,
+  xhrSetup: async (xhr, _url) => {
+    const tokenInfo: TokenInfo | null = await getTokenInfo();
+    if (tokenInfo) {
+      xhr.setRequestHeader('Authorization', 'Bearer ' + tokenInfo.token);
+    }
+  },
+});
+
 const VideoPlayer = ({
   video,
   autoPlay = false,
@@ -49,20 +63,6 @@ const VideoPlayer = ({
   const [volume, setVolume,] = useState<number>(0.5);
   const [isMute, setIsMute,] = useState<boolean>(false);
   const [wide, setWide,] = useState<boolean>(false);
-
-  const hls = new Hls({
-    autoStartLoad: true,
-    debug: false,
-    enableWorker: true,
-    lowLatencyMode: true,
-    backBufferLength: 90,
-    xhrSetup: async (xhr, _url) => {
-      const tokenInfo: TokenInfo | null = await getTokenInfo();
-      if (tokenInfo) {
-        xhr.setRequestHeader('Authorization', 'Bearer ' + tokenInfo.token);
-      }
-    },
-  });
 
   hls.on(Hls.Events.MANIFEST_LOADED, () => {
     setLevelList(hls.levels);
@@ -155,6 +155,7 @@ const VideoPlayer = ({
 
   const setQuality = (level: Level) => {
     const selectedLevel: number = levelList.indexOf(level);
+
     if (hls.currentLevel !== selectedLevel) { // 현재 재생중인 품질과 선택한 품질이 서로 다른 경우
       hls.currentLevel = selectedLevel;
     }
