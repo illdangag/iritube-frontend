@@ -28,7 +28,7 @@ const AccountsVideosEditPage = (props: Props) => {
     const tokenInfo: TokenInfo = await getTokenInfo();
     try {
       await iritubeAPI.updateVideo(tokenInfo, video);
-      void router.push('/accounts/videos');
+      void router.push('/channels/videos');
     } catch {
       setState(State.IDLE);
     }

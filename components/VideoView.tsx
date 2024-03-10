@@ -164,7 +164,7 @@ const VideoView = ({
           <Spacer/>
           <HStack>
             <ButtonGroup size='xs' variant='outline'>
-              <Button as={NextLink} href={`/accounts/videos/${video.videoKey}/edit`}>수정</Button>
+              <Button as={NextLink} href={`/channels/videos/${video.videoKey}/edit`}>수정</Button>
               <Button onClick={onDelete}>삭제</Button>
             </ButtonGroup>
           </HStack>

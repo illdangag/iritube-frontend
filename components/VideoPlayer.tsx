@@ -9,7 +9,7 @@ import {
 
 import Hls, { Level, } from 'hls.js';
 import { TokenInfo, Video, } from '@root/interfaces';
-import { getTokenInfo } from '@root/utils';
+import { getTokenInfo, } from '@root/utils';
 
 type Props = {
   video: Video;

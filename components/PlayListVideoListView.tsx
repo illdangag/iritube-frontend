@@ -5,7 +5,7 @@ import {
 } from '@chakra-ui/react';
 import { MdPlayArrow, } from 'react-icons/md';
 
-import { PlayList, TokenInfo, VideoShare, } from '@root/interfaces';
+import { PlayList, TokenInfo, } from '@root/interfaces';
 import iritubeAPI from '@root/utils/iritubeAPI';
 import { getTokenInfo, } from '@root/utils';
 

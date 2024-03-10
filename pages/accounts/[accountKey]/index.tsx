@@ -1,26 +1,49 @@
+import { useState, useEffect,  } from 'react';
 import { GetServerSideProps, } from 'next';
 import { Tab, TabList, TabPanel, TabPanels, Tabs, } from '@chakra-ui/react';
 import { MainLayout, PageHeaderLayout, } from '@root/layouts';
 import { VideoListView, } from '@root/components';
 
-import { Account, PlayListList, TokenInfo, VideoList, } from '@root/interfaces';
-import { getTokenInfoByCookies, removeTokenInfoByCookies, } from '@root/utils';
+import { Account, PlayListList, TokenInfo, Video, VideoList, } from '@root/interfaces';
+import { getTokenInfo, getTokenInfoByCookies, removeTokenInfoByCookies, } from '@root/utils';
 import iritubeAPI from '@root/utils/iritubeAPI';
 
 type Props = {
-  accountKey: string;
   tabIndex: number;
   account: Account;
   videoList: VideoList;
   playListList: PlayListList;
 };
 
+const VIDEO_LIMIT: number = 20;
+
 const AccountsAccountKeyPage = (props: Props) => {
   const account: Account = props.account;
   const videoList: VideoList = VideoList.getInstance(props.videoList);
-  const playListList: PlayListList = PlayListList.getInstance(props.playListList);
+  const playListListProp: PlayListList = PlayListList.getInstance(props.playListList);
 
-  console.log(account);
+  const [page, setPage,] = useState<number>(0);
+  const [videos, setVideos,] = useState<Video[]>(videoList.videos);
+  const [videoTotal, setVideoTotal,] = useState<number>(videoList.total);
+
+  useEffect(() => {
+    if (videos.length < videoTotal) {
+      void getNextVideoList(page);
+    }
+  }, [page,]);
+
+  const onNextPage = () => {
+    setPage((prevPage) => prevPage + 1);
+  };
+
+  const getNextVideoList = async (page: number) => {
+    const tokenInfo: TokenInfo | null = await getTokenInfo();
+    const newVideoListList: VideoList = await iritubeAPI.getVideoList(tokenInfo, account.accountKey, (page + 1) * VIDEO_LIMIT, VIDEO_LIMIT);
+    setVideoTotal(newVideoListList.total);
+    setVideos(prevState => {
+      return [...prevState, ...newVideoListList.videos,];
+    });
+  };
 
   return <MainLayout title='동영상 목록 | iritube' fullWidth={false}>
     <PageHeaderLayout
@@ -33,7 +56,7 @@ const AccountsAccountKeyPage = (props: Props) => {
       </TabList>
       <TabPanels>
         <TabPanel>
-          <VideoListView videoList={videoList} type='thumbnail'/>
+          <VideoListView videos={videos} type='thumbnail' onNextPage={onNextPage}/>
         </TabPanel>
         <TabPanel>
           재생 목록
@@ -44,10 +67,7 @@ const AccountsAccountKeyPage = (props: Props) => {
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const unit: number = 20;
   const accountKey: string = context.query.accountKey as string;
-  const page: number = context.query.page ? Number(context.query.page) : 1;
-
   const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
 
   if (tokenInfo === null) {
@@ -61,8 +81,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   try {
     const account: Account = await iritubeAPI.getAccount(tokenInfo, accountKey);
-    const videoList: VideoList = await iritubeAPI.getVideoList(tokenInfo, accountKey, unit * (page - 1), unit);
-    const playListList: PlayListList = await iritubeAPI.getPlayListList(tokenInfo, accountKey, 0, unit);
+    const videoList: VideoList = await iritubeAPI.getVideoList(tokenInfo, accountKey, 0, VIDEO_LIMIT);
+    const playListList: PlayListList = await iritubeAPI.getPlayListList(tokenInfo, accountKey, 0, VIDEO_LIMIT);
 
     return {
       props: {

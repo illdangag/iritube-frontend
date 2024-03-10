@@ -1,23 +1,25 @@
 import { useState, useRef, useEffect, } from 'react';
 import { Box, VStack, Grid, GridItem, Card, CardBody, Image, Text, } from '@chakra-ui/react';
-import { VideoView, Pagination, } from '@root/components';
+import { VideoView, } from '@root/components';
 import { VideoDeleteAlert, } from '@root/components/alerts';
 
-import { TokenInfo, Video, VideoList, VideoViewType, } from '@root/interfaces';
+import { TokenInfo, Video, VideoViewType, } from '@root/interfaces';
 import { getTokenInfo, } from '@root/utils';
 import iritubeAPI from '@root/utils/iritubeAPI';
 
 
 type Props = {
-  videoList: VideoList;
+  videos: Video[];
   type?: VideoViewType;
   onChange?: (video: Video) => void;
+  onNextPage?: () => void;
 }
 
 const VideoListView = ({
-  videoList,
+  videos,
   type = 'thumbnail',
   onChange = () => {},
+  onNextPage = () => {},
 }: Props) => {
   const [deleteVideo, setDeleteVideo,] = useState<Video | null>(null);
   const [openDeleteAlert, setOpenDeleteAlert,] = useState<boolean>(false);
@@ -28,7 +30,9 @@ const VideoListView = ({
   useEffect(() => {
     const observer = new IntersectionObserver(
       (item) => {
-        console.log('ob', item[0].isIntersecting);
+        if (item[0].isIntersecting) {
+          onNextPage();
+        }
       },
       {
         threshold: 0.5,
@@ -38,7 +42,7 @@ const VideoListView = ({
     return () => {
       observer.disconnect();
     };
-  }, []);
+  }, [videos,]);
 
   const onDelete = (video: Video) => {
     setDeleteVideo(video);
@@ -72,11 +76,11 @@ const VideoListView = ({
       }}
       gap={6}
     >
-      {videoList.videos.map((item, index) => <GridItem key={index}>
+      {videos.map((item, index) => <GridItem key={index}>
         <VideoView
           video={item}
           type={type}
-          ref={index === videoList.videos.length - 1 ? lastVideoRef : undefined}
+          ref={index === videos.length - 1 ? lastVideoRef : undefined}
         />
       </GridItem>)}
     </Grid>;
@@ -84,12 +88,12 @@ const VideoListView = ({
 
   const getDetailType = () => {
     return <VStack alignItems='stretch'>
-      {videoList.videos.map((video, index) => <Box key={index}>
+      {videos.map((video, index) => <Box key={index}>
         <VideoView
           video={video}
           type={type}
           onDelete={() => onDelete(video)}
-          ref={index === videoList.videos.length - 1 ? lastVideoRef : undefined}
+          ref={index === videos.length - 1 ? lastVideoRef : undefined}
         />
       </Box>)}
     </VStack>;
@@ -97,7 +101,7 @@ const VideoListView = ({
 
   return <>
     <VStack alignItems='stretch'>
-      {videoList && videoList.videos.length === 0 && <Card>
+      {videos && videos.length === 0 && <Card>
         <CardBody display='flex' flexDirection='column' alignItems='center' gap='1rem'>
           <Image src='/static/images/inbox.png' maxWidth='8rem'/>
           <Text fontWeight={500}>동영상이 존재하지 않습니다</Text>
@@ -105,9 +109,6 @@ const VideoListView = ({
       </Card>}
       {type === 'thumbnail' && getThumbnailType()}
       {type === 'detail' && getDetailType()}
-      <Box>
-        <Pagination page={0} listResponse={videoList}/>
-      </Box>
     </VStack>
     <VideoDeleteAlert
       open={openDeleteAlert}
