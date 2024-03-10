@@ -1,29 +1,35 @@
-import {} from 'react';
 import { GetServerSideProps, } from 'next';
-import NextLink from 'next/link';
-import { Button, } from '@chakra-ui/react';
+import { Box, } from '@chakra-ui/react';
 import { MainLayout, PageHeaderLayout, } from '@root/layouts';
+import { VideoListView, } from '@root/components';
 
-import { PlayListList, TokenInfo, VideoList, } from '@root/interfaces';
+import { TokenInfo, VideoList, } from '@root/interfaces';
 import { getTokenInfoByCookies, removeTokenInfoByCookies, } from '@root/utils';
 import iritubeAPI from '@root/utils/iritubeAPI';
 
-
 type Props = {
-  playListList: PlayListList;
-}
+  videoList: VideoList,
+};
 
-const AccountsPlayListsPage = ({}: Props) => {
-  return <MainLayout title='재생 목록 | iritube' fullWidth={false}>
+const AccountsAccountKeyPage = (props: Props) => {
+  const videoList: VideoList = VideoList.getInstance(props.videoList);
+
+  return <MainLayout title='동영상 목록 | iritube' fullWidth={false}>
     <PageHeaderLayout
-      title='재생 목록'
-      descriptions={['재생 목록을 조회합니다',]}
+      title='동영상 목록'
     />
+    <Box paddingBottom='1rem'>
+      <VideoListView videoList={videoList} type='thumbnail'/>
+    </Box>
   </MainLayout>;
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
+
+  const unit: number = 20;
+  const accountKey: string = context.query.accountKey as string;
+  const page: number = context.query.page ? Number(context.query.page) : 1;
 
   if (tokenInfo === null) {
     return {
@@ -35,10 +41,10 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   try {
-    const playListList: PlayListList = await iritubeAPI.getMyPlayListList(tokenInfo, 0, 20);
+    const videoList: VideoList = await iritubeAPI.getVideoList(tokenInfo, accountKey, unit * (page - 1), unit);
     return {
       props: {
-        playListList: JSON.parse(JSON.stringify(playListList)),
+        videoList: JSON.parse(JSON.stringify(videoList)),
       },
     };
   } catch (error) {
@@ -52,4 +58,4 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 };
 
-export default AccountsPlayListsPage;
+export default AccountsAccountKeyPage;

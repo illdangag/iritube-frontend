@@ -45,7 +45,7 @@ const AccountEditPage = () => {
       const tokenInfo: TokenInfo = await getTokenInfo();
       const updatedAccount: Account = await iritubeAPI.updateMyAccount(tokenInfo, updateAccount.nickname);
       setAccount(updatedAccount);
-      void router.push('/accounts');
+      void router.push('/settings');
     } catch (error) {
       setState(State.IDLE);
       // TODO 에러 처리

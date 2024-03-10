@@ -16,6 +16,8 @@ type IricomAPIList = {
   getMyVideoList: (tokenInfo: TokenInfo, offset: number, limit: number) => Promise<VideoList>,
   getMyPlayListList: (tokenInfo: TokenInfo, offset: number, limit: number) => Promise<PlayListList>,
 
+  getVideoList: (tokenInfo: TokenInfo | null, accountKey: string, offset: number, limit: number) => Promise<VideoList>,
+
   // 동영상
   uploadVideo: (tokenInfo: TokenInfo, video: Video, file: File) => Promise<Video>,
   getVideo: (tokenInfo: TokenInfo | null, videoKey: string) => Promise<Video>,
@@ -133,6 +135,25 @@ const IritubeAPI: IricomAPIList = {
     try {
       const response: AxiosResponse<any> = await axios.request(config);
       return PlayListList.getInstance(response.data);
+    } catch (error) {
+      throw new IritubeError(error);
+    }
+  },
+
+  getVideoList: async (tokenInfo: TokenInfo | null, accountKey: string, offset: number, limit: number): Promise<VideoList> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendURL}/v1/accounts/${accountKey}/videos`,
+      method: 'GET',
+      params: {
+        offset,
+        limit,
+      },
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<any> = await axios.request(config);
+      return VideoList.getInstance(response.data);
     } catch (error) {
       throw new IritubeError(error);
     }

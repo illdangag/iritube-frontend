@@ -104,10 +104,10 @@ const HeaderLayout = ({
             <Avatar name={account.nickname} size='sm'/>
           </MenuButton>
           <MenuList>
-            <NextLink href='/accounts'>
+            <NextLink href='/settings'>
               <MenuItem>내 정보</MenuItem>
             </NextLink>
-            <NextLink href='/accounts/videos'>
+            <NextLink href='/channels/videos'>
               <MenuItem>동영상 목록</MenuItem>
             </NextLink>
             <MenuItem onClick={logout}>로그아웃</MenuItem>

@@ -24,7 +24,7 @@ const AccountsPage = () => {
         <CardHeader display='flex' flexDirection='row'>
           <Heading size='sm'>내 정보</Heading>
           <Spacer/>
-          <Link as={NextLink} href={'/accounts/edit'}>
+          <Link as={NextLink} href={'/settings/edit'}>
             <Button size='xs' variant='outline'>수정</Button>
           </Link>
         </CardHeader>
