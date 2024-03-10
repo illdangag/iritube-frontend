@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
 import { useRouter, } from 'next/router';
-import { Box, Button, Card, CardBody, Flex, Heading, HStack, Spacer, Text, VStack, } from '@chakra-ui/react';
+import { Box, Button, Card, CardBody, Flex, Heading, HStack, Link, Spacer, Text, VStack, } from '@chakra-ui/react';
 import { MainLayout, } from '@root/layouts';
 import { PlayListVideoListView, VideoPlayer, } from '@root/components';
 import { PlayListVideoAddAlert, } from '@root/components/alerts';
@@ -11,6 +11,7 @@ import { PlayList, TokenInfo, Video, } from '@root/interfaces';
 import iritubeAPI from '@root/utils/iritubeAPI';
 import { getTokenInfoByCookies, } from '@root/utils';
 import { throttle, } from 'lodash';
+import NextLink from 'next/link';
 
 type Props = {
   video: Video | null,
@@ -202,7 +203,9 @@ const VideosPage = (props: Props) => {
         </Flex>
         {video && video.id && <VStack width='100%' alignItems='flex-start'>
           <Heading size='md' marginTop='0.75rem' marginBottom='0'>{video.title}</Heading>
-          <Text fontSize='sm' fontWeight={700}>{video.account.nickname}</Text>
+          <Link as={NextLink} href={'/accounts/' + video.account.accountKey}>
+            <Text fontSize='sm' fontWeight={700}>{video.account.nickname}</Text>
+          </Link>
           <Card width='100%'>
             <CardBody>
               <VStack alignItems='flex-start' gap={0}>

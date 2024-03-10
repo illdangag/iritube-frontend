@@ -122,9 +122,10 @@ export enum AccountAuth {
 }
 
 export type Account = {
-  id: string,
-  nickname: string,
-  auth: AccountAuth,
+  id: string;
+  nickname: string;
+  auth: AccountAuth;
+  accountKey: string;
 }
 
 export enum VideoState {
