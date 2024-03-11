@@ -1,4 +1,4 @@
-import { forwardRef, } from 'react';
+import { forwardRef, memo, } from 'react';
 import { Box, Card, CardBody, LinkBox, Text, } from '@chakra-ui/react';
 import {} from '@root/components';
 
@@ -22,5 +22,8 @@ const PlayListView = ({
     </CardBody>
   </Card>;
 };
+const equalComparison = (prevProps: Props, nextProps: Props): boolean => {
+  return prevProps.playList.playListKey === nextProps.playList.playListKey;
+};
 
-export default forwardRef(PlayListView);
+export default memo(forwardRef(PlayListView), equalComparison);

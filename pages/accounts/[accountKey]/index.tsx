@@ -15,62 +15,114 @@ type Props = {
   playListList: PlayListList;
 };
 
+type VideoListInfo = {
+  videos: Video[];
+  page: number;
+  total: number;
+  nextPage: number;
+}
+
+type PlayListInfo = {
+  playLists: PlayList[];
+  page: number;
+  total: number;
+  nextPage: number;
+}
+
 const VIDEO_LIMIT: number = 20;
-const PLAYLIST_LIMIT: number = 2;
+const PLAYLIST_LIMIT: number = 20;
 
 const AccountsAccountKeyPage = (props: Props) => {
   const account: Account = props.account;
   const videoList: VideoList = VideoList.getInstance(props.videoList);
   const playListList: PlayListList = PlayListList.getInstance(props.playListList);
 
-  const [videoPage, setVideoPage,] = useState<number>(0);
-  const [videos, setVideos,] = useState<Video[]>(videoList.videos);
-  const [videoTotal, setVideoTotal,] = useState<number>(videoList.total);
+  const [videoListInfo, setVideoListInfo,] = useState<VideoListInfo>({
+    videos: videoList.videos,
+    page: 0,
+    total: videoList.videos.length,
+    nextPage: 0,
+  } as VideoListInfo);
 
-  const [playListPage, setPlayListPage,] = useState<number>(0);
-  const [playLists, setPlayLists,] = useState<PlayList[]>(playListList.playLists);
-  const [playListTotal, setPlayListTotal,] = useState<number>(playListList.total);
+  const [playListListInfo, setPlayListListInfo,] = useState<PlayListInfo>({
+    playLists: playListList.playLists,
+    page: 0,
+    total: playListList.total,
+    nextPage: 0,
+  } as PlayListInfo);
 
   useEffect(() => {
-    if (videos.length < videoTotal) {
-      void getNextVideoList(videoPage);
+    if (videoListInfo.page !== videoListInfo.nextPage) {
+      void getNextVideoList(videoListInfo.nextPage);
     }
-  }, [videoPage,]);
-
-  useEffect(() => {
-    if (playLists.length < playListTotal) {
-      void getNextPlayListList(playListPage);
-    }
-  }, [playListPage,]);
+  }, [videoListInfo,]);
 
   const onVideosNextPage = () => {
-    setVideoPage((prevPage) => {
-      return prevPage + 1;
-    });
-  };
-
-  const onPlayListsNextPage = () => {
-    setPlayListPage((prevPage) => {
-      return prevPage + 1;
+    setVideoListInfo((prev) => {
+      return {
+        ...prev,
+        nextPage: prev.page + 1,
+      } as VideoListInfo;
     });
   };
 
   const getNextVideoList = async (page: number) => {
     const tokenInfo: TokenInfo | null = await getTokenInfo();
-    const newVideoListList: VideoList = await iritubeAPI.getVideoList(tokenInfo, account.accountKey, (page + 1) * VIDEO_LIMIT, VIDEO_LIMIT);
-    setVideoTotal(newVideoListList.total);
-    setVideos(prevState => {
-      return [...prevState, ...newVideoListList.videos,];
+    const newVideoListList: VideoList = await iritubeAPI.getVideoList(tokenInfo, account.accountKey, (page) * VIDEO_LIMIT, VIDEO_LIMIT);
+    if (newVideoListList.videos.length > 0) {
+      setVideoListInfo((prev) => {
+        return {
+          ...prev,
+          page,
+          videos: [...prev.videos, ...newVideoListList.videos,],
+          total: newVideoListList.total,
+        } as VideoListInfo;
+      });
+    } else {
+      setVideoListInfo((prev) => {
+        return {
+          ...prev,
+          nextPage: prev.page,
+        };
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (playListListInfo.page !== playListListInfo.nextPage) {
+      void getNextPlayListList(playListListInfo.nextPage);
+    }
+  }, [playListListInfo,]);
+
+  const onPlayListsNextPage = () => {
+    setPlayListListInfo((prev) => {
+      return {
+        ...prev,
+        nextPage: prev.nextPage + 1,
+      } as PlayListInfo;
     });
   };
 
   const getNextPlayListList = async (page: number) => {
     const tokenInfo: TokenInfo | null = await getTokenInfo();
-    const newPlayListList: PlayListList = await iritubeAPI.getPlayListList(tokenInfo, account.accountKey, (page + 1) * PLAYLIST_LIMIT, PLAYLIST_LIMIT);
-    setPlayListTotal(newPlayListList.total);
-    setPlayLists(prevState => {
-      return [...prevState, ...newPlayListList.playLists,];
-    });
+    const newPlayListList: PlayListList = await iritubeAPI.getPlayListList(tokenInfo, account.accountKey, (page) * PLAYLIST_LIMIT, PLAYLIST_LIMIT);
+    if (newPlayListList.playLists.length > 0) {
+      setPlayListListInfo((prev) => {
+        return {
+          ...prev,
+          page,
+          playLists: [...prev.playLists, ...newPlayListList.playLists,],
+          total: newPlayListList.total,
+        } as PlayListInfo;
+      });
+    } else {
+      setPlayListListInfo((prev) => {
+        return {
+          ...prev,
+          nextPage: prev.page,
+        } as PlayListInfo;
+      });
+    }
   };
 
   return <MainLayout title='동영상 목록 | iritube' fullWidth={false}>
@@ -84,10 +136,10 @@ const AccountsAccountKeyPage = (props: Props) => {
       </TabList>
       <TabPanels>
         <TabPanel>
-          <VideoListView videos={videos} type='thumbnail' onNextPage={onVideosNextPage}/>
+          <VideoListView videos={videoListInfo.videos} type='thumbnail' onNextPage={onVideosNextPage}/>
         </TabPanel>
         <TabPanel>
-          <PlayListListView playLists={playLists} onNextPage={onPlayListsNextPage}/>
+          <PlayListListView playLists={playListListInfo.playLists} onNextPage={onPlayListsNextPage}/>
         </TabPanel>
       </TabPanels>
     </Tabs>

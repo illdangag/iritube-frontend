@@ -1,4 +1,4 @@
-import { useEffect, useState, forwardRef, } from 'react';
+import { useEffect, useState, forwardRef, memo, } from 'react';
 import NextLink from 'next/link';
 import {
   Badge, Box, Button, ButtonGroup, Card, CardBody, CardFooter, HStack, Image, Link, LinkBox, LinkOverlay, Spacer, Text,
@@ -179,4 +179,8 @@ const VideoView = ({
   </>;
 };
 
-export default forwardRef(VideoView);
+const equalComparison = (prevProps: Props, nextProps: Props): boolean => {
+  return prevProps.video.videoKey === nextProps.video.videoKey;
+};
+
+export default memo(forwardRef(VideoView), equalComparison);

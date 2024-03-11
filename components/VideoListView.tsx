@@ -34,7 +34,7 @@ const VideoListView = ({
         }
       },
       {
-        threshold: 0.5,
+        threshold: 0,
       });
     observer.observe(lastVideoRef.current);
 
