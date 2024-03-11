@@ -7,7 +7,6 @@ import { TokenInfo, Video, VideoViewType, } from '@root/interfaces';
 import { getTokenInfo, } from '@root/utils';
 import iritubeAPI from '@root/utils/iritubeAPI';
 
-
 type Props = {
   videos: Video[];
   type?: VideoViewType;

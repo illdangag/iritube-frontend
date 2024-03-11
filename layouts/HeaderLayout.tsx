@@ -2,17 +2,13 @@ import React, { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
 import {
-  Flex, Box, Image, Link, Avatar, Button, Menu, MenuButton, MenuList, MenuItem, IconButton, HStack, Drawer,
-  DrawerOverlay, DrawerContent, DrawerBody, VStack, Heading, Divider,
+  Flex, Box, Image, Link, Avatar, Button, Menu, MenuButton, MenuList, MenuItem, HStack,
 } from '@chakra-ui/react';
-import { MdAdd, MdMenu, } from 'react-icons/md';
-import { PlayListCreateAlert, } from '@root/components/alerts';
 
 import { useRecoilState, } from 'recoil';
-import { accountAtom, playListListAtom, } from '@root/recoil';
-import { Account, PlayListList, TokenInfo, } from '@root/interfaces';
+import { accountAtom, } from '@root/recoil';
+import { Account, TokenInfo, } from '@root/interfaces';
 import { BrowserStorage, } from '@root/utils';
-import iritubeAPI from '@root/utils/iritubeAPI';
 
 type Props = {
 };
@@ -29,19 +25,11 @@ const HeaderLayout = ({
 
   const [state, setState,] = useState<State>(State.INIT);
   const [account, setAccount,] = useRecoilState<Account | null>(accountAtom);
-  const [playListList, setPlayListList,] = useRecoilState<PlayListList | null>(playListListAtom);
-  const [isOpenMenu, setOpenMenu,] = useState<boolean>(false);
-  const [openPlayListCreateAlert, setOpenPlayListCreateAlert,] = useState<boolean>(false);
 
   useEffect(() => {
     const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
     if (tokenInfo === null) {
       setState(State.LOGOUT);
-    } else {
-      void iritubeAPI.getMyPlayListList(tokenInfo, 0, 10)
-        .then(playListList => {
-          setPlayListList(playListList);
-        });
     }
   }, []);
 
@@ -63,34 +51,9 @@ const HeaderLayout = ({
     void router.push('/');
   };
 
-  const onClickMenuButton = () => {
-    setOpenMenu(true);
-  };
-
-  const onCloseMenu = () => {
-    setOpenMenu(false);
-  };
-
-  const onClickPlayListCreateButton = () => {
-    setOpenPlayListCreateAlert(true);
-  };
-
-  const onClosePlayListCreateAlert = () => {
-    setOpenPlayListCreateAlert(false);
-  };
-
-  const onConfirmPlayListCreateAlert = () => {
-    setOpenPlayListCreateAlert(false);
-  };
-
-  const onClickPlayList = () => {
-    setOpenMenu(false);
-  };
-
   return <>
     <Flex flexDirection='row' justifyContent='space-between' alignItems='center' paddingTop='0.8rem' paddingBottom='0.8rem'>
       <HStack>
-        {state === State.LOGIN && <IconButton aria-label='menu' icon={<MdMenu/>} variant='ghost' onClick={onClickMenuButton}/>}
         <Link as={NextLink} marginRight='auto' href='/' _hover={{ textDecoration: 'none', }}>
           <Image src='/static/images/main.png' boxSize='2rem'/>
         </Link>
@@ -115,54 +78,6 @@ const HeaderLayout = ({
         </Menu>
       </Box>}
     </Flex>
-    {state === State.LOGIN && <>
-      <Drawer placement='left' isOpen={isOpenMenu} onClose={onCloseMenu}>
-        <DrawerOverlay/>
-        <DrawerContent>
-          <DrawerBody>
-            <VStack marginTop='1rem' alignItems='stretch'>
-              <HStack paddingLeft='0.75rem' justifyContent='space-between'>
-                <Heading fontSize='sm'>재생 목록</Heading>
-                <IconButton
-                  aria-label='add play list'
-                  icon={<MdAdd/>}
-                  size='sm'
-                  variant='ghost'
-                  onClick={onClickPlayListCreateButton}
-                />
-              </HStack>
-              <Divider/>
-              {playListList && playListList.total === 0 && <>
-                <Button
-                  size='sm'
-                  variant='outline'
-                  leftIcon={<MdAdd/>}
-                  onClick={onClickPlayListCreateButton}
-                >
-                  재생 목록 추가
-                </Button>
-              </>}
-              {playListList && playListList.total > 0 && playListList.playLists.map((playList, index) => <Button
-                key={index}
-                size='sm'
-                variant='ghost'
-                justifyContent='start'
-                as={NextLink}
-                href={`/videos?pk=${playList.playListKey}`}
-                onClick={onClickPlayList}
-              >
-                {playList.title}
-              </Button>)}
-            </VStack>
-          </DrawerBody>
-        </DrawerContent>
-      </Drawer>
-      <PlayListCreateAlert
-        open={openPlayListCreateAlert}
-        onClose={onClosePlayListCreateAlert}
-        onConfirm={onConfirmPlayListCreateAlert}
-      />
-    </>}
   </>;
 };
 
