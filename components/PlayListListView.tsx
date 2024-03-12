@@ -1,27 +1,69 @@
-import { useEffect, useRef, } from 'react';
+import { useEffect, useRef, useState, } from 'react';
 import { Box, Grid, } from '@chakra-ui/react';
 import { PlayListView, } from '@root/components';
 
-import { PlayList, } from '@root/interfaces';
-import {} from '@root/utils';
+import { PlayList, PlayListList, } from '@root/interfaces';
+
+const LIMIT: number = 20;
 
 type Props = {
-  playLists: PlayList[];
-  onNextPage?: () => void;
+  onNextPage: (offset: number, limit: number) => Promise<PlayListList>;
+}
+
+type PlayListInfo = {
+  offset: number;
+  nextOffset: number;
 }
 
 const PlayListListView = ({
-  playLists,
-  onNextPage = () => {},
+  onNextPage,
 }: Props) => {
-
   const lastPlayListRef = useRef(null);
+  const [playLists, setPlayLists,] = useState<PlayList[]>([]);
+  const [state, setState,] = useState<PlayListInfo>({
+    offset: 0,
+    nextOffset: 0,
+  } as PlayListInfo);
 
   useEffect(() => {
+    void onNextPage(0, LIMIT)
+      .then(playListList => {
+        setPlayLists(prev => [...prev, ...playListList.playLists,]);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (state.offset < state.nextOffset) {
+      void onNextPage(state.nextOffset, LIMIT)
+        .then(playListList => {
+          if (playListList.playLists.length > 0) {
+            setPlayLists(prev => [...prev, ...playListList.playLists,]);
+          }
+
+          setState((prev) => {
+            return {
+              offset: prev.offset + playListList.playLists.length,
+              nextOffset: prev.offset + playListList.playLists.length,
+            } as PlayListInfo;
+          });
+        });
+    }
+  }, [state,]);
+
+  useEffect(() => {
+    if (playLists.length === 0) {
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (item) => {
         if (item[0].isIntersecting) {
-          onNextPage();
+          setState((prev) => {
+            return {
+              ...prev,
+              nextOffset: prev.offset + LIMIT,
+            } as PlayListInfo;
+          });
         }
       },
       {
