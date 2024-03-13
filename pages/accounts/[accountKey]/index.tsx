@@ -36,7 +36,7 @@ const AccountsAccountKeyPage = (props: Props) => {
       <TabPanels>
         <TabPanel>
           <VideoListScrollView
-            type='detail'
+            type='thumbnail'
             onNextPage={onVideoListNextPage}
           />
         </TabPanel>

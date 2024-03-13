@@ -3,6 +3,8 @@ import { TokenInfo, } from '../interfaces';
 import { GetServerSidePropsContext, } from 'next/types';
 import iritubeAPI from './iritubeAPI';
 
+export { iritubeAPI, };
+
 export class BrowserStorage {
   static TOKEN_INFO_KEY: string = 'tokenInfo';
 

@@ -163,6 +163,19 @@ const VideoView = ({
             <Link as={NextLink} href={'/accounts/' + video.account.accountKey}>
               <Text fontSize='xs' as='span'>{video.account.nickname}</Text>
             </Link>
+            <HStack>
+              <Box>
+                <Text fontSize='xs' as='span'>{'조회수 ' + video.getViewCount()}</Text>
+                <Text fontSize='xs' as='span' _before={{
+                  content: '\"•\"',
+                  paddingLeft: '0.4rem',
+                  paddingRight: '0.4rem',
+                }}>{updateDate}</Text>
+              </Box>
+              {video.share !== VideoShare.PUBLIC && <Box>
+                {getVideoShareBadge(video.share)}
+              </Box>}
+            </HStack>
           </>}
           {editable && <>
             <HStack>
