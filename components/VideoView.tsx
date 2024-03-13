@@ -14,12 +14,14 @@ import iritubeAPI from '@root/utils/iritubeAPI';
 type Props = {
   video: Video;
   type?: VideoViewType;
+  editable?: boolean;
   onDelete?: () => void;
 }
 
 const VideoView = ({
   video,
   type = 'thumbnail',
+  editable = false,
   onDelete = () => {},
 }: Props, ref) => {
   const [updateDate, setUpdateDate,] = useState<string>('');
@@ -157,17 +159,24 @@ const VideoView = ({
             <Text as='b'>{video.title}</Text>
           </Link>
           <Text fontSize='small'>{video.description}</Text>
-          <HStack>
-            {getVideoShareBadge(video.share)}
-            {getVideoStateBadge(video.state)}
-          </HStack>
-          <Spacer/>
-          <HStack>
-            <ButtonGroup size='xs' variant='outline'>
-              <Button as={NextLink} href={`/channels/videos/${video.videoKey}/edit`}>수정</Button>
-              <Button onClick={onDelete}>삭제</Button>
-            </ButtonGroup>
-          </HStack>
+          {!editable && <>
+            <Link as={NextLink} href={'/accounts/' + video.account.accountKey}>
+              <Text fontSize='xs' as='span'>{video.account.nickname}</Text>
+            </Link>
+          </>}
+          {editable && <>
+            <HStack>
+              {getVideoShareBadge(video.share)}
+              {getVideoStateBadge(video.state)}
+            </HStack>
+            <Spacer/>
+            <HStack>
+              <ButtonGroup size='xs' variant='outline'>
+                <Button as={NextLink} href={`/channels/videos/${video.videoKey}/edit`}>수정</Button>
+                <Button onClick={onDelete}>삭제</Button>
+              </ButtonGroup>
+            </HStack>
+          </>}
         </VStack>
       </CardBody>
     </Card>;
