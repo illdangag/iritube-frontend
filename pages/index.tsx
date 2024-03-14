@@ -41,7 +41,7 @@ const IndexPage = (props: Props) => {
   };
 
   return (
-    <MainLayout>
+    <MainLayout title='Iritube'>
       <Box paddingBottom='1rem'>
         <VideoListView videos={videos} onNextPage={onNextPage}/>
       </Box>

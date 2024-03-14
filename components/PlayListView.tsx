@@ -18,6 +18,8 @@ const PlayListView = ({
 
     if (thumbnailVideo) {
       void initThumbnail(thumbnailVideo);
+    } else {
+      setImageURL('/static/images/black.jpg');
     }
   }, [playList,]);
 
@@ -37,26 +39,11 @@ const PlayListView = ({
       aspectRatio='16/9'
       overflow='hidden'
       borderRadius='lg'
-      position='relative'
     >
       <Box
-        position='absolute'
         borderRadius='lg'
-        top='0'
-        left='50%'
-        width='calc(100% - 1rem)'
-        height='100%'
-        backgroundColor='#fcc41933'
-        transform='translate(-50%, 0%)'
-      />
-      <Box
-        marginTop='0.3rem'
-        borderRadius='lg'
-        overflow='hidden'
-        backgroundColor='black'
         aspectRatio='16/9'
         position='relative'
-        minWidth='10rem'
       >
         <Image
           src={imageURL}
@@ -66,6 +53,19 @@ const PlayListView = ({
           left='50%'
           transform='translate(-50%, -50%)'
         />
+        <Text
+          as='b'
+          position='absolute'
+          right='0.2rem'
+          bottom='0.2rem'
+          paddingLeft='0.2rem'
+          paddingRight='0.2rem'
+          borderRadius='0.2rem'
+          backgroundColor='#00000044'
+          fontSize='xs'
+        >
+          동영상 {playList.videos.length}개
+        </Text>
       </Box>
     </CardBody>
     <CardFooter paddingTop='0.5rem' paddingRight='0' paddingBottom='0' paddingLeft='0'>
