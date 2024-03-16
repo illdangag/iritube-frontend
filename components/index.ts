@@ -4,11 +4,11 @@ import Pagination from './Pagination';
 import VideoListView from './VideoListView';
 import VideoEditor from './VideoEditor';
 import PlayListVideoListView from './PlayListVideoListView';
-import PlayListListView from './PlayListListView';
+import PlayListListScrollView from './PlayListListScrollView';
 import PlayListView from './PlayListView';
 import VideoListScrollView from './VideoListScrollView';
 
 export {
-  VideoPlayer, VideoView, Pagination, VideoListView, VideoEditor, PlayListVideoListView, PlayListListView,
+  VideoPlayer, VideoView, Pagination, VideoListView, VideoEditor, PlayListVideoListView, PlayListListScrollView,
   PlayListView, VideoListScrollView,
 };

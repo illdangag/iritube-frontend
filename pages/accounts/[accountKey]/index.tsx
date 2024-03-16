@@ -1,7 +1,7 @@
 import { GetServerSideProps, } from 'next';
 import { Tab, TabList, TabPanel, TabPanels, Tabs, } from '@chakra-ui/react';
 import { MainLayout, PageHeaderLayout, } from '@root/layouts';
-import { PlayListListView, VideoListScrollView, } from '@root/components';
+import { PlayListListScrollView, VideoListScrollView, } from '@root/components';
 
 import { Account, TokenInfo, } from '@root/interfaces';
 import { getTokenInfo, getTokenInfoByCookies, removeTokenInfoByCookies, } from '@root/utils';
@@ -41,7 +41,7 @@ const AccountsAccountKeyPage = (props: Props) => {
           />
         </TabPanel>
         <TabPanel>
-          <PlayListListView onNextPage={onPlayListsNextPage}/>
+          <PlayListListScrollView onNextPage={onPlayListsNextPage}/>
         </TabPanel>
       </TabPanels>
     </Tabs>

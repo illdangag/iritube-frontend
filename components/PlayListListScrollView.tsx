@@ -15,7 +15,7 @@ type PlayListInfo = {
   nextOffset: number;
 }
 
-const PlayListListView = ({
+const PlayListListScrollView = ({
   onNextPage,
 }: Props) => {
   const lastPlayListRef = useRef(null);
@@ -97,4 +97,4 @@ const PlayListListView = ({
   </Box>;
 };
 
-export default PlayListListView;
+export default PlayListListScrollView;
