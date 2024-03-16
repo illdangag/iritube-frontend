@@ -44,7 +44,7 @@ const AccountsVideosPage = (props: Props) => {
     <PageHeaderLayout
       title='동영상 목록'
       descriptions={['업로드한 동영상 목록을 조회합니다',]}
-      rightContent={<Button size='sm' as={NextLink} href='/accounts/videos/upload'>동영상 업로드</Button>}
+      rightContent={<Button size='sm' as={NextLink} href='/channels/videos/upload'>동영상 업로드</Button>}
     />
     <Box paddingBottom='1rem'>
       <VideoListView videos={videos} type='detail' onNextPage={onNextPage}/>

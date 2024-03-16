@@ -91,6 +91,7 @@ const VideoListView = ({
         <VideoView
           video={video}
           type={type}
+          editable={true}
           onDelete={() => onDelete(video)}
           ref={index === videos.length - 1 ? lastVideoRef : undefined}
         />

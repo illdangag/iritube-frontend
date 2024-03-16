@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, } from 'react';
-import { Box, Card, CardBody, Grid, GridItem, Image, Text, VStack } from '@chakra-ui/react';
-import { VideoView } from '@root/components';
+import { Box, Card, CardBody, Grid, GridItem, Image, Text, VStack, } from '@chakra-ui/react';
+import { VideoView, } from '@root/components';
 
 import { VideoList, Video, VideoViewType, } from '@root/interfaces';
 
@@ -37,7 +37,7 @@ const VideoListScrollView = ({
           return {
             ...prev,
             total: videoList.total,
-          } as ComponentState
+          } as ComponentState;
         });
       });
   }, []);
@@ -60,7 +60,7 @@ const VideoListScrollView = ({
       },
       {
         threshold: 0,
-      }
+      },
     );
     observer.observe(lastVideoRef.current);
 
@@ -132,6 +132,6 @@ const VideoListScrollView = ({
     {state.total > 0 && type === 'thumbnail' && getThumbnailType()}
     {state.total > 0 && type === 'detail' && getDetailType()}
   </VStack>;
-}
+};
 
 export default VideoListScrollView;
