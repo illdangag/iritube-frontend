@@ -30,7 +30,7 @@ const VideoView = ({
   useEffect(() => {
     setUpdateDate(video.getUpdateDate());
     void initThumbnail();
-  }, []);
+  }, [video,]);
 
   const initThumbnail = async () => {
     const tokenInfo: TokenInfo | null = await getTokenInfo();

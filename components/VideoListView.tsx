@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, } from 'react';
+import { useState, } from 'react';
 import { Box, VStack, Grid, GridItem, Card, CardBody, Image, Text, } from '@chakra-ui/react';
 import { VideoView, } from '@root/components';
 import { VideoDeleteAlert, } from '@root/components/alerts';
@@ -8,45 +8,19 @@ import { getTokenInfo, } from '@root/utils';
 import iritubeAPI from '@root/utils/iritubeAPI';
 
 type Props = {
-  videos: Video[];
   type?: VideoViewType;
-  onChange?: (video: Video) => void;
-  onNextPage?: () => void;
+  videos: Video[];
+  onDeleteVideo?: (video: Video) => void;
 }
 
 const VideoListView = ({
+  type = 'detail',
   videos,
-  type = 'thumbnail',
-  onChange = () => {},
-  onNextPage = () => {},
+  onDeleteVideo = () => {},
 }: Props) => {
   const [deleteVideo, setDeleteVideo,] = useState<Video | null>(null);
   const [openDeleteAlert, setOpenDeleteAlert,] = useState<boolean>(false);
   const [loadingDeleteAlert, setLoadingDeleteAlert,] = useState<boolean>(false);
-
-  const lastVideoRef = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (item) => {
-        if (item[0].isIntersecting) {
-          onNextPage();
-        }
-      },
-      {
-        threshold: 0,
-      });
-    observer.observe(lastVideoRef.current);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [videos,]);
-
-  const onDelete = (video: Video) => {
-    setDeleteVideo(video);
-    setOpenDeleteAlert(true);
-  };
 
   const onCloseDeleteAlert = () => {
     setOpenDeleteAlert(false);
@@ -57,11 +31,16 @@ const VideoListView = ({
     const tokenInfo: TokenInfo = await getTokenInfo();
     try {
       const deleteVideo: Video = await iritubeAPI.deleteVideo(tokenInfo, video.videoKey);
-      onChange(deleteVideo);
+      onDeleteVideo(deleteVideo);
     } finally {
       setOpenDeleteAlert(false);
       setLoadingDeleteAlert(false);
     }
+  };
+
+  const onDelete = (video: Video) => {
+    setDeleteVideo(video);
+    setOpenDeleteAlert(true);
   };
 
   const getThumbnailType = () => {
@@ -79,7 +58,6 @@ const VideoListView = ({
         <VideoView
           video={item}
           type={type}
-          ref={index === videos.length - 1 ? lastVideoRef : undefined}
         />
       </GridItem>)}
     </Grid>;
@@ -93,7 +71,6 @@ const VideoListView = ({
           type={type}
           editable={true}
           onDelete={() => onDelete(video)}
-          ref={index === videos.length - 1 ? lastVideoRef : undefined}
         />
       </Box>)}
     </VStack>;
@@ -107,8 +84,8 @@ const VideoListView = ({
           <Text fontWeight={500}>동영상이 존재하지 않습니다</Text>
         </CardBody>
       </Card>}
-      {type === 'thumbnail' && getThumbnailType()}
-      {type === 'detail' && getDetailType()}
+      {videos && type === 'thumbnail' && getThumbnailType()}
+      {videos && type === 'detail' && getDetailType()}
     </VStack>
     <VideoDeleteAlert
       open={openDeleteAlert}

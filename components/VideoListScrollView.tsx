@@ -115,7 +115,6 @@ const VideoListScrollView = ({
         <VideoView
           video={video}
           type={type}
-          // onDelete={() => onDelete(video)}
           ref={index === videos.length - 1 ? lastVideoRef : undefined}
         />
       </Box>)}
