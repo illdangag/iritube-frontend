@@ -23,7 +23,7 @@ const VideoUploadPage = () => {
     try {
       const tokenInfo: TokenInfo = await getTokenInfo();
       await iritubeAPI.uploadVideo(tokenInfo, video, file);
-      void router.push('/');
+      void router.push('/channels/videos');
     } catch {
       setState(State.IDLE);
     }
@@ -36,7 +36,11 @@ const VideoUploadPage = () => {
     />
     <Card>
       <CardBody>
-        <VideoEditor disabled={state === State.REQUEST} onRequest={onRequest}/>
+        <VideoEditor
+          disabled={state === State.REQUEST}
+          loading={state === State.REQUEST}
+          onRequest={onRequest}
+        />
       </CardBody>
     </Card>
   </MainLayout>;

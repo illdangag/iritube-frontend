@@ -14,7 +14,7 @@ type Props = {
   videoList: VideoList,
 }
 
-const VIDEO_LIMIT: number = 1;
+const VIDEO_LIMIT: number = 20;
 
 const AccountsVideosPage = (props: Props) => {
   const page: number = props.page;

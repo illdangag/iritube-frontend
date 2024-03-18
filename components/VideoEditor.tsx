@@ -11,12 +11,14 @@ import { Video, VideoShare, } from '@root/interfaces';
 type Props = {
   defaultVideo?: Video,
   disabled?: boolean,
+  loading?: boolean,
   onRequest?: (video: Video, file: File) => void,
 }
 
 const VideoEditor = ({
   defaultVideo,
   disabled = false,
+  loading = false,
   onRequest = () => {},
 }: Props) => {
   const { acceptedFiles, getRootProps, getInputProps, } = useDropzone({
@@ -121,6 +123,7 @@ const VideoEditor = ({
       <Button
         size='sm'
         isDisabled={disabled || (!defaultVideo && acceptedFiles.length === 0) || title === ''}
+        isLoading={loading}
         onClick={onClickConfirm}
       >
         {!defaultVideo ? '업로드' : '수정'}
