@@ -154,6 +154,7 @@ export class Video {
   public share: VideoShare;
   public tags: string[];
   public viewCount: number;
+  public deleted: boolean;
 
   public get hlsPath (): string {
     const backend: string = process.env.backendURL;

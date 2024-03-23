@@ -15,10 +15,14 @@ const PlayListView = ({
   const [imageURL, setImageURL,] = useState<string>('/static/images/transparent.png');
 
   useEffect(() => {
-    const thumbnailVideo: Video | undefined = playList.videos.find(video => video.share === VideoShare.PUBLIC);
+    const thumbnailVideo: Video | undefined = playList.videos
+      .find(video => video.share === VideoShare.PUBLIC && !video.deleted);
 
     if (thumbnailVideo) {
-      void initThumbnail(thumbnailVideo);
+      void initThumbnail(thumbnailVideo)
+        .catch(() => {
+          setImageURL('/static/images/black.jpg');
+        });
     } else {
       setImageURL('/static/images/black.jpg');
     }
@@ -26,12 +30,8 @@ const PlayListView = ({
 
   const initThumbnail = async (video: Video) => {
     const tokenInfo: TokenInfo | null = await getTokenInfo();
-    try {
-      const imageData: string = await iritubeAPI.getVideoThumbnail(tokenInfo, video.videoKey);
-      setImageURL(imageData);
-    } catch (error) {
-      setImageURL('/static/images/black.jpg');
-    }
+    const imageData: string = await iritubeAPI.getVideoThumbnail(tokenInfo, video.videoKey);
+    setImageURL(imageData);
   };
 
   const getPlayListVideoLink = () => {

@@ -41,7 +41,9 @@ const AccountsAccountKeyPage = (props: Props) => {
           />
         </TabPanel>
         <TabPanel>
-          <PlayListListScrollView onNextPage={onPlayListsNextPage}/>
+          <PlayListListScrollView
+            onNextPage={onPlayListsNextPage}
+          />
         </TabPanel>
       </TabPanels>
     </Tabs>

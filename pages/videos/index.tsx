@@ -7,7 +7,7 @@ import { PlayListVideoListView, VideoPlayer, } from '@root/components';
 import { PlayListVideoAddAlert, } from '@root/components/alerts';
 import { MdPlaylistAdd, } from 'react-icons/md';
 
-import { PlayList, TokenInfo, Video, } from '@root/interfaces';
+import { PlayList, TokenInfo, Video, VideoShare, } from '@root/interfaces';
 import iritubeAPI from '@root/utils/iritubeAPI';
 import { getTokenInfoByCookies, } from '@root/utils';
 import { throttle, } from 'lodash';
@@ -152,17 +152,12 @@ const VideosPage = (props: Props) => {
             'lg': wide ? 'column' : 'row',
           }}
         >
-          {!video && <Box width='100%' height='100%'>
+          {(!video || !video?.id) && <Box width='100%' height='100%'>
             <Card aspectRatio='16/9' ref={invalidVideoRef}>
               <CardBody>
-                존재하지 않는 동영상입니다.
-              </CardBody>
-            </Card>
-          </Box>}
-          {video && !video.id && <Box width='100%' height='100%'>
-            <Card aspectRatio='16/9' ref={invalidVideoRef}>
-              <CardBody>
-                비공개 동영상입니다.
+                {!video && <Text>존재하지 않는 동영상입니다.</Text>}
+                {video?.deleted && <Text>삭제된 동영상입니다.</Text>}
+                {!video?.deleted && video.share === VideoShare.PRIVATE && <Text>비공개 동영상입니다.</Text>}
               </CardBody>
             </Card>
           </Box>}

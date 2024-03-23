@@ -5,7 +5,7 @@ import {
 } from '@chakra-ui/react';
 import { MdPlayArrow, } from 'react-icons/md';
 
-import { PlayList, TokenInfo, } from '@root/interfaces';
+import { PlayList, TokenInfo, VideoShare, } from '@root/interfaces';
 import iritubeAPI from '@root/utils/iritubeAPI';
 import { getTokenInfo, } from '@root/utils';
 
@@ -35,17 +35,24 @@ const PlayListVideoListView = (props: Props) => {
 
     for (let playListVideo of playList.videos) {
       promiseQueue.push(new Promise<ThumbnailData>(async (resolve) => {
-        try {
-          const imageData: string = await iritubeAPI.getVideoThumbnail(tokenInfo, playListVideo.videoKey);
-          resolve({
-            videoKey: playListVideo.videoKey,
-            data: imageData,
-          });
-        } catch (error) {
+        if (playListVideo.deleted) {
           resolve({
             videoKey: playListVideo.videoKey,
             data: '/static/images/black.jpg',
           } as ThumbnailData);
+        } else {
+          try {
+            const imageData: string = await iritubeAPI.getVideoThumbnail(tokenInfo, playListVideo.videoKey);
+            resolve({
+              videoKey: playListVideo.videoKey,
+              data: imageData,
+            } as ThumbnailData);
+          } catch (error) {
+            resolve({
+              videoKey: playListVideo.videoKey,
+              data: '/static/images/black.jpg',
+            } as ThumbnailData);
+          }
         }
       }));
     }
@@ -109,7 +116,8 @@ const PlayListVideoListView = (props: Props) => {
               {getVideoThumbnailElement(playListVideo.videoKey)}
             </LinkOverlay>}
             <VStack height='100%' alignItems='flex-start' marginLeft='0.75rem'>
-              {!playListVideo.id && <Text fontSize='sm' fontWeight={500}>비공개 동영상</Text>}
+              {playListVideo.deleted && <Text fontSize='sm' fontWeight={500}>삭제된 동영상</Text>}
+              {!playListVideo.id && playListVideo.share === VideoShare.PRIVATE && <Text fontSize='sm' fontWeight={500}>비공개 동영상</Text>}
               {playListVideo.id && <LinkOverlay as={NextLink} href={`/videos?vk=${playListVideo.videoKey}&pk=${playList.playListKey}`}>
                 <Text fontSize='sm' fontWeight={500}>{playListVideo.title}</Text>
               </LinkOverlay>}
