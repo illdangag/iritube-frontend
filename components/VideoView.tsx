@@ -44,8 +44,8 @@ const VideoView = ({
 
   const getVideoThumbnail = (aspectRatio: CSS.Property.AspectRatio) => {
     return <LinkBox>
-      <Box borderRadius='lg' overflow='hidden' backgroundColor='black' aspectRatio={aspectRatio} position='relative' minWidth='10rem'>
-        <LinkOverlay as={NextLink} href={video.state === VideoState.CONVERTED ? `/videos?vk=${video.videoKey}` : '#'}>
+      <LinkOverlay as={NextLink} href={video.state === VideoState.CONVERTED ? `/videos?vk=${video.videoKey}` : '#'}>
+        <Box borderRadius='lg' overflow='hidden' backgroundColor='black' aspectRatio={aspectRatio} position='relative' minWidth='10rem'>
           <Image
             src={imageURL}
             alt='thumbnail'
@@ -67,8 +67,8 @@ const VideoView = ({
           >
             {video.getDurationText()}
           </Text>
-        </LinkOverlay>
-      </Box>
+        </Box>
+      </LinkOverlay>
     </LinkBox>;
   };
 

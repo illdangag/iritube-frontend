@@ -71,7 +71,10 @@ const HeaderLayout = ({
               <MenuItem>내 정보</MenuItem>
             </NextLink>
             <NextLink href='/channels/videos'>
-              <MenuItem>동영상 목록</MenuItem>
+              <MenuItem>동영상 관리</MenuItem>
+            </NextLink>
+            <NextLink href='/channels/playlists'>
+              <MenuItem>재생 목록 관리</MenuItem>
             </NextLink>
             <MenuItem onClick={logout}>로그아웃</MenuItem>
           </MenuList>

@@ -6,14 +6,14 @@ import {
 
 import { useSetRecoilState, } from 'recoil';
 import { playListListAtom, } from '@root/recoil';
-import { PlayListList, TokenInfo, } from '@root/interfaces';
+import { PlayList, PlayListList, TokenInfo, } from '@root/interfaces';
 import iritubeAPI from '@root/utils/iritubeAPI';
 import { getTokenInfo, } from '@root/utils';
 
 type Props = {
   open?: boolean;
   onClose?: () => void;
-  onConfirm?: () => void;
+  onConfirm?: (playList: PlayList) => void;
 }
 
 enum Status {
@@ -53,10 +53,10 @@ const PlayListCreateAlert = ({
 
     try {
       const tokenInfo: TokenInfo = await getTokenInfo();
-      await iritubeAPI.createPlayList(tokenInfo, title.trim());
+      const playList: PlayList = await iritubeAPI.createPlayList(tokenInfo, title.trim());
       const playListList: PlayListList = await iritubeAPI.getMyPlayListList(tokenInfo, 0, 10);
       setPlayListList(playListList);
-      onConfirm();
+      onConfirm(playList);
     } catch {
       setState(Status.IDLE);
     }

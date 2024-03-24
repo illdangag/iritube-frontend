@@ -5,11 +5,8 @@ import {
 } from '@chakra-ui/react';
 import { PlayListCreateAlert, } from '@root/components/alerts';
 
-import { useRecoilValue, } from 'recoil';
-import { playListListAtom, } from '@root/recoil';
 import { IritubeError, IritubeErrorCode, PlayList, PlayListList, TokenInfo, Video, } from '@root/interfaces';
-import { BrowserStorage, } from '@root/utils';
-import iritubeAPI from '@root/utils/iritubeAPI';
+import { BrowserStorage, getTokenInfo, iritubeAPI, } from '@root/utils';
 
 type Props = {
   video: Video;
@@ -31,7 +28,7 @@ const PlayListVideoAddAlert = ({
 }: Props) => {
   const closeRef = useRef();
 
-  const playListList = useRecoilValue<PlayListList | null>(playListListAtom);
+  const [playListList, setPlayListList,] = useState<PlayListList | null>(null);
 
   const [state, setState,] = useState<State>(State.IDLE);
   const [selectedPlayListKey, setSelectedPlayListKey,] = useState<string>('');
@@ -39,18 +36,27 @@ const PlayListVideoAddAlert = ({
   const [alreadyExistVideo, setAlreadyExistVideo,] = useState<boolean>(false);
 
   useEffect(() => {
+    void init();
     setState(State.IDLE);
     setSelectedPlayListKey('');
     setOpenPlayListCreateAlert(false);
     setAlreadyExistVideo(false);
   }, [open,]);
 
+  const init = async () => {
+    const tokenInfo: TokenInfo | null = await getTokenInfo();
+    if (tokenInfo) {
+      const playListList: PlayListList = await iritubeAPI.getMyPlayListList(tokenInfo, 0, 100);
+      setPlayListList(playListList);
+    }
+  };
+
   const onChangePlayListRadio = (newValue: string) => {
     setAlreadyExistVideo(false);
     setSelectedPlayListKey(newValue);
   };
 
-  const onClickPPlayListAddButton = async () => {
+  const onClickPlayListAddButton = async () => {
     setState(State.REQUEST);
     const tokenInfo: TokenInfo = BrowserStorage.getTokenInfo();
     try {
@@ -74,7 +80,10 @@ const PlayListVideoAddAlert = ({
   };
 
   const onConfirmPlayListCreateAlert = () => {
-    setOpenPlayListCreateAlert(false);
+    void init()
+      .then(() => {
+        setOpenPlayListCreateAlert(false);
+      });
   };
 
   const addVideoAtPlayList = async (tokenInfo: TokenInfo): Promise<PlayList> => {
@@ -90,10 +99,10 @@ const PlayListVideoAddAlert = ({
       <AlertDialogContent>
         <AlertDialogHeader>재생 목록</AlertDialogHeader>
         <AlertDialogBody>
-          {playListList && playListList.playLists.length === 0 && <Box>
+          {playListList?.playLists.length === 0 && <Box>
             <Text>재생 목록이 존재 하지 않습니다.</Text>
           </Box>}
-          {playListList && playListList.playLists.length > 0 && <FormControl isInvalid={alreadyExistVideo}>
+          {playListList?.playLists.length > 0 && <FormControl isInvalid={alreadyExistVideo}>
             <RadioGroup onChange={onChangePlayListRadio} value={selectedPlayListKey}>
               <VStack alignItems='flex-start'>
                 {playListList.playLists.map((playList, index) => <Radio key={index} value={playList.playListKey}>{playList.title}</Radio>)}
@@ -109,7 +118,7 @@ const PlayListVideoAddAlert = ({
             <Button variant='outline' onClick={onClose} isDisabled={state === State.REQUEST}>취소</Button>
             <Button
               isDisabled={selectedPlayListKey === ''}
-              onClick={onClickPPlayListAddButton}
+              onClick={onClickPlayListAddButton}
               isLoading={state === State.REQUEST}
             >
               추가

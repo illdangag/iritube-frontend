@@ -38,6 +38,8 @@ export class TokenInfo {
 
 export type VideoViewType = 'thumbnail' | 'detail';
 
+export type PlayListViewType = 'thumbnail' | 'detail';
+
 export abstract class ListResponse {
   public total: number;
   public offset: number;
@@ -142,6 +144,12 @@ export enum VideoShare {
   PRIVATE = 'PRIVATE',
 }
 
+export enum PlayListShare {
+  PUBLIC = 'PUBLIC',
+  URL = 'URL',
+  PRIVATE = 'PRIVATE',
+}
+
 export class Video {
   public id: string;
   public videoKey: string;
@@ -231,6 +239,7 @@ export type PlayList = {
   title: string,
   videos: Video[],
   account: Account,
+  share: PlayListShare,
 }
 
 export class PlayListList extends ListResponse {

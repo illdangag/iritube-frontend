@@ -1,4 +1,5 @@
 import { GetServerSideProps, } from 'next';
+import NextLink from 'next/link';
 import { useRouter, } from 'next/router';
 import { Box, Button, } from '@chakra-ui/react';
 import { MainLayout, PageHeaderLayout, } from '@root/layouts';
@@ -7,7 +8,6 @@ import { Pagination, VideoListView, } from '@root/components';
 import { TokenInfo, VideoList, } from '@root/interfaces';
 import { getTokenInfoByCookies, removeTokenInfoByCookies, } from '@root/utils';
 import iritubeAPI from '@root/utils/iritubeAPI';
-import NextLink from 'next/link';
 
 type Props = {
   page: number,
@@ -30,9 +30,9 @@ const AccountsVideosPage = (props: Props) => {
     void router.replace('/channels/videos?page=' + page);
   };
 
-  return <MainLayout title='동영상 목록 | iritube' fullWidth={false}>
+  return <MainLayout title='동영상 관리 | iritube' fullWidth={false}>
     <PageHeaderLayout
-      title='동영상 목록'
+      title='동영상 목록 관리'
       descriptions={['업로드한 동영상 목록을 조회합니다',]}
       rightContent={<Button size='sm' as={NextLink} href='/channels/videos/upload'>동영상 업로드</Button>}
     />
