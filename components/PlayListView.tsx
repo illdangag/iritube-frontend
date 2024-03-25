@@ -1,7 +1,7 @@
 import { forwardRef, memo, useEffect, useState, } from 'react';
 import NextLink from 'next/link';
 import {
-  Badge, Box, Button, ButtonGroup, Card, CardBody, CardFooter, HStack, Image, LinkBox, LinkOverlay, Spacer, Text,
+  Badge, Box, Button, ButtonGroup, Card, CardBody, CardFooter, HStack, Image, Link, LinkBox, LinkOverlay, Spacer, Text,
   VStack,
 } from '@chakra-ui/react';
 
@@ -113,7 +113,9 @@ const PlayListView = ({
         <HStack alignItems='stretch'>
           {getPlayListThumbnail('4/3')}
           <VStack alignItems='start'>
-            <Text as='b'>{playList.title}</Text>
+            <Link as={NextLink} _hover={{ textDecoration: 'none', }} href={getPlayListVideoLink()}>
+              <Text as='b'>{playList.title}</Text>
+            </Link>
             <HStack>
               <Badge colorScheme='gray'>{getPlayListShare(playList.share)}</Badge>
             </HStack>
