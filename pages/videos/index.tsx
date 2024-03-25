@@ -155,9 +155,9 @@ const VideosPage = (props: Props) => {
           {(!video || !video?.id) && <Box width='100%' height='100%'>
             <Card aspectRatio='16/9' ref={invalidVideoRef}>
               <CardBody>
-                {!video && <Text>존재하지 않는 동영상입니다.</Text>}
-                {video?.deleted && <Text>삭제된 동영상입니다.</Text>}
-                {!video?.deleted && video.share === VideoShare.PRIVATE && <Text>비공개 동영상입니다.</Text>}
+                {!video && <Text>동영상이 존재하지 않습니다.</Text>}
+                {video && video.deleted && <Text>삭제된 동영상입니다.</Text>}
+                {video && !video.deleted && video.share === VideoShare.PRIVATE && <Text>비공개 동영상입니다.</Text>}
               </CardBody>
             </Card>
           </Box>}

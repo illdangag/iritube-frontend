@@ -21,7 +21,7 @@ const ChannelsPlayListsPage = (props: Props) => {
   const [openPlayListCreateAlert, setOpenPlayListCreateAlert,] = useState<boolean>(false);
 
   useEffect(() => {
-    setPlayListList(PlayListList.getInstance(props.playListList))
+    setPlayListList(PlayListList.getInstance(props.playListList));
   }, [props.playListList,]);
 
   const onClickOpenPlayListCreateAlert = () => {
