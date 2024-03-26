@@ -6,7 +6,7 @@ import process from 'process';
 const apiKey: string = process.env.apiKey as string;
 const backendURL: string = process.env.backendURL as string;
 
-type IricomAPIList = {
+type IritubeAPIList = {
   // 인증
   refreshToken: (tokenInfo: TokenInfo) => Promise<TokenInfo>,
 
@@ -44,7 +44,7 @@ function setToken (config: AxiosRequestConfig, tokenInfo: TokenInfo | null) {
   }
 }
 
-const IritubeAPI: IricomAPIList = {
+const IritubeAPI: IritubeAPIList = {
   refreshToken: async (tokenInfo: TokenInfo): Promise<TokenInfo> => {
     const config: AxiosRequestConfig = {
       url: 'https://securetoken.googleapis.com/v1/token',

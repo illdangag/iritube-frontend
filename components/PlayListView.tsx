@@ -112,14 +112,13 @@ const PlayListView = ({
       <CardBody display='flex' gap='0.5rem'>
         <HStack alignItems='stretch'>
           {getPlayListThumbnail('4/3')}
-          <VStack alignItems='start'>
+          <VStack justifyContent='space-between' alignItems='start'>
             <Link as={NextLink} _hover={{ textDecoration: 'none', }} href={getPlayListVideoLink()}>
               <Text as='b'>{playList.title}</Text>
             </Link>
             <HStack>
               <Badge colorScheme='gray'>{getPlayListShare(playList.share)}</Badge>
             </HStack>
-            <Spacer/>
             <ButtonGroup size='xs' variant='outline'>
               <Button>삭제</Button>
             </ButtonGroup>

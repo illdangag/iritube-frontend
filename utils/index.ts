@@ -57,8 +57,7 @@ export function getTokenInfoByCookies (context: GetServerSidePropsContext): Prom
             context.res.setHeader('set-cookie', `${BrowserStorage.TOKEN_INFO_KEY}=${JSON.stringify(newTokenInfo)}; Path=/`);
             resolve(newTokenInfo);
           })
-          .catch(error => {
-            console.error(error);
+          .catch(() => {
             context.res.setHeader('set-cookie', `${BrowserStorage.TOKEN_INFO_KEY}=; Path=/; Max-Age=0`);
             resolve(null);
           });
