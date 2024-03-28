@@ -45,7 +45,7 @@ const VideoView = ({
   const getVideoThumbnail = (aspectRatio: CSS.Property.AspectRatio) => {
     return <LinkBox>
       <LinkOverlay as={NextLink} href={video.state === VideoState.CONVERTED ? `/videos?vk=${video.videoKey}` : '#'}>
-        <Box borderRadius='lg' overflow='hidden' backgroundColor='black' aspectRatio={aspectRatio} position='relative' minWidth='10rem'>
+        <Box borderRadius='lg' overflow='hidden' backgroundColor='black' aspectRatio={aspectRatio} position='relative'>
           <Image
             src={imageURL}
             alt='thumbnail'
@@ -86,14 +86,7 @@ const VideoView = ({
             <Text fontSize='xs' as='span'>{video.account.nickname}</Text>
           </Link>
           <HStack>
-            <Box>
-              <Text fontSize='xs' as='span'>{'조회수 ' + video.getViewCount()}</Text>
-              <Text fontSize='xs' as='span' _before={{
-                content: '\"•\"',
-                paddingLeft: '0.4rem',
-                paddingRight: '0.4rem',
-              }}>{updateDate}</Text>
-            </Box>
+            {getViewCountCreateDate()}
             {video.share !== VideoShare.PUBLIC && <Box>
               {getVideoShareBadge(video.share)}
             </Box>}
@@ -118,6 +111,17 @@ const VideoView = ({
     return <Badge colorScheme='gray'>
       {getVideoShareText(videoShare)}
     </Badge>;
+  };
+
+  const getViewCountCreateDate = () => {
+    return <Box>
+      <Text fontSize='xs' as='span'>{'조회수 ' + video.getViewCount()}</Text>
+      <Text fontSize='xs' as='span' _before={{
+        content: '\"•\"',
+        paddingLeft: '0.4rem',
+        paddingRight: '0.4rem',
+      }}>{updateDate}</Text>
+    </Box>;
   };
 
   const getVideoStateText = (videoState: VideoState) => {
@@ -152,46 +156,41 @@ const VideoView = ({
 
   const getDetailType = () => {
     return <Card ref={ref}>
-      <CardBody display='flex' gap='0.5rem'>
-        <Box width='10rem'>
+      <CardBody display='flex' gap='0.5rem' alignItems='center'>
+        <Box width='18rem'>
           {getVideoThumbnail('4/3')}
         </Box>
-        <VStack alignItems='start'>
-          <Link as={NextLink} _hover={{ textDecoration: 'none', }} href={video.state === VideoState.CONVERTED ? `/videos?vk=${video.videoKey}` : '#'}>
-            <Text as='b'>{video.title}</Text>
-          </Link>
-          <Text fontSize='small'>{video.description}</Text>
-          {!editable && <>
-            <Link as={NextLink} href={'/accounts/' + video.account.accountKey}>
-              <Text fontSize='xs' as='span'>{video.account.nickname}</Text>
+        <VStack alignItems='start' width='100%'>
+          <Box>
+            <Link as={NextLink} _hover={{ textDecoration: 'none', }} href={video.state === VideoState.CONVERTED ? `/videos?vk=${video.videoKey}` : '#'}>
+              <Text as='b'>{video.title}</Text>
             </Link>
-            <HStack>
-              <Box>
-                <Text fontSize='xs' as='span'>{'조회수 ' + video.getViewCount()}</Text>
-                <Text fontSize='xs' as='span' _before={{
-                  content: '\"•\"',
-                  paddingLeft: '0.4rem',
-                  paddingRight: '0.4rem',
-                }}>{updateDate}</Text>
-              </Box>
-              {video.share !== VideoShare.PUBLIC && <Box>
+            <Text fontSize='small' marginTop='0.4rem'>{video.description}</Text>
+          </Box>
+          <Spacer/>
+          <HStack alignItems='end' width='100%'>
+            <VStack alignItems='start'>
+              <Link as={NextLink} href={'/accounts/' + video.account.accountKey}>
+                <Text fontSize='xs' as='span'>{video.account.nickname}</Text>
+              </Link>
+              {getViewCountCreateDate()}
+              <HStack>
                 {getVideoShareBadge(video.share)}
-              </Box>}
-            </HStack>
-          </>}
-          {editable && <>
-            <HStack>
-              {getVideoShareBadge(video.share)}
-              {getVideoStateBadge(video.state)}
-            </HStack>
-            <Spacer/>
-            <HStack>
-              <ButtonGroup size='xs' variant='outline'>
-                <Button as={NextLink} href={`/channels/videos/${video.videoKey}/edit`}>수정</Button>
-                <Button onClick={onDelete}>삭제</Button>
-              </ButtonGroup>
-            </HStack>
-          </>}
+                {getVideoStateBadge(video.state)}
+              </HStack>
+            </VStack>
+            {editable && <>
+              <Spacer/>
+              <Box>
+                <HStack>
+                  <ButtonGroup size='xs' variant='outline'>
+                    <Button as={NextLink} href={`/channels/videos/${video.videoKey}/edit`}>수정</Button>
+                    <Button onClick={onDelete}>삭제</Button>
+                  </ButtonGroup>
+                </HStack>
+              </Box>
+            </>}
+          </HStack>
         </VStack>
       </CardBody>
     </Card>;

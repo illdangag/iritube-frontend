@@ -77,9 +77,10 @@ export function removeTokenInfoByCookies (context: GetServerSidePropsContext): v
 export function getTokenInfo (): Promise<TokenInfo | null> {
   return new Promise((resolve, reject) => {
     const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
+
     if (tokenInfo === null) {
       resolve(null);
-    } else if (tokenInfo.expiredDate.getTime() < (new Date()).getTime()) {
+    } else if (tokenInfo.isExpired()) {
       void iritubeAPI.refreshToken(tokenInfo)
         .then(newTokenInfo => {
           BrowserStorage.setTokenInfo(newTokenInfo);
