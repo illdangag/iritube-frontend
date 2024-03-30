@@ -7,11 +7,13 @@ import { PlayList, PlayListViewType, } from '@root/interfaces';
 type Props = {
   type?: PlayListViewType;
   playLists: PlayList[];
+  editable?: boolean;
 }
 
 const PlayListListView = ({
   type = 'thumbnail',
   playLists,
+  editable = false,
 }: Props) => {
   return <VStack alignItems='stretch'>
     {playLists.length === 0 && <Card>
@@ -20,7 +22,7 @@ const PlayListListView = ({
         <Text fontWeight={500}>재생 목록이 존재하지 않습니다</Text>
       </CardBody>
     </Card>}
-    {playLists.map((playList, index) => <PlayListView playList={playList} key={index} type={type}/>)}
+    {playLists.map((playList, index) => <PlayListView playList={playList} key={index} type={type} editable={editable}/>)}
   </VStack>;
 };
 

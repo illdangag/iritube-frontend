@@ -53,6 +53,7 @@ const ChannelsPlayListsPage = (props: Props) => {
       <PlayListListView
         playLists={playListList.playLists}
         type='detail'
+        editable={true}
       />
       <Box paddingBottom='1rem'>
         <Pagination page={0} listResponse={playListList} setPageLink={setPageLink}/>

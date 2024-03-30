@@ -12,11 +12,13 @@ import { getTokenInfo, iritubeAPI, } from '@root/utils';
 type Props = {
   type?: PlayListViewType;
   playList: PlayList;
+  editable?: boolean;
 }
 
 const PlayListView = ({
   type = 'thumbnail',
   playList,
+  editable = false,
 }: Props, ref) => {
   const [imageURL, setImageURL,] = useState<string>('/static/images/transparent.png');
 
@@ -53,7 +55,7 @@ const PlayListView = ({
   const getPlayListThumbnail = (aspectRatio: CSS.Property.AspectRatio) => {
     return <LinkBox>
       <LinkOverlay as={NextLink} href={getPlayListVideoLink()}>
-        <Box borderRadius='lg' overflow='hidden' backgroundColor='black' aspectRatio={aspectRatio} position='relative' minWidth='10rem'>
+        <Box borderRadius='lg' overflow='hidden' backgroundColor='black' aspectRatio={aspectRatio} position='relative'>
           <Image
             src={imageURL}
             alt='thumbnail'
@@ -107,21 +109,37 @@ const PlayListView = ({
     }
   };
 
+  const getPlayListShareBadge = (playListShare: PlayListShare) => {
+    return <Badge colorScheme='gray'>
+      {getPlayListShare(playListShare)}
+    </Badge>;
+  };
+
   const getDetailType = () => {
     return <Card ref={ref}>
-      <CardBody display='flex' gap='0.5rem'>
+      <CardBody>
         <HStack alignItems='stretch'>
-          {getPlayListThumbnail('4/3')}
-          <VStack justifyContent='space-between' alignItems='start'>
+          <Box width='10rem' flexShrink='0'>
+            {getPlayListThumbnail('4/3')}
+          </Box>
+          <VStack alignItems='start' gap='0' flexGrow='1'>
             <Link as={NextLink} _hover={{ textDecoration: 'none', }} href={getPlayListVideoLink()}>
               <Text as='b'>{playList.title}</Text>
             </Link>
-            <HStack>
-              <Badge colorScheme='gray'>{getPlayListShare(playList.share)}</Badge>
+            <Link _hover={{ textDecoration: 'none', }} as={NextLink} href={'/accounts/' + playList.account.accountKey}>
+              <Text fontSize='xs' as='span'>{playList.account.nickname}</Text>
+            </Link>
+            <Spacer/>
+            <HStack width='100%'>
+              {getPlayListShareBadge(playList.share)}
+              {editable && <>
+                <Spacer/>
+                <ButtonGroup size='xs' variant='outline' marginTop='auto'>
+                  <Button>수정</Button>
+                  <Button>삭제</Button>
+                </ButtonGroup>
+              </>}
             </HStack>
-            <ButtonGroup size='xs' variant='outline'>
-              <Button>삭제</Button>
-            </ButtonGroup>
           </VStack>
         </HStack>
       </CardBody>

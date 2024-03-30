@@ -156,42 +156,34 @@ const VideoView = ({
 
   const getDetailType = () => {
     return <Card ref={ref}>
-      <CardBody display='flex' gap='0.5rem' alignItems='center'>
-        <Box width='18rem'>
-          {getVideoThumbnail('4/3')}
-        </Box>
-        <VStack alignItems='start' width='100%'>
-          <Box>
+      <CardBody>
+        <HStack alignItems='stretch'>
+          <Box width='10rem' flexShrink='0'>
+            {getVideoThumbnail('4/3')}
+          </Box>
+          <VStack alignItems='start' gap='0' flexGrow='1'>
             <Link as={NextLink} _hover={{ textDecoration: 'none', }} href={video.state === VideoState.CONVERTED ? `/videos?vk=${video.videoKey}` : '#'}>
               <Text as='b'>{video.title}</Text>
             </Link>
-            <Text fontSize='small' marginTop='0.4rem'>{video.description}</Text>
-          </Box>
-          <Spacer/>
-          <HStack alignItems='end' width='100%'>
-            <VStack alignItems='start'>
-              <Link as={NextLink} href={'/accounts/' + video.account.accountKey}>
-                <Text fontSize='xs' as='span'>{video.account.nickname}</Text>
-              </Link>
-              {getViewCountCreateDate()}
-              <HStack>
-                {getVideoShareBadge(video.share)}
-                {getVideoStateBadge(video.state)}
-              </HStack>
-            </VStack>
-            {editable && <>
-              <Spacer/>
-              <Box>
-                <HStack>
-                  <ButtonGroup size='xs' variant='outline'>
-                    <Button as={NextLink} href={`/channels/videos/${video.videoKey}/edit`}>수정</Button>
-                    <Button onClick={onDelete}>삭제</Button>
-                  </ButtonGroup>
-                </HStack>
-              </Box>
-            </>}
-          </HStack>
-        </VStack>
+            <Text fontSize='small' noOfLines={1} title={video.description}>{video.description}</Text>
+            <Link _hover={{ textDecoration: 'none', }} as={NextLink} href={'/accounts/' + video.account.accountKey}>
+              <Text fontSize='xs' as='span'>{video.account.nickname}</Text>
+            </Link>
+            {getViewCountCreateDate()}
+            <Spacer/>
+            <HStack width='100%'>
+              {getVideoShareBadge(video.share)}
+              {getVideoStateBadge(video.state)}
+              {editable && <>
+                <Spacer/>
+                <ButtonGroup size='xs' variant='outline' marginTop='auto'>
+                  <Button as={NextLink} href={`/channels/videos/${video.videoKey}/edit`}>수정</Button>
+                  <Button onClick={onDelete}>삭제</Button>
+                </ButtonGroup>
+              </>}
+            </HStack>
+          </VStack>
+        </HStack>
       </CardBody>
     </Card>;
   };
