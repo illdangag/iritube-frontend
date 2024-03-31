@@ -8,8 +8,9 @@ import PlayListListScrollView from './PlayListListScrollView';
 import PlayListView from './PlayListView';
 import VideoListScrollView from './VideoListScrollView';
 import PlayListListView from './PlayListListView';
+import PlayListEditor from './PlayListEditor';
 
 export {
   VideoPlayer, VideoView, Pagination, VideoListView, VideoEditor, PlayListVideoListView, PlayListListScrollView,
-  PlayListView, VideoListScrollView, PlayListListView,
+  PlayListView, VideoListScrollView, PlayListListView, PlayListEditor,
 };

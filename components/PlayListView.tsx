@@ -135,7 +135,7 @@ const PlayListView = ({
               {editable && <>
                 <Spacer/>
                 <ButtonGroup size='xs' variant='outline' marginTop='auto'>
-                  <Button>수정</Button>
+                  <Button as={NextLink} href={`/channels/playlists/${playList.playListKey}/edit`}>수정</Button>
                   <Button>삭제</Button>
                 </ButtonGroup>
               </>}

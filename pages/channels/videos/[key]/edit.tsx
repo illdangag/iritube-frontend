@@ -6,8 +6,7 @@ import { MainLayout, PageHeaderLayout, } from '@root/layouts';
 import { VideoEditor, } from '@root/components';
 
 import { TokenInfo, Video, } from '@root/interfaces';
-import { getTokenInfo, getTokenInfoByCookies, removeTokenInfoByCookies, } from '@root/utils';
-import iritubeAPI from '@root/utils/iritubeAPI';
+import { getTokenInfo, getTokenInfoByCookies, removeTokenInfoByCookies, iritubeAPI, } from '@root/utils';
 
 type Props = {
   video: Video,
@@ -49,7 +48,7 @@ const AccountsVideosEditPage = (props: Props) => {
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
-  const videoKey: string = context.query.videoKey as string;
+  const videoKey: string = context.query.key as string;
 
   if (tokenInfo === null) {
     return {
@@ -61,7 +60,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   }
 
   try {
-    await iritubeAPI.getMyAccount(tokenInfo);
     const video: Video = await iritubeAPI.getVideo(tokenInfo, videoKey);
     return {
       props: {
