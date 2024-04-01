@@ -1,8 +1,9 @@
 import { useState, ChangeEvent, useEffect, } from 'react';
 import {
   Card, CardBody, FormControl, FormLabel, HStack, Input, Radio, RadioGroup, VStack,
-  Text, Box, Image, ButtonGroup, Button, Spacer,
+  Text, Box, Image, ButtonGroup, Spacer, IconButton, Fade,
 } from '@chakra-ui/react';
+import { MdArrowUpward, MdArrowDownward, MdDeleteOutline, } from 'react-icons/md';
 
 import { PlayList, PlayListShare, TokenInfo, Video, VideoShare, } from '@root/interfaces';
 import { getTokenInfo, } from '@root/utils';
@@ -18,20 +19,42 @@ type ThumbnailData = {
   data: string;
 };
 
+type BlinkVideos = {
+  videoIndexA: number;
+  videoIndexB: number;
+};
+
 const PlayListEditor = ({
   playList,
   onChange = () => {},
 }: Props) => {
   const [editPlayList, setEditPlayList,] = useState<PlayList>(playList);
   const [thumbnailMap, setThumbnailMap,] = useState<Map<string, string>>(new Map());
+  const [blinkVideos, setBlinkVideos,] = useState<BlinkVideos>({
+    videoIndexA: -1,
+    videoIndexB: -1,
+  });
 
   useEffect(() => {
     void initThumbnail();
-  }, [ playList, ]);
+  }, [playList,]);
 
   useEffect(() => {
     onChange(editPlayList);
   }, [editPlayList,]);
+
+  useEffect(() => {
+    if (blinkVideos.videoIndexA === -1 && blinkVideos.videoIndexB === -1) {
+      return;
+    }
+
+    setTimeout(() => {
+      setBlinkVideos({
+        videoIndexA: -1,
+        videoIndexB: -1,
+      } as BlinkVideos);
+    }, 150);
+  }, [blinkVideos,]);
 
   const initThumbnail = async () => {
     const tokenInfo: TokenInfo | null = await getTokenInfo();
@@ -94,6 +117,10 @@ const PlayListEditor = ({
       ...editPlayList,
       videos,
     } as PlayList);
+    setBlinkVideos({
+      videoIndexA: index - 1,
+      videoIndexB: index,
+    } as BlinkVideos);
   };
 
   const onClickVideoSequenceNext = (video: Video) => {
@@ -105,6 +132,10 @@ const PlayListEditor = ({
       ...editPlayList,
       videos,
     } as PlayList);
+    setBlinkVideos({
+      videoIndexA: index + 1,
+      videoIndexB: index,
+    } as BlinkVideos);
   };
 
   const getVideoThumbnailElement = (videoKey: string) => {
@@ -128,35 +159,43 @@ const PlayListEditor = ({
       <Card variant='outline'>
         <CardBody>
           <VStack alignItems='stretch'>
-            {editPlayList.videos.map((video, index) => <Card key={index}>
-              <CardBody>
-                <HStack alignItems='stretch'>
-                  <Box width='4rem' flexShrink={0}>
-                    {getVideoThumbnailElement(video.videoKey)}
-                  </Box>
-                  <VStack justifyContent='space-between' alignItems='start'>
-                    <Text fontSize='0.8rem'>{video.title}</Text>
-                    <Text fontSize='0.8rem'>{video.account.nickname}</Text>
-                  </VStack>
-                  <Spacer/>
-                  <ButtonGroup variant='outline' size='xs' marginTop='auto'>
-                    <Button
-                      isDisabled={index === 0}
-                      onClick={() => onClickVideoSequencePrevious(video)}
-                    >
-                      위로
-                    </Button>
-                    <Button
-                      isDisabled={playList.videos.length === index + 1}
-                      onClick={() => onClickVideoSequenceNext(video)}
-                    >
-                      아래로
-                    </Button>
-                    <Button>삭제</Button>
-                  </ButtonGroup>
-                </HStack>
-              </CardBody>
-            </Card>)}
+            {editPlayList.videos.map((video, index) => <Fade in={blinkVideos.videoIndexA !== index && blinkVideos.videoIndexB !== index}>
+              <Card key={index}>
+                <CardBody>
+                  <HStack alignItems='stretch'>
+                    <Box width='4rem' flexShrink={0}>
+                      {getVideoThumbnailElement(video.videoKey)}
+                    </Box>
+                    <VStack justifyContent='space-between' alignItems='start'>
+                      <Text fontSize='0.8rem'>{video.title}</Text>
+                      <Text fontSize='0.8rem'>{video.account.nickname}</Text>
+                    </VStack>
+                    <Spacer/>
+                    <ButtonGroup variant='outline' size='sm' marginTop='auto'>
+                      <IconButton
+                        aria-label='previous'
+                        variant='ghost'
+                        icon={<MdArrowUpward/>}
+                        isDisabled={index === 0}
+                        onClick={() => onClickVideoSequencePrevious(video)}
+                      />
+                      <IconButton
+                        aria-label='next'
+                        variant='ghost'
+                        icon={<MdArrowDownward/>}
+                        isDisabled={playList.videos.length === index + 1}
+                        onClick={() => onClickVideoSequenceNext(video)}
+                      />
+                      <IconButton
+                        aria-label='remove'
+                        variant='ghost'
+                        icon={<MdDeleteOutline/>}
+                      />
+                    </ButtonGroup>
+                  </HStack>
+                </CardBody>
+              </Card>
+            </Fade>)}
           </VStack>
         </CardBody>
       </Card>
