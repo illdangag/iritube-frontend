@@ -58,7 +58,7 @@ const PlayListVideoAddAlert = ({
 
   const onClickPlayListAddButton = async () => {
     setState(State.REQUEST);
-    const tokenInfo: TokenInfo = BrowserStorage.getTokenInfo();
+    const tokenInfo: TokenInfo = await getTokenInfo();
     try {
       await addVideoAtPlayList(tokenInfo);
       onConfirm();

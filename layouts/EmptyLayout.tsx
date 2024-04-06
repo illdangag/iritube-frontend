@@ -7,7 +7,7 @@ import { Box, } from '@chakra-ui/react';
 import { Account, TokenInfo, } from '@root/interfaces';
 import { useSetRecoilState, } from 'recoil';
 import { accountAtom, } from '@root/recoil';
-import { BrowserStorage, } from '@root/utils';
+import { BrowserStorage, getTokenInfo, } from '@root/utils';
 import iritubeAPI from '@root/utils/iritubeAPI';
 
 type Props = {
@@ -22,21 +22,21 @@ const EmptyLayout = ({
   const setAccount = useSetRecoilState<Account | null>(accountAtom);
 
   useEffect(() => {
-    const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
+    void init();
+  }, []);
 
+  const init = async () => {
+    const tokenInfo: TokenInfo | null = await getTokenInfo();
     if (tokenInfo !== null) {
-      void iritubeAPI.getMyAccount(tokenInfo)
-        .then((account: Account) => {
-          setAccount(account);
-        });
+      const account: Account = await iritubeAPI.getMyAccount(tokenInfo);
+      setAccount(account);
     } else {
       setAccount({
         id: '',
         nickname: '',
       } as Account);
     }
-
-  }, []);
+  };
 
   return (
     <>

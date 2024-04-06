@@ -8,7 +8,7 @@ import {
 import { useRecoilState, } from 'recoil';
 import { accountAtom, } from '@root/recoil';
 import { Account, TokenInfo, } from '@root/interfaces';
-import { BrowserStorage, } from '@root/utils';
+import { BrowserStorage, getTokenInfo, } from '@root/utils';
 
 type Props = {
 };
@@ -27,10 +27,12 @@ const HeaderLayout = ({
   const [account, setAccount,] = useRecoilState<Account | null>(accountAtom);
 
   useEffect(() => {
-    const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
-    if (tokenInfo === null) {
-      setState(State.LOGOUT);
-    }
+    void getTokenInfo()
+      .then(tokenInfo => {
+        if (tokenInfo === null) {
+          setState(State.LOGOUT);
+        }
+      });
   }, []);
 
   useEffect(() => {
