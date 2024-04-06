@@ -7,7 +7,7 @@ import {
 
 import { useRecoilState, } from 'recoil';
 import { accountAtom, } from '@root/recoil';
-import { Account, TokenInfo, } from '@root/interfaces';
+import { Account, } from '@root/interfaces';
 import { BrowserStorage, getTokenInfo, } from '@root/utils';
 
 type Props = {

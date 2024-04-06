@@ -6,7 +6,7 @@ import {
 import { PlayListCreateAlert, } from '@root/components/alerts';
 
 import { IritubeError, IritubeErrorCode, PlayList, PlayListList, TokenInfo, Video, } from '@root/interfaces';
-import { BrowserStorage, getTokenInfo, iritubeAPI, } from '@root/utils';
+import { getTokenInfo, iritubeAPI, } from '@root/utils';
 
 type Props = {
   video: Video;
@@ -90,7 +90,7 @@ const PlayListVideoAddAlert = ({
     const playList: PlayList = await iritubeAPI.getPlayList(tokenInfo, selectedPlayListKey);
     const videoKeyList: string[] = playList.videos.map(video => video.videoKey);
     videoKeyList.push(video.videoKey);
-    return await iritubeAPI.updatePlayList(tokenInfo, selectedPlayListKey, playList.title, videoKeyList);
+    return await iritubeAPI.updatePlayList(tokenInfo, playList);
   };
 
   return <>

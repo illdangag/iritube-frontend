@@ -49,6 +49,7 @@ const VideoThumbnail = (props: Props) => {
       borderRadius='0.2rem'
       backgroundColor='#00000055'
       fontSize='xs'
+      color='#ffffff'
     >
       {description}
     </Text>}

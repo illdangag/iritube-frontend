@@ -10,11 +10,13 @@ import { PlayList, PlayListShare, Video, VideoShare, } from '@root/interfaces';
 
 type Props = {
   playList: PlayList;
+  isDisabled?: boolean;
   onChange?: (playList: PlayList) => void;
 }
 
 const PlayListEditor = ({
   playList,
+  isDisabled = false,
   onChange = () => {},
 }: Props) => {
   const [editPlayList, setEditPlayList,] = useState<PlayList>(playList);
@@ -62,7 +64,7 @@ const PlayListEditor = ({
   return <VStack alignItems='stretch'>
     <FormControl>
       <FormLabel>제목</FormLabel>
-      <Input type='title' value={editPlayList.title} onChange={onChangeTitle}/>
+      <Input type='title' value={editPlayList.title} isDisabled={isDisabled} onChange={onChangeTitle}/>
     </FormControl>
     <FormControl>
       <FormLabel>동영상 목록</FormLabel>
@@ -86,19 +88,20 @@ const PlayListEditor = ({
                         aria-label='previous'
                         variant='ghost'
                         icon={<MdArrowUpward/>}
-                        isDisabled={index === 0}
+                        isDisabled={index === 0 || isDisabled}
                         onClick={() => onClickVideoSequencePrevious(video)}
                       />
                       <IconButton
                         aria-label='next'
                         variant='ghost'
                         icon={<MdArrowDownward/>}
-                        isDisabled={playList.videos.length === index + 1}
+                        isDisabled={playList.videos.length === index + 1 || isDisabled}
                         onClick={() => onClickVideoSequenceNext(video)}
                       />
                       <IconButton
                         aria-label='remove'
                         variant='ghost'
+                        isDisabled={isDisabled}
                         icon={<MdDeleteOutline/>}
                       />
                     </ButtonGroup>
@@ -112,7 +115,7 @@ const PlayListEditor = ({
     </FormControl>
     <FormControl>
       <FormLabel>공유</FormLabel>
-      <RadioGroup value={editPlayList.share} onChange={onChangeShare}>
+      <RadioGroup value={editPlayList.share} onChange={onChangeShare} isDisabled={isDisabled}>
         <HStack>
           <Radio value={VideoShare.PUBLIC}>공개</Radio>
           <Radio value={VideoShare.URL}>링크 공유</Radio>

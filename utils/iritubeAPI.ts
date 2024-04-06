@@ -30,7 +30,7 @@ type IritubeAPIList = {
   // 재생 목록
   createPlayList: (tokenInfo: TokenInfo, title: string) => Promise<PlayList>,
   getPlayList: (tokenInfo: TokenInfo | null, playListKey: string) => Promise<PlayList>,
-  updatePlayList: (tokenInfo: TokenInfo, playListKey: string, title: string | null, videoKeyList: string[] | null) => Promise<PlayList>,
+  updatePlayList: (tokenInfo: TokenInfo, playList: PlayList) => Promise<PlayList>,
 
   getRecommendVideoList: (tokenInfo: TokenInfo | null, offset: number, limit: number) => Promise<VideoList>,
 };
@@ -322,21 +322,17 @@ const IritubeAPI: IritubeAPIList = {
     }
   },
 
-  updatePlayList: async (tokenInfo: TokenInfo, playListKey: string, title: string | null, videoKeyList: string[] | null): Promise<PlayList> => {
+  updatePlayList: async (tokenInfo: TokenInfo, playList: PlayList): Promise<PlayList> => {
     const config: AxiosRequestConfig = {
-      url: `${backendURL}/v1/playlists/${playListKey}`,
+      url: `${backendURL}/v1/playlists/${playList.playListKey}`,
       method: 'PATCH',
       data: {},
     };
     setToken(config, tokenInfo);
 
-    if (title) {
-      config.data.title = title;
-    }
-
-    if (videoKeyList) {
-      config.data.videoKeys = videoKeyList;
-    }
+    config.data.title = playList.title;
+    config.data.videoKeys = playList.videos ? playList.videos.map(video => video.videoKey) : [];
+    config.data.share = playList.share;
 
     try {
       const response: AxiosResponse<PlayList> = await axios.request(config);

@@ -7,7 +7,7 @@ import { Box, } from '@chakra-ui/react';
 import { Account, TokenInfo, } from '@root/interfaces';
 import { useSetRecoilState, } from 'recoil';
 import { accountAtom, } from '@root/recoil';
-import { BrowserStorage, getTokenInfo, } from '@root/utils';
+import { getTokenInfo, } from '@root/utils';
 import iritubeAPI from '@root/utils/iritubeAPI';
 
 type Props = {
