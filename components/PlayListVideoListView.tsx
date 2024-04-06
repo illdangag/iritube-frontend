@@ -1,71 +1,20 @@
-import { useEffect, useState, } from 'react';
 import NextLink from 'next/link';
 import {
-  Box, Card, CardBody, CardHeader, CardProps, Heading, HStack, Image, LinkBox, LinkOverlay, Text, VStack,
+  Card, CardBody, CardHeader, CardProps, Heading, HStack, LinkBox, LinkOverlay, Text, VStack,
 } from '@chakra-ui/react';
 import { MdPlayArrow, } from 'react-icons/md';
 
-import { PlayList, TokenInfo, VideoShare, } from '@root/interfaces';
-import iritubeAPI from '@root/utils/iritubeAPI';
-import { getTokenInfo, } from '@root/utils';
+import { PlayList, VideoShare, } from '@root/interfaces';
+import { VideoThumbnail, } from '@root/components/index';
 
 interface Props extends CardProps {
   playList: PlayList;
   videoKey: string;
 }
 
-type ThumbnailData = {
-  videoKey: string;
-  data: string;
-};
-
 const PlayListVideoListView = (props: Props) => {
   const playList: PlayList = props.playList;
   const videoKey: string = props.videoKey;
-
-  const [thumbnailMap, setThumbnailMap,] = useState<Map<string, string>>(new Map());
-
-  useEffect(() => {
-    void initThumbnail();
-  }, [playList,]);
-
-  const initThumbnail = async () => {
-    const tokenInfo: TokenInfo | null = await getTokenInfo();
-    const promiseQueue: Promise<ThumbnailData>[] = [];
-
-    for (let playListVideo of playList.videos) {
-      promiseQueue.push(new Promise<ThumbnailData>(async (resolve) => {
-        if (playListVideo.deleted) {
-          resolve({
-            videoKey: playListVideo.videoKey,
-            data: '/static/images/black.jpg',
-          } as ThumbnailData);
-        } else {
-          try {
-            const imageData: string = await iritubeAPI.getVideoThumbnail(tokenInfo, playListVideo.videoKey);
-            resolve({
-              videoKey: playListVideo.videoKey,
-              data: imageData,
-            } as ThumbnailData);
-          } catch (error) {
-            resolve({
-              videoKey: playListVideo.videoKey,
-              data: '/static/images/black.jpg',
-            } as ThumbnailData);
-          }
-        }
-      }));
-    }
-
-    const promiseResult: ThumbnailData[] = await Promise.all(promiseQueue);
-
-    const newThumbnailMap: Map<string, string> = new Map<string, string>();
-    promiseResult.forEach(value => {
-      newThumbnailMap.set(value.videoKey, value.data);
-    });
-
-    setThumbnailMap(newThumbnailMap);
-  };
 
   const getCardProps = (): CardProps => {
     const cardProps: Props = {
@@ -80,17 +29,6 @@ const PlayListVideoListView = (props: Props) => {
 
   const getCurrentVideoIndex = (): number => {
     return playList.videos.findIndex(item => item.videoKey === videoKey);
-  };
-
-  const getVideoThumbnailElement = (videoKey: string) => {
-    return <Box width='4rem' aspectRatio={4 / 3} position='relative' overflow='hidden' borderRadius='md'>
-      <Image
-        src={thumbnailMap && thumbnailMap.get(videoKey) || '/static/images/black.jpg'}
-        alt='thumbnail'
-        position='absolute'
-        top='50%' left='50%' transform='translate(-50%, -50%)'
-      />
-    </Box>;
   };
 
   return <Card paddingBottom='1rem' paddingRight='1rem' {...getCardProps()}>
@@ -111,9 +49,9 @@ const PlayListVideoListView = (props: Props) => {
             <VStack width='1.25rem'>
               {videoKey === playListVideo.videoKey ? <Text fontSize='xs'><MdPlayArrow width='0.2rem'/></Text> : <Text fontSize='xs'>{index + 1}</Text>}
             </VStack>
-            {!playListVideo.id && getVideoThumbnailElement(playListVideo.videoKey)}
+            {!playListVideo.id && <VideoThumbnail video={playListVideo} aspectRatio='4/3' width='4rem'/>}
             {playListVideo.id && <LinkOverlay as={NextLink} href={`/videos?vk=${playListVideo.videoKey}&pk=${playList.playListKey}`}>
-              {getVideoThumbnailElement(playListVideo.videoKey)}
+              <VideoThumbnail video={playListVideo} aspectRatio='4/3' width='4rem'/>
             </LinkOverlay>}
             <VStack height='100%' alignItems='flex-start' marginLeft='0.75rem'>
               {playListVideo.deleted && <Text fontSize='sm' fontWeight={500}>삭제된 동영상</Text>}

@@ -1,52 +1,64 @@
 import { memo, useEffect, useState, } from 'react';
-import { Box, Image, } from '@chakra-ui/react';
+import { Box, BoxProps, Image, Text, } from '@chakra-ui/react';
 
 import { TokenInfo, Video, } from '@root/interfaces';
 import { getTokenInfo, iritubeAPI, } from '@root/utils';
-import * as CSS from 'csstype';
 
-type Props = {
-  video: Video;
-  aspectRatio?: CSS.Property.AspectRatio;
+interface Props extends BoxProps {
+  video?: Video;
   description?: string;
 }
 
-const BLACK_IMAGE: string = '/static/images/black.jpg';
-const TRANSPARENT_IMAGE: string = '/static/images/transparent.png';
+const VideoThumbnail = (props: Props) => {
+  const video: Video | null = props.video || null;
+  const description: string = props.description;
 
-const VideoThumbnail = ({
-  video,
-  aspectRatio = '4/3',
-  description = '',
-}: Props) => {
-  const [imageData, setImageData,] = useState<string>(TRANSPARENT_IMAGE);
+  const [imageData, setImageData,] = useState<string>('');
   useEffect(() => {
     void initThumbnailImage();
   }, [video,]);
 
   const initThumbnailImage = async () => {
+    if (video === null) {
+      return;
+    }
     const tokenInfo: TokenInfo | null = await getTokenInfo();
 
     try {
       const imageData: string = await iritubeAPI.getVideoThumbnail(tokenInfo, video.videoKey);
       setImageData(imageData);
     } catch {
-      setImageData(BLACK_IMAGE);
     }
   };
 
-  return <Box aspectRatio={aspectRatio} position='relative' overflow='hidden' borderRadius='md'>
-    <Image
+  return <Box position='relative' overflow='hidden' borderRadius='md' backgroundColor='#00000066' {...props}>
+    {imageData !== '' && <Image
       src={imageData}
-      alt={video.videoKey}
       position='absolute'
       top='50%'
       left='50%'
       transform='translate(-50%, -50%)'
-    />
+    />}
+    {description && <Text
+      as='b'
+      position='absolute'
+      right='0.2rem'
+      bottom='0.2rem'
+      paddingLeft='0.2rem'
+      paddingRight='0.2rem'
+      borderRadius='0.2rem'
+      backgroundColor='#00000055'
+      fontSize='xs'
+    >
+      {description}
+    </Text>}
   </Box>;
 };
 
 export default memo(VideoThumbnail, (prevProps: Props, nextProps: Props) => {
+  if (!nextProps.video || !nextProps.video) {
+    return false;
+  }
+
   return prevProps.video.videoKey === nextProps.video.videoKey && prevProps.description === nextProps.description;
 }) ;

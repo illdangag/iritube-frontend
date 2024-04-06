@@ -1,13 +1,12 @@
-import { forwardRef, memo, useEffect, useState, } from 'react';
+import { forwardRef, memo, } from 'react';
 import NextLink from 'next/link';
 import {
-  Badge, Box, Button, ButtonGroup, Card, CardBody, CardFooter, HStack, Image, Link, LinkBox, LinkOverlay, Spacer, Text,
+  Badge, Box, Button, ButtonGroup, Card, CardBody, CardFooter, HStack, Link, Spacer, Text,
   VStack,
 } from '@chakra-ui/react';
+import { VideoThumbnail, } from '@root/components';
 
-import * as CSS from 'csstype';
-import { PlayList, PlayListShare, PlayListViewType, TokenInfo, Video, VideoShare, } from '@root/interfaces';
-import { getTokenInfo, iritubeAPI, } from '@root/utils';
+import { PlayList, PlayListShare, PlayListViewType,  } from '@root/interfaces';
 
 type Props = {
   type?: PlayListViewType;
@@ -20,28 +19,6 @@ const PlayListView = ({
   playList,
   editable = false,
 }: Props, ref) => {
-  const [imageURL, setImageURL,] = useState<string>('/static/images/transparent.png');
-
-  useEffect(() => {
-    const thumbnailVideo: Video | undefined = playList.videos
-      .find(video => video.share === VideoShare.PUBLIC && !video.deleted);
-
-    if (thumbnailVideo) {
-      void initThumbnail(thumbnailVideo)
-        .catch(() => {
-          setImageURL('/static/images/black.jpg');
-        });
-    } else {
-      setImageURL('/static/images/black.jpg');
-    }
-  }, [playList,]);
-
-  const initThumbnail = async (video: Video) => {
-    const tokenInfo: TokenInfo | null = await getTokenInfo();
-    const imageData: string = await iritubeAPI.getVideoThumbnail(tokenInfo, video.videoKey);
-    setImageURL(imageData);
-  };
-
   const getPlayListVideoLink = () => {
     const urlSearchParams = new URLSearchParams();
     if (playList.videos.length > 0) {
@@ -52,36 +29,6 @@ const PlayListView = ({
     return '/videos?' + urlSearchParams.toString();
   };
 
-  const getPlayListThumbnail = (aspectRatio: CSS.Property.AspectRatio) => {
-    return <LinkBox>
-      <LinkOverlay as={NextLink} href={getPlayListVideoLink()}>
-        <Box borderRadius='lg' overflow='hidden' backgroundColor='black' aspectRatio={aspectRatio} position='relative'>
-          <Image
-            src={imageURL}
-            alt='thumbnail'
-            position='absolute'
-            top='50%'
-            left='50%'
-            transform='translate(-50%, -50%)'
-          />
-          <Text
-            as='b'
-            position='absolute'
-            right='0.2rem'
-            bottom='0.2rem'
-            paddingLeft='0.2rem'
-            paddingRight='0.2rem'
-            borderRadius='0.2rem'
-            backgroundColor='#00000044'
-            fontSize='xs'
-          >
-            동영상 {playList.videos.length}개
-          </Text>
-        </Box>
-      </LinkOverlay>
-    </LinkBox>;
-  };
-
   const getThumbnailType = () => {
     return <Card ref={ref} backgroundColor='none' variant='ghost'>
       <CardBody
@@ -90,7 +37,7 @@ const PlayListView = ({
         overflow='hidden'
         borderRadius='lg'
       >
-        {getPlayListThumbnail('16/9')}
+        <VideoThumbnail video={playList.videos[0]} aspectRatio={16 / 9} description={`동영상 ${playList.videos.length}개`}/>
       </CardBody>
       <CardFooter paddingTop='0.5rem' paddingRight='0' paddingBottom='0' paddingLeft='0'>
         <Text as='b'>{playList.title}</Text>
@@ -120,7 +67,7 @@ const PlayListView = ({
       <CardBody>
         <HStack alignItems='stretch'>
           <Box width='10rem' flexShrink='0'>
-            {getPlayListThumbnail('4/3')}
+            <VideoThumbnail video={playList.videos[0]} aspectRatio={4 / 3} description={`동영상 ${playList.videos.length}개`}/>
           </Box>
           <VStack alignItems='start' gap='0' flexGrow='1'>
             <Link as={NextLink} _hover={{ textDecoration: 'none', }} href={getPlayListVideoLink()}>

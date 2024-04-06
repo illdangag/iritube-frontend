@@ -1,15 +1,13 @@
 import { useEffect, useState, forwardRef, memo, } from 'react';
 import NextLink from 'next/link';
 import {
-  Badge, Box, Button, ButtonGroup, Card, CardBody, CardFooter, HStack, Image, Link, LinkBox, LinkOverlay, Spacer, Text,
+  Badge, Box, Button, ButtonGroup, Card, CardBody, CardFooter, HStack, Link, LinkBox, LinkOverlay, Spacer, Text,
   VStack,
 } from '@chakra-ui/react';
 import { ThemeTypings, } from '@chakra-ui/styled-system';
+import { VideoThumbnail, } from '@root/components/index';
 
-import { TokenInfo, Video, VideoShare, VideoState, VideoViewType, } from '@root/interfaces';
-import * as CSS from 'csstype';
-import { getTokenInfo, } from '@root/utils';
-import iritubeAPI from '@root/utils/iritubeAPI';
+import { Video, VideoShare, VideoState, VideoViewType, } from '@root/interfaces';
 
 type Props = {
   video: Video;
@@ -25,57 +23,19 @@ const VideoView = ({
   onDelete = () => {},
 }: Props, ref) => {
   const [updateDate, setUpdateDate,] = useState<string>('');
-  const [imageURL, setImageURL,] = useState<string>('/static/images/transparent.png');
 
   useEffect(() => {
     setUpdateDate(video.getUpdateDate());
-    void initThumbnail();
   }, [video,]);
-
-  const initThumbnail = async () => {
-    const tokenInfo: TokenInfo | null = await getTokenInfo();
-    try {
-      const imageData: string = await iritubeAPI.getVideoThumbnail(tokenInfo, video.videoKey);
-      setImageURL(imageData);
-    } catch (error) {
-      setImageURL('/static/images/black.jpg');
-    }
-  };
-
-  const getVideoThumbnail = (aspectRatio: CSS.Property.AspectRatio) => {
-    return <LinkBox>
-      <LinkOverlay as={NextLink} href={video.state === VideoState.CONVERTED ? `/videos?vk=${video.videoKey}` : '#'}>
-        <Box borderRadius='lg' overflow='hidden' backgroundColor='black' aspectRatio={aspectRatio} position='relative'>
-          <Image
-            src={imageURL}
-            alt='thumbnail'
-            position='absolute'
-            top='50%'
-            left='50%'
-            transform='translate(-50%, -50%)'
-          />
-          <Text
-            as='b'
-            position='absolute'
-            right='0.2rem'
-            bottom='0.2rem'
-            paddingLeft='0.2rem'
-            paddingRight='0.2rem'
-            borderRadius='0.2rem'
-            backgroundColor='#00000044'
-            fontSize='xs'
-          >
-            {video.getDurationText()}
-          </Text>
-        </Box>
-      </LinkOverlay>
-    </LinkBox>;
-  };
 
   const getThumbnailType = () => {
     return <Card backgroundColor='none' variant='ghost' ref={ref}>
       <CardBody padding={0}>
-        {getVideoThumbnail('16/9')}
+        <LinkBox>
+          <LinkOverlay as={NextLink} href={video.state === VideoState.CONVERTED ? `/videos?vk=${video.videoKey}` : '#'}>
+            <VideoThumbnail video={video} aspectRatio={16 / 9} description={video.getDurationText()}/>
+          </LinkOverlay>
+        </LinkBox>
       </CardBody>
       <CardFooter paddingTop='0.5rem' paddingRight='0' paddingBottom='0' paddingLeft='0'>
         <VStack width='100%' alignItems='start' gap={0.4}>
@@ -146,10 +106,7 @@ const VideoView = ({
       colorScheme = 'red';
     }
 
-    return <Badge
-      variant='solid'
-      colorScheme={colorScheme}
-    >
+    return <Badge variant='solid' colorScheme={colorScheme}>
       {getVideoStateText(videoState)}
     </Badge>;
   };
@@ -159,7 +116,11 @@ const VideoView = ({
       <CardBody>
         <HStack alignItems='stretch'>
           <Box width='10rem' flexShrink='0'>
-            {getVideoThumbnail('4/3')}
+            <LinkBox>
+              <LinkOverlay as={NextLink} href={video.state === VideoState.CONVERTED ? `/videos?vk=${video.videoKey}` : '#'}>
+                <VideoThumbnail video={video} aspectRatio={4 / 3} description={video.getDurationText()}/>
+              </LinkOverlay>
+            </LinkBox>
           </Box>
           <VStack alignItems='start' gap='0' flexGrow='1'>
             <Link as={NextLink} _hover={{ textDecoration: 'none', }} href={video.state === VideoState.CONVERTED ? `/videos?vk=${video.videoKey}` : '#'}>
