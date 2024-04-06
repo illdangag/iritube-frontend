@@ -1,4 +1,4 @@
-import {} from 'react';
+import { useState, } from 'react';
 import { GetServerSideProps, } from 'next';
 import {} from 'next/router';
 import { Button, ButtonGroup, Card, CardBody, CardFooter, } from '@chakra-ui/react';
@@ -15,8 +15,14 @@ type Props = {
 const AccountsPlayListEditPage = (props: Props) => {
   const playList: PlayList = props.playList;
 
+  const [editPlayList, setEditPlayList,] = useState<PlayList>(playList);
+
   const onChangePlayList = (playList: PlayList) => {
-    console.log(playList);
+    setEditPlayList(playList);
+  };
+
+  const onClickConfirm = () => {
+    console.log(editPlayList);
   };
 
   return <MainLayout fullWidth={false}>
@@ -26,12 +32,12 @@ const AccountsPlayListEditPage = (props: Props) => {
     />
     <Card>
       <CardBody>
-        <PlayListEditor playList={playList} onChange={onChangePlayList}/>
+        <PlayListEditor playList={editPlayList} onChange={onChangePlayList}/>
       </CardBody>
       <CardFooter paddingTop='0'>
         <ButtonGroup marginLeft='auto'>
           <Button variant='outline'>취소</Button>
-          <Button>저장</Button>
+          <Button onClick={onClickConfirm}>저장</Button>
         </ButtonGroup>
       </CardFooter>
     </Card>
