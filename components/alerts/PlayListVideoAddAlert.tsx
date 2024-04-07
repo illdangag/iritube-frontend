@@ -5,7 +5,7 @@ import {
 } from '@chakra-ui/react';
 import { PlayListCreateAlert, } from '@root/components/alerts';
 
-import { IritubeError, IritubeErrorCode, PlayList, PlayListList, TokenInfo, Video, } from '@root/interfaces';
+import { PlayList, PlayListList, TokenInfo, Video, } from '@root/interfaces';
 import { getTokenInfo, iritubeAPI, } from '@root/utils';
 
 type Props = {
@@ -59,15 +59,15 @@ const PlayListVideoAddAlert = ({
   const onClickPlayListAddButton = async () => {
     setState(State.REQUEST);
     const tokenInfo: TokenInfo = await getTokenInfo();
-    try {
-      await addVideoAtPlayList(tokenInfo);
+    const playList: PlayList = await iritubeAPI.getPlayList(tokenInfo, selectedPlayListKey);
+    const videoKeyList: string[] = playList.videos.map(video => video.videoKey);
+    if (videoKeyList.indexOf(video.videoKey) > -1) {
+      setAlreadyExistVideo(true);
+      setState(State.IDLE);
+    } else {
+      playList.videos.push(video);
+      await iritubeAPI.updatePlayList(tokenInfo, playList);
       onConfirm();
-    } catch (error) {
-      const iritubeError: IritubeError = error as IritubeError;
-      if (iritubeError.code === IritubeErrorCode.DUPLICATE_VIDEO_IN_PLAYLIST) {
-        setAlreadyExistVideo(true);
-        setState(State.IDLE);
-      }
     }
   };
 
@@ -86,13 +86,6 @@ const PlayListVideoAddAlert = ({
       });
   };
 
-  const addVideoAtPlayList = async (tokenInfo: TokenInfo): Promise<PlayList> => {
-    const playList: PlayList = await iritubeAPI.getPlayList(tokenInfo, selectedPlayListKey);
-    const videoKeyList: string[] = playList.videos.map(video => video.videoKey);
-    videoKeyList.push(video.videoKey);
-    return await iritubeAPI.updatePlayList(tokenInfo, playList);
-  };
-
   return <>
     <AlertDialog leastDestructiveRef={closeRef} isOpen={open} onClose={onClose}>
       <AlertDialogOverlay/>
@@ -103,7 +96,7 @@ const PlayListVideoAddAlert = ({
             <Text>재생 목록이 존재 하지 않습니다.</Text>
           </Box>}
           {playListList?.playLists.length > 0 && <FormControl isInvalid={alreadyExistVideo}>
-            <RadioGroup onChange={onChangePlayListRadio} value={selectedPlayListKey}>
+            <RadioGroup onChange={onChangePlayListRadio} value={selectedPlayListKey} isDisabled={state === State.REQUEST}>
               <VStack alignItems='flex-start'>
                 {playListList.playLists.map((playList, index) => <Radio key={index} value={playList.playListKey}>{playList.title}</Radio>)}
               </VStack>
