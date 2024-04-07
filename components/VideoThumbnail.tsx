@@ -1,7 +1,7 @@
 import { memo, useEffect, useState, } from 'react';
 import { Box, BoxProps, Image, Text, } from '@chakra-ui/react';
 
-import { TokenInfo, Video, } from '@root/interfaces';
+import { TokenInfo, Video, VideoShare, } from '@root/interfaces';
 import { getTokenInfo, iritubeAPI, } from '@root/utils';
 
 interface Props extends BoxProps {
@@ -19,15 +19,18 @@ const VideoThumbnail = (props: Props) => {
   }, [video,]);
 
   const initThumbnailImage = async () => {
-    if (video === null) {
+    if (video === null || video.share === VideoShare.PRIVATE && !video.id) {
+      setImageData('');
       return;
     }
+
     const tokenInfo: TokenInfo | null = await getTokenInfo();
 
     try {
       const imageData: string = await iritubeAPI.getVideoThumbnail(tokenInfo, video.videoKey);
       setImageData(imageData);
     } catch {
+      setImageData('');
     }
   };
 

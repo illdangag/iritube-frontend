@@ -1,7 +1,7 @@
 import { forwardRef, memo, } from 'react';
 import NextLink from 'next/link';
 import {
-  Badge, Box, Button, ButtonGroup, Card, CardBody, CardFooter, HStack, Link, Spacer, Text,
+  Badge, Box, Button, ButtonGroup, Card, CardBody, CardFooter, HStack, Link, LinkBox, LinkOverlay, Spacer, Text,
   VStack,
 } from '@chakra-ui/react';
 import { VideoThumbnail, } from '@root/components';
@@ -37,7 +37,11 @@ const PlayListView = ({
         overflow='hidden'
         borderRadius='lg'
       >
-        <VideoThumbnail video={playList.videos[0]} aspectRatio={16 / 9} description={`동영상 ${playList.videos.length}개`}/>
+        <LinkBox>
+          <LinkOverlay as={NextLink} href={getPlayListVideoLink()}>
+            <VideoThumbnail video={playList.videos[0]} aspectRatio={16 / 9} description={`동영상 ${playList.videos.length}개`}/>
+          </LinkOverlay>
+        </LinkBox>
       </CardBody>
       <CardFooter paddingTop='0.5rem' paddingRight='0' paddingBottom='0' paddingLeft='0'>
         <Text as='b'>{playList.title}</Text>
@@ -67,7 +71,11 @@ const PlayListView = ({
       <CardBody>
         <HStack alignItems='stretch'>
           <Box width='10rem' flexShrink='0'>
-            <VideoThumbnail video={playList.videos[0]} aspectRatio={4 / 3} description={`동영상 ${playList.videos.length}개`}/>
+            <LinkBox>
+              <LinkOverlay as={NextLink} href={getPlayListVideoLink()}>
+                <VideoThumbnail video={playList.videos[0]} aspectRatio={4 / 3} description={`동영상 ${playList.videos.length}개`}/>
+              </LinkOverlay>
+            </LinkBox>
           </Box>
           <VStack alignItems='start' gap='0' flexGrow='1'>
             <Link as={NextLink} _hover={{ textDecoration: 'none', }} href={getPlayListVideoLink()}>

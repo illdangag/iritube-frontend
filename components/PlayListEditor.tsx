@@ -1,9 +1,9 @@
-import { useState, ChangeEvent, useEffect, } from 'react';
+import { ChangeEvent, useEffect, useState, } from 'react';
 import {
-  Card, CardBody, FormControl, FormLabel, HStack, Input, Radio, RadioGroup, VStack,
-  Text, Box, ButtonGroup, Spacer, IconButton,
+  Box, ButtonGroup, Card, CardBody, FormControl, FormLabel, HStack, IconButton, Input, Radio, RadioGroup, Spacer, Text,
+  VStack,
 } from '@chakra-ui/react';
-import { MdArrowUpward, MdArrowDownward, MdDeleteOutline, } from 'react-icons/md';
+import { MdArrowDownward, MdArrowUpward, MdDeleteOutline, } from 'react-icons/md';
 import { VideoThumbnail, } from '@root/components';
 import { PlayListVideoDeleteAlert, } from '@root/components/alerts';
 
@@ -102,8 +102,8 @@ const PlayListEditor = ({
                         <VideoThumbnail video={video} aspectRatio={'4/3'} key={'thumbnail-' + index}/>
                       </Box>
                       <VStack justifyContent='space-between' alignItems='start'>
-                        <Text fontSize='0.8rem'>{video.title}</Text>
-                        <Text fontSize='0.8rem'>{video.account.nickname}</Text>
+                        <Text fontSize='0.8rem'>{video.share === VideoShare.PRIVATE ? '비공개 동영상' : video.title}</Text>
+                        {video.share !== VideoShare.PRIVATE && <Text fontSize='0.8rem'>{video.account.nickname}</Text>}
                       </VStack>
                       <Spacer/>
                       <ButtonGroup variant='outline' size='sm' marginTop='auto'>
