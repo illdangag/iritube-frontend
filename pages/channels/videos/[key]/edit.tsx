@@ -1,12 +1,13 @@
 import { useState, } from 'react';
 import { GetServerSideProps, } from 'next';
 import { useRouter, } from 'next/router';
-import { Card, CardBody, } from '@chakra-ui/react';
+import { Button, ButtonGroup, Card, CardBody, CardFooter, } from '@chakra-ui/react';
 import { MainLayout, PageHeaderLayout, } from '@root/layouts';
 import { VideoEditor, } from '@root/components';
 
 import { TokenInfo, Video, } from '@root/interfaces';
 import { getTokenInfo, getTokenInfoByCookies, removeTokenInfoByCookies, iritubeAPI, } from '@root/utils';
+import NextLink from 'next/link';
 
 type Props = {
   video: Video,
@@ -18,14 +19,18 @@ enum State {
 }
 
 const AccountsVideosEditPage = (props: Props) => {
-  const video: Video = Video.getInstance(props.video);
   const router = useRouter();
+  const [video, setVideo,] = useState<Video>(Video.getInstance(props.video));
   const [state, setState,] = useState<State>(State.IDLE);
 
-  const onRequest = async (video: Video) => {
+  const onChangeVideoEditor = async (video: Video, file: File) => {
+    setVideo(video);
+  };
+
+  const onClickConfirm = async () => {
     setState(State.REQUEST);
-    const tokenInfo: TokenInfo = await getTokenInfo();
     try {
+      const tokenInfo: TokenInfo = await getTokenInfo();
       await iritubeAPI.updateVideo(tokenInfo, video);
       void router.push('/channels/videos');
     } catch {
@@ -40,8 +45,14 @@ const AccountsVideosEditPage = (props: Props) => {
     />
     <Card>
       <CardBody>
-        <VideoEditor defaultVideo={video} disabled={state === State.REQUEST} onRequest={onRequest}/>
+        <VideoEditor video={video} mode='edit' isDisabled={state === State.REQUEST} onChange={onChangeVideoEditor}/>
       </CardBody>
+      <CardFooter paddingTop='0'>
+        <ButtonGroup marginLeft='auto'>
+          <Button variant='outline' as={NextLink} href='/channels/videos' isDisabled={state === State.REQUEST}>취소</Button>
+          <Button onClick={onClickConfirm} isLoading={state === State.REQUEST}>수정</Button>
+        </ButtonGroup>
+      </CardFooter>
     </Card>
   </MainLayout>;
 };

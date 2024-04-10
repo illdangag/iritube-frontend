@@ -151,18 +151,18 @@ export enum PlayListShare {
 }
 
 export class Video {
-  public id: string;
-  public videoKey: string;
+  public id: string = '';
+  public videoKey: string = '';
   public account: Account;
-  public title: string;
-  public description: string;
-  public createDate: number;
-  public duration: number;
+  public title: string = '';
+  public description: string = '';
+  public createDate: number = 0;
+  public duration: number = 0;
   public state: VideoState;
   public share: VideoShare;
-  public tags: string[];
-  public viewCount: number;
-  public deleted: boolean;
+  public tags: string[] = [];
+  public viewCount: number = 0;
+  public deleted: boolean = false;
 
   public get hlsPath (): string {
     const backend: string = process.env.backendURL;

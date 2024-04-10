@@ -1,46 +1,55 @@
-import { ChangeEvent, useState, KeyboardEvent, } from 'react';
+import { ChangeEvent, useState, KeyboardEvent, useEffect, } from 'react';
 import {
-  Box, Button, FormControl, FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, Tag, TagCloseButton, TagLabel,
-  Text, Textarea,
-  VStack,
+  Box, FormControl, FormHelperText, FormLabel, HStack, Input, Radio, RadioGroup, Tag, TagCloseButton, TagLabel,
+  Text, Textarea, VStack,
 } from '@chakra-ui/react';
 import { useDropzone, } from 'react-dropzone';
 
 import { Video, VideoShare, } from '@root/interfaces';
 
 type Props = {
-  defaultVideo?: Video,
-  disabled?: boolean,
-  loading?: boolean,
-  onRequest?: (video: Video, file: File) => void,
+  video?: Video,
+  mode?: 'create' | 'edit',
+  isDisabled?: boolean,
+  isLoading?: boolean,
+  onChange?: (video: Video, file: File) => void,
 }
 
 const VideoEditor = ({
-  defaultVideo,
-  disabled = false,
-  loading = false,
-  onRequest = () => {},
+  video = new Video(),
+  mode = 'create',
+  isDisabled = false,
+  onChange = () => {},
 }: Props) => {
   const { acceptedFiles, getRootProps, getInputProps, } = useDropzone({
-    disabled: disabled,
+    disabled: isDisabled,
   });
-
-  const [title, setTitle,] = useState<string>(defaultVideo ? defaultVideo.title : '');
-  const [description, setDescription,] = useState<string>(defaultVideo ? defaultVideo.description : '');
-  const [share, setShare,] = useState<VideoShare>(defaultVideo ? defaultVideo.share : VideoShare.PUBLIC);
+  const [editVideo, setEditVideo,] = useState<Video>(video);
   const [tag, setTag,] = useState<string>('');
-  const [tagList, setTagList,] = useState<string[]>(defaultVideo ? defaultVideo.tags : []);
+
+  useEffect(() => {
+    onChange(editVideo, acceptedFiles[0]);
+  }, [editVideo, acceptedFiles,]);
 
   const onChangeTitle = (event: ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value);
+    setEditVideo({
+      ...editVideo,
+      title: event.target.value,
+    } as Video);
   };
 
   const onChangeDescription = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    setDescription(event.target.value);
+    setEditVideo({
+      ...editVideo,
+      description: event.target.value,
+    } as Video);
   };
 
   const onChangeShare = (nextValue: VideoShare) => {
-    setShare(nextValue);
+    setEditVideo({
+      ...editVideo,
+      share: nextValue,
+    } as Video);
   };
 
   const onChangeTag = (event: ChangeEvent<HTMLInputElement>) => {
@@ -50,37 +59,29 @@ const VideoEditor = ({
   const onKeyUpTag = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' && tag !== '') {
       const newTagList = [
-        ...tagList,
+        ...editVideo.tags,
         tag.trim(),
       ];
       const distinctTagList = newTagList.filter((tag, index) => newTagList.indexOf(tag) === index);
-      setTagList(distinctTagList);
       setTag('');
+      setEditVideo({
+        ...editVideo,
+        tags: distinctTagList,
+      } as Video);
     }
   };
 
   const onClickTagDelete = (deleteTag: string) => {
-    const newTagList = tagList.filter((tag) => tag !== deleteTag);
-    setTagList(newTagList);
-  };
-
-  const onClickConfirm = async () => {
-    const video = new Video();
-    video.title = title;
-    video.description = description;
-    video.share = share;
-    video.tags = tagList;
-
-    if (defaultVideo) {
-      video.videoKey = defaultVideo.videoKey;
-    }
-
-    onRequest(video, acceptedFiles[0]);
+    const newTagList = video.tags.filter((tag) => tag !== deleteTag);
+    setEditVideo({
+      ...editVideo,
+      tags: newTagList,
+    } as Video);
   };
 
   return <VStack alignItems='stretch' gap='1rem'>
     <VStack gap='1rem'>
-      {!defaultVideo && <Box width='100%' cursor='pointer'>
+      {mode === 'create' && <Box width='100%' cursor='pointer'>
         <Text as='label' display='block' marginBottom='0.5rem' marginInlineEnd='0.75rem' fontWeight='500'>동영상 파일</Text>
         <Box width='100%' height='100%' borderWidth='1px' borderRadius='lg' {...getRootProps()}>
           <input {...getInputProps()}/>
@@ -91,26 +92,26 @@ const VideoEditor = ({
       </Box>}
       <FormControl>
         <FormLabel>제목</FormLabel>
-        <Input type='title' value={title} disabled={disabled} onChange={onChangeTitle}/>
+        <Input type='title' value={editVideo.title} isDisabled={isDisabled} onChange={onChangeTitle}/>
       </FormControl>
       <FormControl>
         <FormLabel>설명</FormLabel>
-        <Textarea resize='none' value={description} disabled={disabled} onChange={onChangeDescription}/>
+        <Textarea resize='none' value={editVideo.description} isDisabled={isDisabled} onChange={onChangeDescription}/>
       </FormControl>
       <FormControl>
         <FormLabel>태그</FormLabel>
-        <Input type='text' value={tag} disabled={disabled} onChange={onChangeTag} onKeyUp={onKeyUpTag}/>
+        <Input type='text' value={tag} isDisabled={isDisabled} onChange={onChangeTag} onKeyUp={onKeyUpTag}/>
         <FormHelperText>'Enter'버튼을 눌러 태그를 추가하세요</FormHelperText>
         <HStack alignItems='start' marginTop='0.4rem'>
-          {tagList.map((tag, index) => <Tag key={index} marginRight='0.4rem' marginBottom='0.4rem'>
+          {editVideo.tags.map((tag, index) => <Tag key={index} marginRight='0.4rem' marginBottom='0.4rem'>
             <TagLabel>{tag}</TagLabel>
-            <TagCloseButton onClick={() => onClickTagDelete(tag)}/>
+            <TagCloseButton isDisabled={isDisabled} onClick={() => onClickTagDelete(tag)}/>
           </Tag>)}
         </HStack>
       </FormControl>
       <FormControl>
         <FormLabel>공유</FormLabel>
-        <RadioGroup value={share} isDisabled={disabled} onChange={onChangeShare}>
+        <RadioGroup value={editVideo.share} isDisabled={isDisabled} onChange={onChangeShare}>
           <HStack>
             <Radio value={VideoShare.PUBLIC}>공개</Radio>
             <Radio value={VideoShare.URL}>링크 공유</Radio>
@@ -119,16 +120,6 @@ const VideoEditor = ({
         </RadioGroup>
       </FormControl>
     </VStack>
-    <HStack paddingTop='0' justifyContent='end'>
-      <Button
-        size='sm'
-        isDisabled={disabled || (!defaultVideo && acceptedFiles.length === 0) || title === ''}
-        isLoading={loading}
-        onClick={onClickConfirm}
-      >
-        {!defaultVideo ? '업로드' : '수정'}
-      </Button>
-    </HStack>
   </VStack>;
 };
 

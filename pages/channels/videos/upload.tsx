@@ -1,13 +1,13 @@
 import { useState, } from 'react';
 import { GetServerSideProps, } from 'next';
 import { useRouter, } from 'next/router';
-import { Card, CardBody, } from '@chakra-ui/react';
+import { Button, ButtonGroup, Card, CardBody, CardFooter, } from '@chakra-ui/react';
 import { MainLayout, PageHeaderLayout, } from '@root/layouts';
 import { VideoEditor, } from '@root/components';
 
 import { TokenInfo, Video, } from '@root/interfaces';
-import { getTokenInfo, getTokenInfoByCookies, removeTokenInfoByCookies, } from '@root/utils';
-import iritubeAPI from '@root/utils/iritubeAPI';
+import { getTokenInfo, getTokenInfoByCookies, removeTokenInfoByCookies, iritubeAPI, } from '@root/utils';
+import NextLink from 'next/link';
 
 enum State {
   IDLE = 'IDLE',
@@ -16,9 +16,16 @@ enum State {
 
 const VideoUploadPage = () => {
   const router = useRouter();
+  const [video, setVideo,] = useState<Video>(new Video());
+  const [file, setFile,] = useState<File | null>(null);
   const [state, setState,] = useState<State>(State.IDLE);
 
-  const onRequest = async (video: Video, file: File) => {
+  const onChangeVideoEditor = (video: Video, file: File) => {
+    setVideo(video);
+    setFile(file);
+  };
+
+  const onClickConfirm = async () => {
     setState(State.REQUEST);
     try {
       const tokenInfo: TokenInfo = await getTokenInfo();
@@ -37,11 +44,23 @@ const VideoUploadPage = () => {
     <Card>
       <CardBody>
         <VideoEditor
-          disabled={state === State.REQUEST}
-          loading={state === State.REQUEST}
-          onRequest={onRequest}
+          video={video}
+          isLoading={state === State.REQUEST}
+          onChange={onChangeVideoEditor}
         />
       </CardBody>
+      <CardFooter paddingTop='0'>
+        <ButtonGroup marginLeft='auto'>
+          <Button variant='outline' as={NextLink} href='/channels/videos' isDisabled={state === State.REQUEST}>취소</Button>
+          <Button
+            isDisabled={!file || !video.title}
+            isLoading={state === State.REQUEST}
+            onClick={onClickConfirm}
+          >
+            업로드
+          </Button>
+        </ButtonGroup>
+      </CardFooter>
     </Card>
   </MainLayout>;
 };
