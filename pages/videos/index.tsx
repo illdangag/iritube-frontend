@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
 import { useRouter, } from 'next/router';
+import NextLink from 'next/link';
 import { Box, Button, Card, CardBody, Flex, Heading, HStack, Link, Spacer, Text, VStack, } from '@chakra-ui/react';
 import { MainLayout, } from '@root/layouts';
 import { PlayListVideoListView, VideoPlayer, } from '@root/components';
@@ -8,10 +9,8 @@ import { PlayListVideoAddAlert, } from '@root/components/alerts';
 import { MdPlaylistAdd, } from 'react-icons/md';
 
 import { PlayList, TokenInfo, Video, VideoShare, } from '@root/interfaces';
-import iritubeAPI from '@root/utils/iritubeAPI';
-import { getTokenInfoByCookies, } from '@root/utils';
+import { getTokenInfoByCookies, iritubeAPI, } from '@root/utils';
 import { throttle, } from 'lodash';
-import NextLink from 'next/link';
 
 type Props = {
   video: Video | null,

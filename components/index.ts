@@ -10,8 +10,9 @@ import VideoListScrollView from './VideoListScrollView';
 import PlayListListView from './PlayListListView';
 import PlayListEditor from './PlayListEditor';
 import VideoThumbnail from './VideoThumbnail';
+import AccountEditor from './AccountEditor';
 
 export {
   VideoPlayer, VideoView, Pagination, VideoListView, VideoEditor, PlayListVideoListView, PlayListListScrollView,
-  PlayListView, VideoListScrollView, PlayListListView, PlayListEditor, VideoThumbnail,
+  PlayListView, VideoListScrollView, PlayListListView, PlayListEditor, VideoThumbnail, AccountEditor,
 };

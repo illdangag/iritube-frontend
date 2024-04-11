@@ -1,9 +1,10 @@
-import { ChangeEvent, useState, useEffect, } from 'react';
+import { useState, useEffect, } from 'react';
 import { GetServerSideProps, } from 'next';
 import { useRouter, } from 'next/router';
 import {
-  Box, Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, Input, Spacer, VStack,
+  Box, Button, Card, CardBody, CardHeader, Heading, Spacer, VStack,
 } from '@chakra-ui/react';
+import { AccountEditor, } from '@root/components';
 import { MainLayout, PageHeaderLayout, } from '@root/layouts';
 
 import { Account, TokenInfo, } from '@root/interfaces';
@@ -31,14 +32,6 @@ const AccountEditPage = () => {
     });
   }, [account,]);
 
-  const onChangeNickname = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    setUpdateAccount({
-      ...updateAccount,
-      nickname: value,
-    });
-  };
-
   const onClickSave = async () => {
     try {
       setState(State.REQUEST);
@@ -50,6 +43,10 @@ const AccountEditPage = () => {
       setState(State.IDLE);
       // TODO 에러 처리
     }
+  };
+
+  const onChangeAccount = (account: Account) => {
+    setUpdateAccount(account);
   };
 
   return <MainLayout fullWidth={false}>
@@ -67,12 +64,7 @@ const AccountEditPage = () => {
           </Box>
         </CardHeader>
         <CardBody alignItems='stretch' paddingTop='0'>
-          <VStack alignItems='stretch'>
-            <FormControl>
-              <FormLabel>닉네임</FormLabel>
-              <Input value={updateAccount && updateAccount.nickname || ''} isDisabled={state === State.REQUEST} onChange={onChangeNickname}/>
-            </FormControl>
-          </VStack>
+          <AccountEditor value={updateAccount} onChange={onChangeAccount}/>
         </CardBody>
       </Card>
     </VStack>

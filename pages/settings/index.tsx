@@ -1,14 +1,14 @@
 import { GetServerSideProps, } from 'next';
 import {
-  Button, Card, CardBody, CardHeader, FormControl, FormLabel, Heading, Input, Link, Spacer, VStack,
+  Button, Card, CardBody, CardHeader, Heading, Link, Spacer, VStack,
 } from '@chakra-ui/react';
 import { MainLayout, PageHeaderLayout, } from '@root/layouts';
+import { AccountEditor, } from '@root/components';
 
 import { Account, TokenInfo, } from '@root/interfaces';
 import { useRecoilValue, } from 'recoil';
 import { accountAtom, } from '@root/recoil';
-import { getTokenInfoByCookies, removeTokenInfoByCookies, } from '@root/utils';
-import iritubeAPI from '@root/utils/iritubeAPI';
+import { getTokenInfoByCookies, removeTokenInfoByCookies, iritubeAPI, } from '@root/utils';
 import NextLink from 'next/link';
 
 const AccountsPage = () => {
@@ -29,12 +29,7 @@ const AccountsPage = () => {
           </Link>
         </CardHeader>
         <CardBody alignItems='stretch' paddingTop='0'>
-          <VStack alignItems='stretch'>
-            <FormControl>
-              <FormLabel>닉네임</FormLabel>
-              <Input value={account ? account.nickname : ''} isDisabled/>
-            </FormControl>
-          </VStack>
+          <AccountEditor value={account} isDisabled/>
         </CardBody>
       </Card>
     </VStack>
