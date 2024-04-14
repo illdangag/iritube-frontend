@@ -60,7 +60,7 @@ const VideoThumbnail = (props: Props) => {
 };
 
 export default memo(VideoThumbnail, (prevProps: Props, nextProps: Props) => {
-  if (!nextProps.video || !nextProps.video) {
+  if (!prevProps.video || !nextProps.video) {
     return false;
   }
 
