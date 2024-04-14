@@ -102,7 +102,7 @@ const PlayListEditor = ({
                         <VideoThumbnail video={video} aspectRatio={'4/3'} key={'thumbnail-' + index}/>
                       </Box>
                       <VStack justifyContent='space-between' alignItems='start'>
-                        <Text fontSize='0.8rem'>{video.share === VideoShare.PRIVATE ? '비공개 동영상' : video.title}</Text>
+                        <Text fontSize='0.8rem'>{video.getTitle()}</Text>
                         {video.share !== VideoShare.PRIVATE && <Text fontSize='0.8rem'>{video.account.nickname}</Text>}
                       </VStack>
                       <Spacer/>

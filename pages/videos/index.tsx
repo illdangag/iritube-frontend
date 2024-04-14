@@ -18,8 +18,8 @@ type Props = {
 };
 
 const VideosPage = (props: Props) => {
-  const video: Video | null = props.video ? Object.assign(new Video(), props.video) : null;
-  const playList: PlayList | null = props.playList;
+  const video: Video | null = props.video ? Video.getInstance(props.video) : null;
+  const playList: PlayList | null = props.playList ? PlayList.getInstance(props.playList) : null;
 
   const router = useRouter();
   const videoKey: string = router.query.vk as string;
@@ -142,7 +142,7 @@ const VideosPage = (props: Props) => {
     }
   };
 
-  return <MainLayout title={(video && video.id ? (video.title + ' | ') : '') + 'Iritube'}>
+  return <MainLayout title={(video && video.id ? (video.getTitle() + ' | ') : '') + 'Iritube'}>
     <Box>
       <VStack alignItems='flex-start'>
         <Flex width='100%' gap='1rem' alignItems='stretch'
@@ -196,7 +196,7 @@ const VideosPage = (props: Props) => {
           </Box>}
         </Flex>
         {video && video.id && <VStack width='100%' alignItems='flex-start'>
-          <Heading size='md' marginTop='0.75rem' marginBottom='0'>{video.title}</Heading>
+          <Heading size='md' marginTop='0.75rem' marginBottom='0'>{video.getTitle()}</Heading>
           <Link as={NextLink} href={'/accounts/' + video.account.accountKey}>
             <Text fontSize='sm' fontWeight={700}>{video.account.nickname}</Text>
           </Link>
@@ -270,7 +270,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       video: JSON.parse(JSON.stringify(video)),
-      playList,
+      playList: JSON.parse(JSON.stringify(playList)),
     },
   };
 };

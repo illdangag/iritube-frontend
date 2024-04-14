@@ -222,6 +222,18 @@ export class Video {
 
     return result + String(minute).padStart(2, '0') + ':' + String(second).padStart(2, '0');
   }
+
+  public getTitle (): string {
+    if (this.id) {
+      return this.title;
+    }
+
+    if (this.share === VideoShare.PRIVATE) {
+      return '비공개 동영상';
+    }
+
+    return '삭제된 동영상';
+  }
 }
 
 export class VideoList extends ListResponse {
@@ -233,13 +245,18 @@ export class VideoList extends ListResponse {
   }
 }
 
-export type PlayList = {
-  id: string,
-  playListKey: string,
-  title: string,
-  videos: Video[],
-  account: Account,
-  share: PlayListShare,
+export class PlayList {
+  public id: string;
+  public playListKey: string;
+  public title: string;
+  public videos: Video[];
+  public account: Account;
+  public share: PlayListShare;
+
+  public static getInstance (object: any): PlayList {
+    object.videos = object.videos.map(video => Video.getInstance(video));
+    return Object.assign(new PlayList(), object);
+  }
 }
 
 export class PlayListList extends ListResponse {

@@ -316,7 +316,7 @@ const IritubeAPI: IritubeAPIList = {
 
     try {
       const response: AxiosResponse<PlayList> = await axios.request(config);
-      return response.data;
+      return PlayList.getInstance(response.data);
     } catch (error) {
       throw new IritubeError(error);
     }

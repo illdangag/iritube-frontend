@@ -4,8 +4,7 @@ import {
   ButtonGroup, Text,
 } from '@chakra-ui/react';
 
-import { Video, } from '@root/interfaces';
-import {} from '@root/utils';
+import { Video, VideoShare, } from '@root/interfaces';
 
 type Props = {
   video: Video;
@@ -21,13 +20,12 @@ const PlayListVideoDeleteAlert = ({
   onConfirm = () => {},
 }: Props) => {
   const closeRef = useRef();
-
   return <AlertDialog leastDestructiveRef={closeRef} isOpen={isOpen} onClose={onClose}>
     <AlertDialogOverlay/>
     <AlertDialogContent>
       <AlertDialogHeader>삭제</AlertDialogHeader>
       <AlertDialogBody>
-        <Text>"{video.title}"을 재생 목록에서 삭제 하시겠습니까?</Text>
+        <Text>"{video.getTitle()}"을 재생 목록에서 삭제 하시겠습니까?</Text>
       </AlertDialogBody>
       <AlertDialogFooter>
         <ButtonGroup>

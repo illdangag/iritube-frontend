@@ -19,7 +19,7 @@ enum State {
 }
 
 const AccountsPlayListEditPage = (props: Props) => {
-  const playList: PlayList = props.playList;
+  const playList: PlayList = PlayList.getInstance(props.playList);
 
   const router = useRouter();
 
@@ -81,7 +81,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const playList: PlayList = await iritubeAPI.getPlayList(tokenInfo, playListKey);
     return {
       props: {
-        playList: playList,
+        playList: JSON.parse(JSON.stringify(playList)),
       },
     };
   } catch {
