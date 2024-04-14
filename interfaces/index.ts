@@ -265,7 +265,7 @@ export class PlayListList extends ListResponse {
   public static getInstance (object: any): PlayListList {
     object.playLists = object.playLists.map(playList => {
       playList.videos = playList.videos.map(video => Video.getInstance(video));
-      return playList;
+      return PlayList.getInstance(playList);
     });
     return Object.assign(new PlayListList(), object);
   }

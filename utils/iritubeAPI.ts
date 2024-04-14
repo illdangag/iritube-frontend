@@ -31,6 +31,7 @@ type IritubeAPIList = {
   createPlayList: (tokenInfo: TokenInfo, title: string) => Promise<PlayList>,
   getPlayList: (tokenInfo: TokenInfo | null, playListKey: string) => Promise<PlayList>,
   updatePlayList: (tokenInfo: TokenInfo, playList: PlayList) => Promise<PlayList>,
+  deletePlayList: (tokenInfo: TokenInfo, playList: PlayList) => Promise<PlayList>,
 
   getRecommendVideoList: (tokenInfo: TokenInfo | null, offset: number, limit: number) => Promise<VideoList>,
 };
@@ -301,7 +302,7 @@ const IritubeAPI: IritubeAPIList = {
 
     try {
       const response: AxiosResponse<PlayList> = await axios.request(config);
-      return response.data;
+      return PlayList.getInstance(response.data);
     } catch (error) {
       throw new IritubeError(error);
     }
@@ -336,7 +337,22 @@ const IritubeAPI: IritubeAPIList = {
 
     try {
       const response: AxiosResponse<PlayList> = await axios.request(config);
-      return response.data;
+      return PlayList.getInstance(response.data);
+    } catch (error) {
+      throw new IritubeError(error);
+    }
+  },
+
+  deletePlayList: async (tokenInfo: TokenInfo, playList: PlayList): Promise<PlayList> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendURL}/v1/playlists/${playList.playListKey}`,
+      method: 'DELETE',
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<PlayList> = await axios.request(config);
+      return PlayList.getInstance(response.data);
     } catch (error) {
       throw new IritubeError(error);
     }

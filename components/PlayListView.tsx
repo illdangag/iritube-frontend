@@ -12,12 +12,14 @@ type Props = {
   type?: PlayListViewType;
   playList: PlayList;
   editable?: boolean;
+  onClickDelete?: (playList: PlayList) => void;
 }
 
 const PlayListView = ({
   type = 'thumbnail',
   playList,
   editable = false,
+  onClickDelete = () => {},
 }: Props, ref) => {
   const getPlayListVideoLink = () => {
     const urlSearchParams = new URLSearchParams();
@@ -91,7 +93,7 @@ const PlayListView = ({
                 <Spacer/>
                 <ButtonGroup size='xs' variant='outline' marginTop='auto'>
                   <Button as={NextLink} href={`/channels/playlists/${playList.playListKey}/edit`}>수정</Button>
-                  <Button>삭제</Button>
+                  <Button onClick={() => onClickDelete(playList)}>삭제</Button>
                 </ButtonGroup>
               </>}
             </HStack>

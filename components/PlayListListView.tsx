@@ -8,12 +8,14 @@ type Props = {
   type?: PlayListViewType;
   playLists: PlayList[];
   editable?: boolean;
+  onClickDelete?: (playList: PlayList) => void;
 }
 
 const PlayListListView = ({
   type = 'thumbnail',
   playLists,
   editable = false,
+  onClickDelete = () => {},
 }: Props) => {
   return <VStack alignItems='stretch'>
     {playLists.length === 0 && <Card>
@@ -22,7 +24,9 @@ const PlayListListView = ({
         <Text fontWeight={500}>재생 목록이 존재하지 않습니다</Text>
       </CardBody>
     </Card>}
-    {playLists.map((playList, index) => <PlayListView playList={playList} key={index} type={type} editable={editable}/>)}
+    {playLists.map((playList, index) => <PlayListView
+      playList={playList} key={index} type={type} editable={editable} onClickDelete={onClickDelete}
+    />)}
   </VStack>;
 };
 

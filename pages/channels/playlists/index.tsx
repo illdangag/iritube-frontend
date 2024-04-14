@@ -3,9 +3,9 @@ import { GetServerSideProps, } from 'next';
 import { Box, Button, } from '@chakra-ui/react';
 import { MainLayout, PageHeaderLayout, } from '@root/layouts';
 import { Pagination, PlayListListView, } from '@root/components';
-import { PlayListCreateAlert, } from '@root/components/alerts';
+import { PlayListCreateAlert, PlayListDeleteAlert, } from '@root/components/alerts';
 
-import { PlayListList, TokenInfo, } from '@root/interfaces';
+import { PlayList, PlayListList, TokenInfo, } from '@root/interfaces';
 import { getTokenInfo, getTokenInfoByCookies, iritubeAPI, removeTokenInfoByCookies, } from '@root/utils';
 
 type Props = {
@@ -19,6 +19,9 @@ const ChannelsPlayListsPage = (props: Props) => {
   const page: number = props.page;
   const [playListList, setPlayListList,] = useState<PlayListList>(PlayListList.getInstance(props.playListList));
   const [openPlayListCreateAlert, setOpenPlayListCreateAlert,] = useState<boolean>(false);
+  const [deletePlayList, setDeletePlayList,] = useState<PlayList | null>(null);
+  const [openPlayListDeleteAlert, setOpenPlayListDeleteAlert,] = useState<boolean>(false);
+  const [loadingPlayListDeleteAlert, setLoadingPlayListDeleteAlert,] = useState<boolean>(false);
 
   useEffect(() => {
     setPlayListList(PlayListList.getInstance(props.playListList));
@@ -43,6 +46,29 @@ const ChannelsPlayListsPage = (props: Props) => {
     return '/channels/playlists?page=' + page;
   };
 
+  const onClickDeletePlayList = (playList: PlayList) => {
+    setDeletePlayList(playList);
+    setOpenPlayListDeleteAlert(true);
+  };
+
+  const onClosePlayListDeleteAlert = () => {
+    setOpenPlayListDeleteAlert(false);
+  };
+
+  const onConfirmPlayListDeleteAlert = async () => {
+    setLoadingPlayListDeleteAlert(true);
+    const tokenInfo: TokenInfo = await getTokenInfo();
+    try {
+      await iritubeAPI.deletePlayList(tokenInfo, deletePlayList);
+      const playListList: PlayListList = await iritubeAPI.getMyPlayListList(tokenInfo, (page - 1) * PLAY_LIST_LIMIT, PLAY_LIST_LIMIT);
+      setPlayListList(playListList);
+    } catch {
+      // TODO
+    }
+    setOpenPlayListDeleteAlert(false);
+    setLoadingPlayListDeleteAlert(false);
+  };
+
   return <MainLayout title='재생 목록 관리 | iritube' fullWidth={false}>
     <PageHeaderLayout
       title='재생 목록 관리'
@@ -54,6 +80,7 @@ const ChannelsPlayListsPage = (props: Props) => {
         playLists={playListList.playLists}
         type='detail'
         editable={true}
+        onClickDelete={onClickDeletePlayList}
       />
       <Box paddingBottom='1rem'>
         <Pagination page={0} listResponse={playListList} setPageLink={setPageLink}/>
@@ -64,6 +91,13 @@ const ChannelsPlayListsPage = (props: Props) => {
       onClose={onClosePlayListCreateAlert}
       onConfirm={onConfirmPlayListCreateAlert}
     />
+    {deletePlayList && <PlayListDeleteAlert
+      playList={deletePlayList}
+      isOpen={openPlayListDeleteAlert}
+      isLoading={loadingPlayListDeleteAlert}
+      onClose={onClosePlayListDeleteAlert}
+      onConfirm={onConfirmPlayListDeleteAlert}
+    />}
   </MainLayout>;
 };
 

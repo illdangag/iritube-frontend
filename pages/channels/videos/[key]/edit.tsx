@@ -23,7 +23,7 @@ const AccountsVideosEditPage = (props: Props) => {
   const [video, setVideo,] = useState<Video>(Video.getInstance(props.video));
   const [state, setState,] = useState<State>(State.IDLE);
 
-  const onChangeVideoEditor = async (video: Video, file: File) => {
+  const onChangeVideoEditor = async (video: Video) => {
     setVideo(video);
   };
 

@@ -4,7 +4,7 @@ import {
   ButtonGroup, Text,
 } from '@chakra-ui/react';
 
-import { Video, VideoShare, } from '@root/interfaces';
+import { Video, } from '@root/interfaces';
 
 type Props = {
   video: Video;
