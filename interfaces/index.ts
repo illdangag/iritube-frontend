@@ -270,3 +270,16 @@ export class PlayListList extends ListResponse {
     return Object.assign(new PlayListList(), object);
   }
 }
+
+export class VideoComment {
+  public id: string;
+  public videoCommentKey: string;
+  public createDate: number;
+  public updateDate: number;
+  public comment: string = '';
+  public account: Account;
+
+  public static getInstance (object: any): VideoComment {
+    return Object.assign(new VideoComment(), object);
+  }
+}

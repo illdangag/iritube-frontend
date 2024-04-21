@@ -2,20 +2,29 @@ import { useEffect, useRef, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
 import { useRouter, } from 'next/router';
 import NextLink from 'next/link';
-import { Box, Button, Card, CardBody, Flex, Heading, HStack, Link, Spacer, Text, VStack, } from '@chakra-ui/react';
+import {
+  Box, Button, Card, CardBody, CardFooter, Flex, Heading, HStack, Link, Spacer, Text, VStack,
+} from '@chakra-ui/react';
 import { MainLayout, } from '@root/layouts';
-import { PlayListVideoListView, VideoPlayer, } from '@root/components';
+import { PlayListVideoListView, VideoPlayer, VideoCommentEditor, } from '@root/components';
 import { PlayListVideoAddAlert, } from '@root/components/alerts';
 import { MdPlaylistAdd, } from 'react-icons/md';
 
-import { PlayList, TokenInfo, Video, VideoShare, } from '@root/interfaces';
-import { getTokenInfoByCookies, iritubeAPI, } from '@root/utils';
+import { Account, PlayList, TokenInfo, Video, VideoComment, VideoShare, } from '@root/interfaces';
+import { getTokenInfo, getTokenInfoByCookies, iritubeAPI, } from '@root/utils';
 import { throttle, } from 'lodash';
+import { useRecoilValue, } from 'recoil';
+import { accountAtom, } from '@root/recoil';
 
 type Props = {
   video: Video | null,
   playList: PlayList | null,
 };
+
+enum VideoCommentState {
+  IDLE = 'IDLE',
+  REQUEST = 'REQUEST',
+}
 
 const VideosPage = (props: Props) => {
   const video: Video | null = props.video ? Video.getInstance(props.video) : null;
@@ -30,6 +39,10 @@ const VideosPage = (props: Props) => {
   const [openAddPlayListAlert, setOpenAddPlayListAlert,] = useState<boolean>(false);
   const [videoPlayerHeight, setVideoPlayerHeight,] = useState<number>(-1);
   const [wide, setWide,] = useState<boolean>(false);
+
+  const account: Account = useRecoilValue<Account>(accountAtom);
+  const [videoCommentState, setVideoCommentState,] = useState<VideoCommentState>(VideoCommentState.IDLE);
+  const [videoComment, setVideoComment,] = useState<VideoComment>(new VideoComment());
 
   useEffect(() => {
     const windowResizeCallback = throttle(() => {
@@ -142,6 +155,24 @@ const VideosPage = (props: Props) => {
     }
   };
 
+  const onChangeVideoComment = (videoComment: VideoComment) => {
+    setVideoComment(videoComment);
+  };
+
+  const onClickVideoComment = async () => {
+    const tokenInfo: TokenInfo | null = await getTokenInfo();
+    if (tokenInfo === null) {
+      return;
+    }
+    setVideoCommentState(VideoCommentState.REQUEST);
+    try {
+      await iritubeAPI.createVideoComment(tokenInfo, video, videoComment.comment);
+      setVideoComment(new VideoComment());
+    } finally {
+      setVideoCommentState(VideoCommentState.IDLE);
+    }
+  };
+
   return <MainLayout title={(video && video.id ? (video.getTitle() + ' | ') : '') + 'Iritube'}>
     <Box>
       <VStack alignItems='flex-start'>
@@ -216,6 +247,29 @@ const VideosPage = (props: Props) => {
                 </Box>
               </VStack>
             </CardBody>
+          </Card>
+        </VStack>}
+        {video && video.id && <VStack alignItems='stretch' width='100%'>
+          <Card>
+            <CardBody>
+              <VideoCommentEditor
+                value={videoComment}
+                isDisabled={videoCommentState === VideoCommentState.REQUEST || !account || !account.id}
+                onChange={onChangeVideoComment}
+                placeholder={!account || !account.id ? '로그인 후 댓글을 작성 할 수 있습니다.' : ''}
+              />
+            </CardBody>
+            <CardFooter paddingTop='0'>
+              <Button
+                marginLeft='auto'
+                size='sm'
+                onClick={onClickVideoComment}
+                isDisabled={videoComment.comment.length === 0 || (!account || !account.id)}
+                isLoading={videoCommentState === VideoCommentState.REQUEST}
+              >
+                등록
+              </Button>
+            </CardFooter>
           </Card>
         </VStack>}
       </VStack>

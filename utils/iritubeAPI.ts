@@ -1,6 +1,8 @@
 import axios, { AxiosRequestConfig, AxiosResponse, } from 'axios';
 
-import { Account, IritubeError, PlayList, PlayListList, TokenInfo, Video, VideoList, } from '../interfaces';
+import {
+  Account, IritubeError, PlayList, PlayListList, TokenInfo, Video, VideoComment, VideoList,
+} from '../interfaces';
 import process from 'process';
 
 const apiKey: string = process.env.apiKey as string;
@@ -26,6 +28,9 @@ type IritubeAPIList = {
   updateVideo: (tokenInfo: TokenInfo, video: Video) => Promise<Video>,
   deleteVideo: (tokenInfo: TokenInfo, videoKey: string) => Promise<Video>,
   getVideoThumbnail: (tokenInfo: TokenInfo | null, videoKey: string) => Promise<string>,
+
+  // 동영상 댓글
+  createVideoComment: (tokenInfo: TokenInfo, video: Video, comment: string) => Promise<VideoComment>,
 
   // 재생 목록
   createPlayList: (tokenInfo: TokenInfo, title: string) => Promise<PlayList>,
@@ -285,6 +290,24 @@ const IritubeAPI: IritubeAPIList = {
       const mimeType = response.headers['content-type'];
       const file: File = new File([response.data,], videoKey, { type: mimeType, });
       return await fileToData(file);
+    } catch (error) {
+      throw new IritubeError(error);
+    }
+  },
+
+  createVideoComment: async (tokenInfo: TokenInfo, video: Video, comment: string): Promise<VideoComment> => {
+    const config: AxiosRequestConfig = {
+      url: `${backendURL}/v1/videos/${video.videoKey}/comments`,
+      method: 'POST',
+      data: {
+        comment,
+      },
+    };
+    setToken(config, tokenInfo);
+
+    try {
+      const response: AxiosResponse<any> = await axios.request(config);
+      return VideoComment.getInstance(response.data);
     } catch (error) {
       throw new IritubeError(error);
     }
