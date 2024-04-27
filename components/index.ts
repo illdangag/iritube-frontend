@@ -12,9 +12,10 @@ import PlayListEditor from './PlayListEditor';
 import VideoThumbnail from './VideoThumbnail';
 import AccountEditor from './AccountEditor';
 import VideoCommentEditor from './VideoCommentEditor';
+import VideoCommentView from './VideoCommentView';
 
 export {
   VideoPlayer, VideoView, Pagination, VideoListView, VideoEditor, PlayListVideoListView, PlayListListScrollView,
   PlayListView, VideoListScrollView, PlayListListView, PlayListEditor, VideoThumbnail, AccountEditor,
-  VideoCommentEditor,
+  VideoCommentEditor, VideoCommentView,
 };

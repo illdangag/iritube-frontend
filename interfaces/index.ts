@@ -282,4 +282,44 @@ export class VideoComment {
   public static getInstance (object: any): VideoComment {
     return Object.assign(new VideoComment(), object);
   }
+
+  public getUpdateDate (): string {
+    const now: number = new Date().getTime();
+
+    let ago: number = (this.updateDate - now) / 1000;
+    let unit: Intl.RelativeTimeFormatUnit;
+
+    if ((ago * -1) < 60) {
+      return '조금 전';
+    } else if ((ago * -1) < 60 * 60) {
+      ago = ago / (60);
+      unit = 'minute';
+    } else if ((ago * -1) < 60 * 60 * 24) {
+      ago = ago / (60 * 60);
+      unit = 'hour';
+    } else if ((ago * -1) < 60 * 60 * 24 * 30) {
+      ago = ago / (60 * 60 * 24);
+      unit = 'day';
+    } else if ((ago * -1) < 60 * 60 * 24 * 30 * 12) {
+      ago = ago / (60 * 60 * 24 * 30);
+      unit = 'month';
+    } else { // 몇개월 전
+      ago = ago / (60 * 60 * 24 * 30 * 12);
+      unit = 'year';
+    }
+
+    return new Intl.RelativeTimeFormat('ko-KR').format(Math.round(ago), unit);
+  }
+}
+
+export class VideoCommentList extends ListResponse {
+  public comments: VideoComment[];
+
+  public static getInstance (object: any): VideoCommentList {
+    object.comments = object.comments.map(videoComment => {
+      return VideoComment.getInstance(videoComment);
+    });
+
+    return Object.assign(new VideoCommentList(), object);
+  }
 }

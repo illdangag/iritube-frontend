@@ -65,4 +65,4 @@ export default memo(VideoThumbnail, (prevProps: Props, nextProps: Props) => {
   }
 
   return prevProps.video.videoKey === nextProps.video.videoKey && prevProps.description === nextProps.description;
-}) ;
+});
