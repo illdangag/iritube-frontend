@@ -1,4 +1,3 @@
-import VideoCommentEditorArea from './VideoCommentEditorArea';
-import VideoCommentListArea from './VideoCommentListArea';
+import VideoCommentArea from './VideoCommentArea';
 
-export { VideoCommentEditorArea, VideoCommentListArea, };
+export { VideoCommentArea, };

@@ -8,7 +8,7 @@ import {
 import { MainLayout, } from '@root/layouts';
 import { PlayListVideoListView, VideoPlayer, } from '@root/components';
 import { PlayListVideoAddAlert, } from '@root/components/alerts';
-import { VideoCommentEditorArea, VideoCommentListArea, } from '@root/components/pages/videos';
+import { VideoCommentArea, } from '@root/components/pages/videos';
 import { MdPlaylistAdd, } from 'react-icons/md';
 
 import { PlayList, TokenInfo, Video, VideoShare, } from '@root/interfaces';
@@ -212,16 +212,7 @@ const VideosPage = (props: Props) => {
             </CardBody>
           </Card>
         </VStack>}
-        {video && video.id && <Card width='100%'>
-          <CardBody>
-            <VideoCommentEditorArea video={video}/>
-          </CardBody>
-        </Card>}
-        {video && video.id && <Card width='100%'>
-          <CardBody>
-            <VideoCommentListArea video={video}/>
-          </CardBody>
-        </Card>}
+        {video && video.id && <VideoCommentArea video={video}/>}
       </VStack>
     </Box>
     {video && video.id && <PlayListVideoAddAlert
