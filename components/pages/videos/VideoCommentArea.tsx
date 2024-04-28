@@ -1,4 +1,4 @@
-import { useEffect, useState, } from 'react';
+import { memo, useEffect, useState, } from 'react';
 import { Button, Card, CardBody, Spinner, VStack, } from '@chakra-ui/react';
 import { VideoCommentEditor, VideoCommentView, } from '@root/components';
 
@@ -69,7 +69,7 @@ const VideoCommentArea = ({
     }
   };
 
-  return <VStack width='100%' alignItems='stretch'>
+  return <VStack alignItems='stretch'>
     <Card>
       <CardBody>
         <VStack alignItems='stretch' width='100%'>
@@ -106,4 +106,10 @@ const VideoCommentArea = ({
   </VStack>;
 };
 
-export default VideoCommentArea;
+export default memo(VideoCommentArea, (prevProps: Props, nextProps: Props) => {
+  if (!prevProps.video || !nextProps.video) {
+    return false;
+  }
+
+  return prevProps.video.videoKey === nextProps.video.videoKey;
+});

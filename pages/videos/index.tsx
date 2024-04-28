@@ -1,15 +1,10 @@
 import { useEffect, useRef, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
 import { useRouter, } from 'next/router';
-import NextLink from 'next/link';
-import {
-  Box, Button, Card, CardBody, Flex, Heading, HStack, Link, Spacer, Text, VStack,
-} from '@chakra-ui/react';
+import { Box, Card, CardBody, Flex, Text, VStack, } from '@chakra-ui/react';
 import { MainLayout, } from '@root/layouts';
 import { PlayListVideoListView, VideoPlayer, } from '@root/components';
-import { PlayListVideoAddAlert, } from '@root/components/alerts';
-import { VideoCommentArea, } from '@root/components/pages/videos';
-import { MdPlaylistAdd, } from 'react-icons/md';
+import { VideoCommentArea, VideoDescriptionArea, } from '@root/components/pages/videos';
 
 import { PlayList, TokenInfo, Video, VideoShare, } from '@root/interfaces';
 import { getTokenInfoByCookies, iritubeAPI, } from '@root/utils';
@@ -30,7 +25,6 @@ const VideosPage = (props: Props) => {
   const videoRef = useRef<HTMLDivElement>(null);
   const invalidVideoRef = useRef<HTMLDivElement>(null);
 
-  const [openAddPlayListAlert, setOpenAddPlayListAlert,] = useState<boolean>(false);
   const [videoPlayerHeight, setVideoPlayerHeight,] = useState<number>(-1);
   const [wide, setWide,] = useState<boolean>(false);
 
@@ -53,18 +47,6 @@ const VideosPage = (props: Props) => {
 
   const getPlayListHeight = () => {
     return videoRef.current ? videoRef.current.offsetHeight : invalidVideoRef.current.offsetHeight;
-  };
-
-  const onClickAddPlayListButton = () => {
-    setOpenAddPlayListAlert(true);
-  };
-
-  const onClosePlayListVideoAddAlert = () => {
-    setOpenAddPlayListAlert(false);
-  };
-
-  const onConfirmPlayListVideoAddAlert = () => {
-    setOpenAddPlayListAlert(false);
   };
 
   const onEndedVideoPlayer = () => {
@@ -147,7 +129,7 @@ const VideosPage = (props: Props) => {
 
   return <MainLayout title={(video && video.id ? (video.getTitle() + ' | ') : '') + 'Iritube'}>
     <Box>
-      <VStack alignItems='flex-start'>
+      <VStack alignItems='stretch'>
         <Flex width='100%' gap='1rem' alignItems='stretch'
           flexDirection={{
             'base': 'column',
@@ -189,38 +171,10 @@ const VideosPage = (props: Props) => {
             />
           </Box>}
         </Flex>
-        {video && video.id && <VStack width='100%' alignItems='flex-start'>
-          <Heading size='md' marginTop='0.75rem' marginBottom='0'>{video.getTitle()}</Heading>
-          <Link as={NextLink} href={'/accounts/' + video.account.accountKey}>
-            <Text fontSize='sm' fontWeight={700}>{video.account.nickname}</Text>
-          </Link>
-          <Card width='100%'>
-            <CardBody>
-              <VStack alignItems='flex-start' gap={0}>
-                <HStack width='100%'>
-                  <Text fontWeight={700}>{'조회수 ' + video.getViewCount() + ' ' + video.getUpdateDate()}</Text>
-                  <Spacer/>
-                  <Button size='xs' variant='outline' leftIcon={<MdPlaylistAdd/>} onClick={onClickAddPlayListButton}>재생 목록 추가</Button>
-                </HStack>
-                <HStack>
-                  {video.tags.map((tag, index) => <Text key={index} color='blue.400'>#{tag}</Text>)}
-                </HStack>
-                <Box marginTop='0.75rem'>
-                  <Text>{video.description}</Text>
-                </Box>
-              </VStack>
-            </CardBody>
-          </Card>
-        </VStack>}
+        {video && video.id && <VideoDescriptionArea video={video}/>}
         {video && video.id && <VideoCommentArea video={video}/>}
       </VStack>
     </Box>
-    {video && video.id && <PlayListVideoAddAlert
-      open={openAddPlayListAlert}
-      video={video}
-      onClose={onClosePlayListVideoAddAlert}
-      onConfirm={onConfirmPlayListVideoAddAlert}
-    />}
   </MainLayout>;
 };
 
