@@ -75,7 +75,8 @@ const VideoCommentArea = ({
         <VStack alignItems='stretch' width='100%'>
           <VideoCommentEditor
             value={videoComment}
-            isDisabled={createState === CreateState.REQUEST}
+            isDisabled={createState === CreateState.REQUEST || !account || !account.id}
+            placeholder={(!account || !account.id) ? '로그인 후 등록 가능합니다' : '댓글을 입력하세요'}
             onChange={onChangeVideoComment}
           />
           <Button

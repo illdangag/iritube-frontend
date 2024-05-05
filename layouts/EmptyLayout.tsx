@@ -46,7 +46,8 @@ const EmptyLayout = ({
       <Box
         paddingLeft='1rem'
         paddingRight='1rem'
-        height='100%'
+        paddingBottom='1rem'
+        minHeight='100%'
       >
         {children}
       </Box>
