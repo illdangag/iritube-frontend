@@ -1,6 +1,7 @@
 import { memo, useEffect, useState, } from 'react';
-import { Button, Card, CardBody, Spinner, VStack, } from '@chakra-ui/react';
-import { VideoCommentEditor, VideoCommentView, } from '@root/components';
+import { useRouter, } from 'next/router';
+import { Button, Card, CardBody, VStack, } from '@chakra-ui/react';
+import { Pagination, VideoCommentEditor, VideoCommentView, } from '@root/components';
 
 import { Account, TokenInfo, Video, VideoComment, VideoCommentList, } from '@root/interfaces';
 import { useRecoilValue, } from 'recoil';
@@ -9,6 +10,7 @@ import { getTokenInfo, iritubeAPI, } from '@root/utils';
 
 type Props = {
   video: Video,
+  videoCommentPage?: number,
 }
 
 enum CreateState {
@@ -16,57 +18,60 @@ enum CreateState {
   REQUEST = 'REQUEST',
 }
 
-enum ListState {
-  IDLE = 'IDLE',
-  REQUEST = 'REQUEST',
-}
+const COMMENT_LIMIT: number = 10;
 
 const VideoCommentArea = ({
   video,
+  videoCommentPage = 1,
 }: Props) => {
+  const router = useRouter();
   const account: Account = useRecoilValue<Account>(accountAtom);
 
   const [createState, setCreateState,] = useState<CreateState>(CreateState.IDLE);
   const [videoComment, setVideoComment,] = useState<VideoComment>(new VideoComment());
 
-  const [listState, setListState,] = useState<ListState>(ListState.IDLE);
   const [videoComments, setVideoComments,] = useState<VideoComment[]>([]);
+  const [videoCommentList, setVideoCommentList,] = useState<VideoCommentList | null>(null);
 
   useEffect(() => {
     void init();
-  }, [video,]);
+  }, [video, videoCommentPage,]);
 
   const init = async () => {
-    setListState(ListState.REQUEST);
     const tokenInfo: TokenInfo | null = await getTokenInfo();
-    const videoCommentList: VideoCommentList = await iritubeAPI.getVideoCommentList(tokenInfo, video.videoKey);
-    const newVideoComments: VideoComment[] = videoCommentList.comments
-      .sort((itemA, itemB) => {
-        return itemB.createDate - itemA.createDate;
-      });
-    setVideoComments(newVideoComments);
-    setListState(ListState.IDLE);
+    const videoCommentList: VideoCommentList = await iritubeAPI.getVideoCommentList(tokenInfo, video.videoKey, (videoCommentPage - 1) * COMMENT_LIMIT, COMMENT_LIMIT);
+    setVideoCommentList(videoCommentList);
   };
 
   const onChangeVideoComment = (value: VideoComment) => {
     setVideoComment(value);
   };
 
+  /**
+   * 댓글 작성
+   */
   const onClickConfirm = async () => {
     const tokenInfo: TokenInfo = await getTokenInfo();
     setCreateState(CreateState.REQUEST);
 
     try {
       const newVideoComment: VideoComment = await iritubeAPI.createVideoComment(tokenInfo, video, videoComment.comment);
+      const newVideoCommentList: VideoCommentList = await iritubeAPI.getVideoCommentList(tokenInfo, video.videoKey, 0, COMMENT_LIMIT);
 
       setVideoComment(new VideoComment());
       setVideoComments([
         newVideoComment,
         ...videoComments,
       ]);
+
+      void router.push(setCommentPageLink(newVideoCommentList.totalPage));
     } finally {
       setCreateState(CreateState.IDLE);
     }
+  };
+
+  const setCommentPageLink = (page: number) => {
+    return router.pathname + '?vk=' + router.query.vk + '&cp=' + page;
   };
 
   return <VStack alignItems='stretch'>
@@ -91,26 +96,17 @@ const VideoCommentArea = ({
         </VStack>
       </CardBody>
     </Card>
-    {videoComments.length > 0 && <Card>
+    {videoCommentList && videoCommentList.total > 0 && <Card>
       <CardBody>
-        <VStack gap='1rem'>
-          {videoComments.map((videoComment) =>
-            <VideoCommentView
-              key={videoComment.videoCommentKey}
-              videoComment={videoComment}
-            />,
-          )}
-          {listState === ListState.REQUEST && <Spinner/>}
+        <VStack alignItems='stretch'>
+          <VStack gap='1rem'>
+            {videoCommentList.comments.map(videoComment => <VideoCommentView key={videoComment.videoCommentKey} videoComment={videoComment}/>)}
+          </VStack>
+          <Pagination page={videoCommentList.currentPage} listResponse={videoCommentList} setPageLink={setCommentPageLink}/>
         </VStack>
       </CardBody>
     </Card>}
   </VStack>;
 };
 
-export default memo(VideoCommentArea, (prevProps: Props, nextProps: Props) => {
-  if (!prevProps.video || !nextProps.video) {
-    return false;
-  }
-
-  return prevProps.video.videoKey === nextProps.video.videoKey;
-});
+export default VideoCommentArea;

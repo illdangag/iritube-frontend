@@ -31,7 +31,7 @@ type IritubeAPIList = {
 
   // 동영상 댓글
   createVideoComment: (tokenInfo: TokenInfo, video: Video, comment: string) => Promise<VideoComment>,
-  getVideoCommentList: (tokenInfo: TokenInfo | null, videoKey: string) => Promise<VideoCommentList>,
+  getVideoCommentList: (tokenInfo: TokenInfo | null, videoKey: string,  offset: number, limit: number) => Promise<VideoCommentList>,
 
   // 재생 목록
   createPlayList: (tokenInfo: TokenInfo, title: string) => Promise<PlayList>,
@@ -314,10 +314,14 @@ const IritubeAPI: IritubeAPIList = {
     }
   },
 
-  getVideoCommentList: async (tokenInfo: TokenInfo | null, videoKey: string): Promise<VideoCommentList> => {
+  getVideoCommentList: async (tokenInfo: TokenInfo | null, videoKey: string, offset: number = 0, limit: number = 5): Promise<VideoCommentList> => {
     const config: AxiosRequestConfig = {
       url: `${backendURL}/v1/videos/${videoKey}/comments`,
       method: 'GET',
+      params: {
+        offset,
+        limit,
+      },
     };
     setToken(config, tokenInfo);
 

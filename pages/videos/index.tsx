@@ -13,11 +13,13 @@ import { throttle, } from 'lodash';
 type Props = {
   video: Video | null,
   playList: PlayList | null,
+  videoCommentPage: number,
 };
 
 const VideosPage = (props: Props) => {
   const video: Video | null = props.video ? Video.getInstance(props.video) : null;
   const playList: PlayList | null = props.playList ? PlayList.getInstance(props.playList) : null;
+  const videoCommentPage: number = props.videoCommentPage;
 
   const router = useRouter();
   const videoKey: string = router.query.vk as string;
@@ -172,7 +174,7 @@ const VideosPage = (props: Props) => {
           </Box>}
         </Flex>
         {video && video.id && <VideoDescriptionArea video={video}/>}
-        {video && video.id && <VideoCommentArea video={video}/>}
+        {video && video.id && <VideoCommentArea video={video} videoCommentPage={videoCommentPage}/>}
       </VStack>
     </Box>
   </MainLayout>;
@@ -182,9 +184,11 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const tokenInfo: TokenInfo | null = await getTokenInfoByCookies(context);
   const videoKey: string | null = context.query.vk ? context.query.vk as string : null;
   const playListKey: string | null = context.query.pk ? context.query.pk as string : null;
+  const commentPageValue: string | null = context.query.cp ? context.query.cp as string : null;
 
   let video: Video | null = null;
   let playList: PlayList | null = null;
+  let videoCommentPage: number = 1;
 
   if (videoKey === null && playListKey === null) { // 동영상 키, 재생 목록 키가 모두 존재하지 않는다면
     return {
@@ -199,6 +203,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     try {
       playList = await iritubeAPI.getPlayList(tokenInfo, playListKey);
     } catch (error) {}
+  }
+
+  if (commentPageValue) {
+    videoCommentPage = parseInt(commentPageValue, 10);
+    if (videoCommentPage < 1) {
+      videoCommentPage = 1;
+    }
   }
 
   if (videoKey === null && playList && playList.videos && playList.videos.length > 0) {
@@ -222,6 +233,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     props: {
       video: JSON.parse(JSON.stringify(video)),
       playList: JSON.parse(JSON.stringify(playList)),
+      videoCommentPage: videoCommentPage,
     },
   };
 };
