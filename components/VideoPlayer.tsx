@@ -1,11 +1,6 @@
 import { MouseEvent, useEffect, useRef, useState, memo, forwardRef, ReactEventHandler, } from 'react';
-import {
-  Box, Fade, Flex, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Progress, Slider,
-  SliderFilledTrack, SliderThumb, SliderTrack, Text, VStack,
-} from '@chakra-ui/react';
-import {
-  MdOutlineSettings, MdPause, MdPlayArrow, MdVolumeOff, MdVolumeUp, MdSkipNext, MdSkipPrevious, MdOutlineCrop32,
-} from 'react-icons/md';
+import { Box, Fade, Flex, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Progress, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, VStack, } from '@chakra-ui/react';
+import { MdOutlineSettings, MdPause, MdPlayArrow, MdVolumeOff, MdVolumeUp, MdSkipNext, MdSkipPrevious, MdOutlineCrop32, } from 'react-icons/md';
 
 import Hls, { Level, } from 'hls.js';
 import { TokenInfo, Video, } from '@root/interfaces';
@@ -254,7 +249,7 @@ const VideoPlayer = ({
         backgroundImage: 'linear-gradient(to top, #00000040, #ffffff00)',
       }} position='absolute' bottom='0' padding='0.5rem' width='100%' alignItems='row'>
         <Flex flexDirection='column' justifyContent='center' height='1rem' cursor='pointer' position='relative' onClick={onClickProgress}>
-          <Progress height='0.2rem' value={videoProgress}/>
+          <Progress height='0.2rem' value={videoProgress} backgroundColor='#868e9690'/>
         </Flex>
         <HStack justifyContent='space-between'>
           <HStack>
@@ -332,7 +327,7 @@ const VideoPlayer = ({
                 value={isMute ? 0 : volume * 100}
                 onChange={onChangeVolume}
               >
-                <SliderTrack>
+                <SliderTrack backgroundColor='#868e9690'>
                   <SliderFilledTrack/>
                 </SliderTrack>
                 <SliderThumb/>
