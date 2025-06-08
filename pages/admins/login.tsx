@@ -1,8 +1,8 @@
-import { ChangeEvent, useEffect, useState, KeyboardEvent, } from 'react';
+import React, { ChangeEvent, useEffect, useState, KeyboardEvent, } from 'react';
 import { GetServerSideProps, } from 'next';
 import { useRouter, } from 'next/router';
 import {
-  Button, Card, CardBody, CardFooter, CardHeader, Flex, Heading, Input, Spacer, useToast, VStack,
+  Button, Card, CardBody, CardFooter, CardHeader, Flex, Heading, Image, Input, Spacer, useToast, VStack,
 } from '@chakra-ui/react';
 import { MdLogin, } from 'react-icons/md';
 import { EmptyLayout, } from '@root/layouts';
@@ -74,12 +74,13 @@ const AdminsLoginPage = () => {
   };
 
   return <EmptyLayout title='Login | iritube'>
-    <Flex flexDirection='column' height='100%'>
+    <VStack flexDirection='column' height='100vh'>
       <Spacer/>
-      <Card maxWidth='32rem' minWidth='24rem' marginLeft='auto' marginRight='auto' variant='outline'>
+      <Card width='100%' maxWidth='28rem'>
         <CardHeader>
-          <Flex flexDirection='column' align='center'>
-            <Heading size='md'>Iritube에 로그인</Heading>
+          <Flex flexDirection='column' align='center' gap='3'>
+            <Image src='/static/images/main.png' boxSize='5rem'/>
+            <Heading size='lg'>Iritube</Heading>
           </Flex>
         </CardHeader>
         <CardBody>
@@ -106,6 +107,7 @@ const AdminsLoginPage = () => {
         </CardBody>
         <CardFooter>
           <Button
+            size='sm'
             width='100%'
             isDisabled={pageState === PageState.REQUEST || pageState === PageState.SUCCESS}
             isLoading={pageState === PageState.REQUEST}
@@ -117,7 +119,8 @@ const AdminsLoginPage = () => {
         </CardFooter>
       </Card>
       <Spacer/>
-    </Flex>
+      <Spacer/>
+    </VStack>
   </EmptyLayout>;
 };
 
