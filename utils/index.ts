@@ -87,7 +87,8 @@ export function getTokenInfo (): Promise<TokenInfo | null> {
           resolve(newTokenInfo);
         })
         .catch(error => {
-          reject(error);
+          // reject(error);
+          resolve(null);
         });
     } else {
       resolve(tokenInfo);

@@ -1,9 +1,7 @@
-import { useEffect, useState, } from 'react';
+import React, { useEffect, useState, } from 'react';
 import { GetServerSideProps, } from 'next';
 import { useRouter, } from 'next/router';
-import {
-  Button, Card, CardBody, CardHeader, Center, Container, Flex, Heading, Spacer, useToast,
-} from '@chakra-ui/react';
+import { Button, Card, CardBody, CardHeader, Center, Image, Flex, Heading, Spacer, useToast, VStack, Text, } from '@chakra-ui/react';
 import { FcGoogle, } from 'react-icons/fc';
 import { EmptyLayout, } from '@root/layouts';
 
@@ -52,31 +50,32 @@ const LoginPage = () => {
   };
 
   return <EmptyLayout title='Login | iritube'>
-    <Flex flexDirection='column' height='100%'>
+    <VStack flexDirection='column' height='100vh'>
       <Spacer/>
-      <Container>
-        <Card maxWidth='32rem' marginLeft='auto' marginRight='auto' variant='outline'>
-          <CardHeader>
-            <Flex flexDirection='column' align='center'>
-              <Heading size='md'>Iritube에 로그인</Heading>
-            </Flex>
-          </CardHeader>
-          <CardBody>
-            <Center>
-              <Button
-                leftIcon={<FcGoogle/>}
-                onClick={onClickSignInGoogle}
-                isDisabled={pageState === PageState.REQUEST || pageState === PageState.SUCCESS}
-                isLoading={pageState === PageState.REQUEST}
-              >
-                Continue with Google
-              </Button>
-            </Center>
-          </CardBody>
-        </Card>
-      </Container>
+      <Card width='100%' maxWidth='28rem'>
+        <CardHeader>
+          <Flex flexDirection='column' align='center' gap='3'>
+            <Image src='/static/images/main.png' boxSize='5rem'/>
+            <Heading size='lg'>Iritube</Heading>
+          </Flex>
+        </CardHeader>
+        <CardBody>
+          <Center>
+            <Button
+              size='sm'
+              leftIcon={<FcGoogle/>}
+              onClick={onClickSignInGoogle}
+              isDisabled={pageState === PageState.REQUEST || pageState === PageState.SUCCESS}
+              isLoading={pageState === PageState.REQUEST}
+            >
+              Google 계정으로 계속하기
+            </Button>
+          </Center>
+        </CardBody>
+      </Card>
       <Spacer/>
-    </Flex>
+      <Spacer/>
+    </VStack>
   </EmptyLayout>;
 };
 
