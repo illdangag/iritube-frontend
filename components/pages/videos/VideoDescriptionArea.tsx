@@ -28,7 +28,7 @@ const VideoDescriptionArea = ({
   };
 
   return <VStack alignItems='stretch'>
-    <VStack alignItems='stretch'>
+    <VStack alignItems='start'>
       <Heading size='md' marginTop='0.75rem' marginBottom='0'>{video.getTitle()}</Heading>
       <Link as={NextLink} href={'/accounts/' + video.account.accountKey}>
         <Text fontSize='sm' fontWeight={700}>{video.account.nickname}</Text>
