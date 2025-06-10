@@ -2,9 +2,12 @@ import { memo, useState, } from 'react';
 import NextLink from 'next/link';
 import { Box, Button, Card, CardBody, Heading, HStack, Link, Spacer, Text, VStack, } from '@chakra-ui/react';
 import { MdPlaylistAdd, } from 'react-icons/md';
-import { PlayListVideoAddAlert } from '@root/components/alerts';
+import { PlayListVideoAddAlert, RequireLoginAlert, } from '@root/components/alerts';
 
-import { Video, } from '@root/interfaces';
+import { useRecoilValue, } from 'recoil';
+import { accountAtom, } from '@root/recoil';
+
+import { Account, Video, } from '@root/interfaces';
 
 type Props = {
   video: Video;
@@ -13,10 +16,19 @@ type Props = {
 const VideoDescriptionArea = ({
   video,
 }: Props) => {
+  const account: Account = useRecoilValue<Account>(accountAtom);
+
   const [openAddPlayListAlert, setOpenAddPlayListAlert,] = useState<boolean>(false);
+  const [openRequireLoginAlert, setOpenRequireLoginAlert,] = useState<boolean>(false);
 
   const onClickAddPlayListButton = () => {
-    setOpenAddPlayListAlert(true);
+    console.log(account);
+    if (account.id) {
+      setOpenAddPlayListAlert(true);
+    } else {
+      setOpenRequireLoginAlert(true);
+    }
+
   };
 
   const onClosePlayListVideoAddAlert = () => {
@@ -25,6 +37,10 @@ const VideoDescriptionArea = ({
 
   const onConfirmPlayListVideoAddAlert = () => {
     setOpenAddPlayListAlert(false);
+  };
+
+  const onCloseRequireLoginAlert = () => {
+    setOpenRequireLoginAlert(false);
   };
 
   return <VStack alignItems='stretch'>
@@ -52,7 +68,7 @@ const VideoDescriptionArea = ({
           </HStack>
           <HStack>
             {video.tags.map((tag, index) =>
-              <Text key={index} color='blue.400'>#{tag}</Text>,
+              <Text key={`tag-${index}`} color='blue.400'>#{tag}</Text>,
             )}
           </HStack>
           <Box>
@@ -67,6 +83,11 @@ const VideoDescriptionArea = ({
       onClose={onClosePlayListVideoAddAlert}
       onConfirm={onConfirmPlayListVideoAddAlert}
     />}
+    <RequireLoginAlert
+      open={openRequireLoginAlert}
+      message='재생 목록 기능을 사용하기 위해서는 로그인이 필요합니다.'
+      onClose={onCloseRequireLoginAlert}
+    />
   </VStack>;
 };
 

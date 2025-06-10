@@ -1,4 +1,4 @@
-import { memo, useEffect, useState, } from 'react';
+import { useEffect, useState, } from 'react';
 import { useRouter, } from 'next/router';
 import { Button, Card, CardBody, VStack, } from '@chakra-ui/react';
 import { Pagination, VideoCommentEditor, VideoCommentView, } from '@root/components';
