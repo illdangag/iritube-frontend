@@ -1,11 +1,6 @@
 import { MouseEvent, useEffect, useRef, useState, memo, forwardRef, ReactEventHandler, } from 'react';
-import {
-  Box, Fade, Flex, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Progress, Slider,
-  SliderFilledTrack, SliderThumb, SliderTrack, Text, VStack,
-} from '@chakra-ui/react';
-import {
-  MdOutlineSettings, MdPause, MdPlayArrow, MdVolumeOff, MdVolumeUp, MdSkipNext, MdSkipPrevious, MdOutlineCrop32,
-} from 'react-icons/md';
+import { Box, Fade, Flex, HStack, IconButton, Menu, MenuButton, MenuItem, MenuList, Progress, Slider, SliderFilledTrack, SliderThumb, SliderTrack, Text, VStack, } from '@chakra-ui/react';
+import { MdOutlineSettings, MdPause, MdPlayArrow, MdVolumeOff, MdVolumeUp, MdSkipNext, MdSkipPrevious, MdOutlineCrop32, } from 'react-icons/md';
 
 import Hls, { Level, } from 'hls.js';
 import { TokenInfo, Video, } from '@root/interfaces';
@@ -63,6 +58,8 @@ const VideoPlayer = ({
   const [volume, setVolume,] = useState<number>(0.5);
   const [isMute, setIsMute,] = useState<boolean>(false);
   const [wide, setWide,] = useState<boolean>(false);
+  const [showVideoController, setShowVideoController,] = useState<boolean>(true);
+  const [showVideoControllerTimout, setShowVideoControllerTimout,] = useState<NodeJS.Timeout | null>(null);
 
   hls.on(Hls.Events.MANIFEST_LOADED, () => {
     setLevelList(hls.levels);
@@ -211,7 +208,33 @@ const VideoPlayer = ({
     onNarrow();
   };
 
-  return <Box width='100%' height='100%' ref={ref}>
+  const onMouseMoveVideo = () => {
+    if (!showVideoController) {
+      setShowVideoController(true);
+    }
+
+    if (showVideoControllerTimout) {
+      clearInterval(showVideoControllerTimout);
+      setShowVideoControllerTimout(null);
+    }
+
+    setShowVideoControllerTimout(setTimeout(() => {
+      setShowVideoController(false);
+    }, 5000));
+  };
+
+  const onMouseLeaveVideo = () => {
+    if (showVideoControllerTimout) {
+      clearInterval(showVideoControllerTimout);
+      setShowVideoControllerTimout(null);
+    }
+
+    setShowVideoControllerTimout(setTimeout(() => {
+      setShowVideoController(false);
+    }, 200));
+  };
+
+  return <Box width='100%' height='100%' ref={ref} onMouseMove={onMouseMoveVideo} onMouseLeave={onMouseLeaveVideo}>
     <Box position='relative' backgroundColor='black' borderRadius='lg' overflow='hidden'>
       <VStack aspectRatio='16/9'>
         <video style={{
@@ -250,144 +273,146 @@ const VideoPlayer = ({
         </Box>
       </Fade>
       <Box position='absolute' top='0' left='0' width='100%' height='100%' onClick={onClickVideo}/>
-      <VStack css={{
-        backgroundImage: 'linear-gradient(to top, #00000040, #ffffff00)',
-      }} position='absolute' bottom='0' padding='0.5rem' width='100%' alignItems='row'>
-        <Flex flexDirection='column' justifyContent='center' height='1rem' cursor='pointer' position='relative' onClick={onClickProgress}>
-          <Progress height='0.2rem' value={videoProgress}/>
-        </Flex>
-        <HStack justifyContent='space-between'>
-          <HStack>
-            {onPrevious && <IconButton
-              aria-label='previuse'
-              size='sm'
-              fontSize='1.4rem'
-              variant='ghost'
-              _hover={{
-                backgroundColor: '#00000033',
-              }}
-              icon={<MdSkipPrevious color='#ffffff'/>}
-              onClick={onPrevious}
-            />}
-            {videoState === State.PAUSE && <IconButton
-              aria-label='pause'
-              size='sm'
-              fontSize='1.4rem'
-              variant='ghost'
-              _hover={{
-                backgroundColor: '#00000033',
-              }}
-              icon={<MdPlayArrow color='#ffffff'/>}
-              onClick={onClickPlayButton}
-            />}
-            {videoState === State.PLAY && <IconButton
-              aria-label='pause'
-              size='sm'
-              fontSize='1.4rem'
-              variant='ghost'
-              _hover={{
-                backgroundColor: '#00000033',
-              }}
-              icon={<MdPause color='#ffffff'/>}
-              onClick={onClickPauseButton}
-            />}
-            {onNext && <IconButton
-              aria-label='next'
-              size='sm'
-              fontSize='1.4rem'
-              variant='ghost'
-              _hover={{
-                backgroundColor: '#00000033',
-              }}
-              icon={<MdSkipNext color='#ffffff'/>}
-              onClick={onNext}
-            />}
-            <Text color='#ffffff' fontSize='0.8rem'>{`${currentTime} / ${totalTime}`}</Text>
-            {!existAudio && <IconButton
-              aria-label='notExistAudio'
-              size='sm'
-              fontSize='1.4rem'
-              variant='ghost'
-              _hover={{
-                backgroundColor: '#00000033',
-              }}
-              isDisabled
-              icon={<MdVolumeOff color='#ffffff'/>}
-            />}
-            {existAudio && <IconButton
-              aria-label='audioCountols'
-              size='sm'
-              fontSize='1.4rem'
-              variant='ghost'
-              _hover={{
-                backgroundColor: '#00000033',
-              }}
-              icon={isMute || volume === 0 ? <MdVolumeOff color='#ffffff'/> : <MdVolumeUp color='#ffffff'/>}
-              onClick={onClickVolume}
-            />}
-            {existAudio && <Box width='4rem'>
-              <Slider
-                aria-label='volumnSlider'
-                defaultValue={(videoRef.current as HTMLVideoElement).volume * 100}
-                value={isMute ? 0 : volume * 100}
-                onChange={onChangeVolume}
-              >
-                <SliderTrack>
-                  <SliderFilledTrack/>
-                </SliderTrack>
-                <SliderThumb/>
-              </Slider>
-            </Box>}
-          </HStack>
-          <HStack>
-            {!wide && onWide && <IconButton
-              aria-label='wide'
-              size='sm'
-              fontSize='1.4rem'
-              variant='ghost'
-              _hover={{
-                backgroundColor: '#00000033',
-              }}
-              icon={<MdOutlineCrop32 color='#ffffff'/>}
-              onClick={onWideVideo}
-            />}
-            {wide && onNarrow && <IconButton
-              aria-label='wide'
-              size='sm'
-              fontSize='1.4rem'
-              variant='ghost'
-              _hover={{
-                backgroundColor: '#00000033',
-              }}
-              icon={<MdOutlineCrop32 color='#ffffff'/>}
-              onClick={onNarrowVideo}
-            />}
-            {currentLevel > -1 && <Text fontSize='0.8rem'>{levelList[currentLevel].height}</Text>}
-            <Menu>
-              <MenuButton
-                as={IconButton}
-                icon={<MdOutlineSettings color='#ffffff'/>}
-                aria-label='quality'
+      <Fade in={videoState === State.PAUSE || showVideoController}>
+        <VStack css={{
+          backgroundImage: 'linear-gradient(to top, #00000040, #ffffff00)',
+        }} position='absolute' bottom='0' padding='0.5rem' width='100%' alignItems='row'>
+          <Flex flexDirection='column' justifyContent='center' height='1rem' cursor='pointer' position='relative' onClick={onClickProgress}>
+            <Progress height='0.2rem' value={videoProgress} backgroundColor='#868e9690'/>
+          </Flex>
+          <HStack justifyContent='space-between'>
+            <HStack>
+              {onPrevious && <IconButton
+                aria-label='previuse'
                 size='sm'
                 fontSize='1.4rem'
                 variant='ghost'
                 _hover={{
                   backgroundColor: '#00000033',
                 }}
-              >
-              </MenuButton>
-              <MenuList>
-                {levelList.map((level, index) => <MenuItem
-                  key={'' + level.height + index}
-                  onClick={() => setQuality(level)}
+                icon={<MdSkipPrevious color='#ffffff'/>}
+                onClick={onPrevious}
+              />}
+              {videoState === State.PAUSE && <IconButton
+                aria-label='pause'
+                size='sm'
+                fontSize='1.4rem'
+                variant='ghost'
+                _hover={{
+                  backgroundColor: '#00000033',
+                }}
+                icon={<MdPlayArrow color='#ffffff'/>}
+                onClick={onClickPlayButton}
+              />}
+              {videoState === State.PLAY && <IconButton
+                aria-label='pause'
+                size='sm'
+                fontSize='1.4rem'
+                variant='ghost'
+                _hover={{
+                  backgroundColor: '#00000033',
+                }}
+                icon={<MdPause color='#ffffff'/>}
+                onClick={onClickPauseButton}
+              />}
+              {onNext && <IconButton
+                aria-label='next'
+                size='sm'
+                fontSize='1.4rem'
+                variant='ghost'
+                _hover={{
+                  backgroundColor: '#00000033',
+                }}
+                icon={<MdSkipNext color='#ffffff'/>}
+                onClick={onNext}
+              />}
+              <Text color='#ffffff' fontSize='0.8rem'>{`${currentTime} / ${totalTime}`}</Text>
+              {!existAudio && <IconButton
+                aria-label='notExistAudio'
+                size='sm'
+                fontSize='1.4rem'
+                variant='ghost'
+                _hover={{
+                  backgroundColor: '#00000033',
+                }}
+                isDisabled
+                icon={<MdVolumeOff color='#ffffff'/>}
+              />}
+              {existAudio && <IconButton
+                aria-label='audioCountols'
+                size='sm'
+                fontSize='1.4rem'
+                variant='ghost'
+                _hover={{
+                  backgroundColor: '#00000033',
+                }}
+                icon={isMute || volume === 0 ? <MdVolumeOff color='#ffffff'/> : <MdVolumeUp color='#ffffff'/>}
+                onClick={onClickVolume}
+              />}
+              {existAudio && <Box width='4rem'>
+                <Slider
+                  aria-label='volumnSlider'
+                  defaultValue={(videoRef.current as HTMLVideoElement).volume * 100}
+                  value={isMute ? 0 : volume * 100}
+                  onChange={onChangeVolume}
                 >
-                  {level.height}
-                </MenuItem>)}
-              </MenuList>
-            </Menu>
+                  <SliderTrack backgroundColor='#868e9690'>
+                    <SliderFilledTrack/>
+                  </SliderTrack>
+                  <SliderThumb/>
+                </Slider>
+              </Box>}
+            </HStack>
+            <HStack>
+              {!wide && onWide && <IconButton
+                aria-label='wide'
+                size='sm'
+                fontSize='1.4rem'
+                variant='ghost'
+                _hover={{
+                  backgroundColor: '#00000033',
+                }}
+                icon={<MdOutlineCrop32 color='#ffffff'/>}
+                onClick={onWideVideo}
+              />}
+              {wide && onNarrow && <IconButton
+                aria-label='wide'
+                size='sm'
+                fontSize='1.4rem'
+                variant='ghost'
+                _hover={{
+                  backgroundColor: '#00000033',
+                }}
+                icon={<MdOutlineCrop32 color='#ffffff'/>}
+                onClick={onNarrowVideo}
+              />}
+              {currentLevel > -1 && <Text fontSize='0.8rem'>{levelList[currentLevel].height}</Text>}
+              <Menu>
+                <MenuButton
+                  as={IconButton}
+                  icon={<MdOutlineSettings color='#ffffff'/>}
+                  aria-label='quality'
+                  size='sm'
+                  fontSize='1.4rem'
+                  variant='ghost'
+                  _hover={{
+                    backgroundColor: '#00000033',
+                  }}
+                >
+                </MenuButton>
+                <MenuList>
+                  {levelList.map((level, index) => <MenuItem
+                    key={'' + level.height + index}
+                    onClick={() => setQuality(level)}
+                  >
+                    {level.height}
+                  </MenuItem>)}
+                </MenuList>
+              </Menu>
+            </HStack>
           </HStack>
-        </HStack>
-      </VStack>
+        </VStack>
+      </Fade>
     </Box>
   </Box>;
 };
