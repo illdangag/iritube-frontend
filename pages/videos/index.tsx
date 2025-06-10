@@ -130,53 +130,60 @@ const VideosPage = (props: Props) => {
   };
 
   return <MainLayout title={(video && video.id ? (video.getTitle() + ' | ') : '') + 'Iritube'}>
-    <Box>
-      <VStack alignItems='stretch'>
-        <Flex width='100%' gap='1rem' alignItems='stretch'
-          flexDirection={{
-            'base': 'column',
-            'lg': wide ? 'column' : 'row',
-          }}
-        >
-          {(!video || !video?.id) && <Box width='100%' height='100%'>
-            <Card aspectRatio='16/9' ref={invalidVideoRef}>
-              <CardBody>
-                {!video && <Text>동영상이 존재하지 않습니다.</Text>}
-                {video && video.deleted && <Text>삭제된 동영상입니다.</Text>}
-                {video && !video.deleted && video.share === VideoShare.PRIVATE && <Text>비공개 동영상입니다.</Text>}
-              </CardBody>
-            </Card>
-          </Box>}
-          {video && video.id && !playList && <VideoPlayer
-            video={video}
-            ref={videoRef}
-            autoPlay={true}
-            onEnded={onEndedVideoPlayer}
-          />}
-          {video && video.id && playList && <VideoPlayer
-            video={video}
-            ref={videoRef}
-            autoPlay={true}
-            onEnded={onEndedVideoPlayer}
-            onPrevious={onPreviousVideo}
-            onNext={onNextVideo}
-            onWide={onWideVideo}
-            onNarrow={onNarrowVideo}
-          />}
-          {playList && <Box>
-            <PlayListVideoListView
-              width={{ 'base': '100%', 'lg': wide ? '100%' : '20rem', }}
-              height={{ 'base': 'none', 'lg': wide ? 'none' : videoPlayerHeight, }}
-              maxHeight={{ 'base': '18rem', 'lg': wide ? '18rem' : 'none', }}
-              playList={playList}
-              videoKey={videoKey}
-            />
-          </Box>}
-        </Flex>
-        {video && video.id && <VideoDescriptionArea video={video}/>}
-        {video && video.id && <VideoCommentArea video={video} videoCommentPage={videoCommentPage}/>}
-      </VStack>
-    </Box>
+    <VStack alignItems='stretch'>
+      <Flex width='100%' gap='1rem' alignItems='stretch'
+        flexDirection={{
+          'base': 'column',
+          'lg': wide ? 'column' : 'row',
+        }}
+      >
+        {/* 동영상이 유효하지 않은 경우 */}
+        {(!video || !video?.id) && <Box width='100%' height='100%'>
+          <Card aspectRatio='16/9' ref={invalidVideoRef}>
+            <CardBody>
+              {!video && <Text>동영상이 존재하지 않습니다.</Text>}
+              {video && video.deleted && <Text>삭제된 동영상입니다.</Text>}
+              {video && !video.deleted && video.share === VideoShare.PRIVATE && <Text>비공개 동영상입니다.</Text>}
+            </CardBody>
+          </Card>
+        </Box>}
+
+        {/* 단일 동영상 */}
+        {video && video.id && !playList && <VideoPlayer
+          video={video}
+          ref={videoRef}
+          autoPlay={true}
+          onEnded={onEndedVideoPlayer}
+        />}
+
+        {/* 재생 목록에 포함된 동영상 */}
+        {video && video.id && playList && <VideoPlayer
+          video={video}
+          ref={videoRef}
+          autoPlay={true}
+          onEnded={onEndedVideoPlayer}
+          onPrevious={onPreviousVideo}
+          onNext={onNextVideo}
+          onWide={onWideVideo}
+          onNarrow={onNarrowVideo}
+        />}
+        {playList && <Box>
+          <PlayListVideoListView
+            width={{ 'base': '100%', 'lg': wide ? '100%' : '20rem', }}
+            height={{ 'base': 'none', 'lg': wide ? 'none' : videoPlayerHeight, }}
+            maxHeight={{ 'base': '18rem', 'lg': wide ? '18rem' : 'none', }}
+            playList={playList}
+            videoKey={videoKey}
+          />
+        </Box>}
+      </Flex>
+
+      {/* 동영상 설명 */}
+      {video && video.id && <VideoDescriptionArea video={video}/>}
+
+      {/* 동영상 댓글 */}
+      {video && video.id && <VideoCommentArea video={video} videoCommentPage={videoCommentPage}/>}
+    </VStack>
   </MainLayout>;
 };
 
