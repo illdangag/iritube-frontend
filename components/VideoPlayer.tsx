@@ -240,7 +240,7 @@ const VideoPlayer = ({
         <video style={{
           width: '100%',
           height: '100%',
-        }} ref={videoRef} autoPlay={autoPlay} onContextMenu={onContextMenu} onEnded={onEnded}/>
+        }} ref={videoRef} playsInline={true} autoPlay={autoPlay} onContextMenu={onContextMenu} onEnded={onEnded}/>
       </VStack>
       <Fade in={showCenterPlay}>
         <Box position='absolute' top='50%' left='50%' transform='translate(-50%, -50%)'>
