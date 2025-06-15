@@ -14,7 +14,7 @@ type Props = {
   onNext?: () => void;
   onWide?: () => void;
   onNarrow?: () => void;
-}
+};
 
 enum State {
   PLAY = 'PLAY',
@@ -235,8 +235,8 @@ const VideoPlayer = ({
   };
 
   return <Box width='100%' height='100%' ref={ref} onMouseMove={onMouseMoveVideo} onMouseLeave={onMouseLeaveVideo}>
-    <Box position='relative' backgroundColor='black' borderRadius='lg' overflow='hidden'>
-      <VStack aspectRatio='16/9'>
+    <Box position='relative' width='100%' height='100%' backgroundColor='black' borderRadius='lg' overflow='hidden'>
+      <VStack width='100%' height='100%' justifyItems='center' alignItems='center' aspectRatio='16/9'>
         <video style={{
           width: '100%',
           height: '100%',

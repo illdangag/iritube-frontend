@@ -1,7 +1,7 @@
 import React, { useEffect, useState, } from 'react';
 import { GetServerSideProps, } from 'next';
 import { useRouter, } from 'next/router';
-import { Button, Card, CardBody, CardHeader, Center, Image, Flex, Heading, Spacer, useToast, VStack, Text, } from '@chakra-ui/react';
+import { Button, Card, CardBody, CardHeader, Center, Image, Flex, Heading, Spacer, useToast, VStack, } from '@chakra-ui/react';
 import { FcGoogle, } from 'react-icons/fc';
 import { EmptyLayout, } from '@root/layouts';
 

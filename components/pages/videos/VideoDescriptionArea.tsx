@@ -22,7 +22,6 @@ const VideoDescriptionArea = ({
   const [openRequireLoginAlert, setOpenRequireLoginAlert,] = useState<boolean>(false);
 
   const onClickAddPlayListButton = () => {
-    console.log(account);
     if (account.id) {
       setOpenAddPlayListAlert(true);
     } else {

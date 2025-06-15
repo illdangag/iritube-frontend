@@ -75,7 +75,7 @@ export function removeTokenInfoByCookies (context: GetServerSidePropsContext): v
 }
 
 export function getTokenInfo (): Promise<TokenInfo | null> {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve, _reject) => {
     const tokenInfo: TokenInfo | null = BrowserStorage.getTokenInfo();
 
     if (tokenInfo === null) {
@@ -86,8 +86,7 @@ export function getTokenInfo (): Promise<TokenInfo | null> {
           BrowserStorage.setTokenInfo(newTokenInfo);
           resolve(newTokenInfo);
         })
-        .catch(error => {
-          // reject(error);
+        .catch(_error => {
           resolve(null);
         });
     } else {
