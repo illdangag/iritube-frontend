@@ -9,6 +9,7 @@ import { getTokenInfo, } from '@root/utils';
 type Props = {
   video: Video;
   autoPlay?: boolean;
+  isRounded?: boolean;
   onEnded?: ReactEventHandler<HTMLVideoElement>;
   onPrevious?: () => void;
   onNext?: () => void;
@@ -38,6 +39,7 @@ const hls = new Hls({
 const VideoPlayer = ({
   video,
   autoPlay = false,
+  isRounded = true,
   onEnded = () => {},
   onPrevious,
   onNext,
@@ -235,7 +237,7 @@ const VideoPlayer = ({
   };
 
   return <Box width='100%' height='100%' ref={ref} onMouseMove={onMouseMoveVideo} onMouseLeave={onMouseLeaveVideo}>
-    <Box position='relative' width='100%' height='100%' backgroundColor='black' borderRadius='lg' overflow='hidden'>
+    <Box position='relative' width='100%' height='100%' backgroundColor='black' borderRadius={isRounded && 'lg' || 'none'} overflow='hidden'>
       <VStack width='100%' height='100%' justifyItems='center' alignItems='center' aspectRatio='16/9'>
         <video style={{
           width: '100%',
