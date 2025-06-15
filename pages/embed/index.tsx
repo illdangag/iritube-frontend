@@ -1,6 +1,6 @@
 import {} from 'react';
 import { GetServerSideProps, } from 'next/types';
-import { Box, } from '@chakra-ui/react';
+import { Box, Text, } from '@chakra-ui/react';
 import { VideoPlayer, } from '@root/components';
 
 import { TokenInfo, Video, } from '@root/interfaces';
@@ -14,7 +14,10 @@ const EmbedPage = (props: Props) => {
   const video: Video | null = props.video ? Video.getInstance(props.video) : null;
 
   return (<Box height='100vh'>
-    <VideoPlayer video={video} isRounded={false}/>
+    {(!video || !video.id) && <Box padding='1rem'>
+      <Text>동영상이 존재하지 않습니다</Text>
+    </Box>}
+    {video && video.id && <VideoPlayer video={video} isRounded={false}/>}
   </Box>);
 };
 
@@ -30,16 +33,24 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         video: null,
       },
     };
-  } else {
-    try {
-      video = await iritubeAPI.getVideo(tokenInfo, videoKey);
-    } catch (error) {
-      console.error(error);
-    }
+  }
 
+  try {
+    video = await iritubeAPI.getVideo(tokenInfo, videoKey);
+  } catch {
+    video = null;
+  }
+
+  if (video) {
     return {
       props: {
         video: JSON.parse(JSON.stringify(video)),
+      },
+    };
+  } else {
+    return {
+      props: {
+        video: null,
       },
     };
   }
