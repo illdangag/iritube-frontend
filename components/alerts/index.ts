@@ -4,5 +4,6 @@ import PlayListVideoAddAlert from './PlayListVideoAddAlert';
 import PlayListVideoDeleteAlert from './PlayListVideoDeleteAlert';
 import PlayListDeleteAlert from './PlayListDeleteAlert';
 import RequireLoginAlert from './RequireLoginAlert';
+import VideoEmbedPopup from './VideoEmbedPopup';
 
-export { VideoDeleteAlert, PlayListCreateAlert, PlayListVideoAddAlert, PlayListVideoDeleteAlert, PlayListDeleteAlert, RequireLoginAlert, };
+export { VideoDeleteAlert, PlayListCreateAlert, PlayListVideoAddAlert, PlayListVideoDeleteAlert, PlayListDeleteAlert, RequireLoginAlert, VideoEmbedPopup, };

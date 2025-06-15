@@ -1,8 +1,8 @@
 import { memo, useState, } from 'react';
 import NextLink from 'next/link';
-import { Box, Button, Card, CardBody, Heading, HStack, Link, Spacer, Text, VStack, } from '@chakra-ui/react';
-import { MdPlaylistAdd, } from 'react-icons/md';
-import { PlayListVideoAddAlert, RequireLoginAlert, } from '@root/components/alerts';
+import { Box, Button, Card, CardBody, Heading, HStack, Link, Spacer, Text, VStack, ButtonGroup, } from '@chakra-ui/react';
+import { MdPlaylistAdd, MdShare, } from 'react-icons/md';
+import { PlayListVideoAddAlert, RequireLoginAlert, VideoEmbedPopup, } from '@root/components/alerts';
 
 import { useRecoilValue, } from 'recoil';
 import { accountAtom, } from '@root/recoil';
@@ -20,6 +20,7 @@ const VideoDescriptionArea = ({
 
   const [openAddPlayListAlert, setOpenAddPlayListAlert,] = useState<boolean>(false);
   const [openRequireLoginAlert, setOpenRequireLoginAlert,] = useState<boolean>(false);
+  const [openVideoEmbedPopup, setOpenVideoEmbedPopup,] = useState<boolean>(false);
 
   const onClickAddPlayListButton = () => {
     if (account.id) {
@@ -27,7 +28,6 @@ const VideoDescriptionArea = ({
     } else {
       setOpenRequireLoginAlert(true);
     }
-
   };
 
   const onClosePlayListVideoAddAlert = () => {
@@ -40,6 +40,14 @@ const VideoDescriptionArea = ({
 
   const onCloseRequireLoginAlert = () => {
     setOpenRequireLoginAlert(false);
+  };
+
+  const onClickShareButton = () => {
+    setOpenVideoEmbedPopup(true);
+  };
+
+  const onCloseVideoEmbedPopup = () => {
+    setOpenVideoEmbedPopup(false);
   };
 
   return <VStack alignItems='stretch'>
@@ -56,14 +64,10 @@ const VideoDescriptionArea = ({
             <Text fontWeight={700}>{'조회수 ' + video.getViewCount()}</Text>
             <Text fontWeight={700}>{video.getUpdateDate()}</Text>
             <Spacer/>
-            <Button
-              size='xs'
-              variant='outline'
-              leftIcon={<MdPlaylistAdd/>}
-              onClick={onClickAddPlayListButton}
-            >
-              재생 목록 추가
-            </Button>
+            <ButtonGroup size='xs' variant='outline'>
+              <Button leftIcon={<MdShare/>} onClick={onClickShareButton}>공유 하기</Button>
+              <Button leftIcon={<MdPlaylistAdd/>} onClick={onClickAddPlayListButton}>재생 목록 추가</Button>
+            </ButtonGroup>
           </HStack>
           <HStack>
             {video.tags.map((tag, index) =>
@@ -86,6 +90,11 @@ const VideoDescriptionArea = ({
       open={openRequireLoginAlert}
       message='재생 목록 기능을 사용하기 위해서는 로그인이 필요합니다.'
       onClose={onCloseRequireLoginAlert}
+    />
+    <VideoEmbedPopup
+      video={video}
+      open={openVideoEmbedPopup}
+      onClose={onCloseVideoEmbedPopup}
     />
   </VStack>;
 };
