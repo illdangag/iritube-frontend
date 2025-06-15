@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState, } from 'react';
+import { ReactNode, useEffect, useRef, useState, } from 'react';
 import { GetServerSideProps, } from 'next/types';
 import { useRouter, } from 'next/router';
-import { Box, Card, CardBody, Flex, Text, VStack, } from '@chakra-ui/react';
+import { Box, Card, CardBody, Flex, HStack, Text, VStack, } from '@chakra-ui/react';
 import { MainLayout, } from '@root/layouts';
 import { PlayListVideoListView, VideoPlayer, } from '@root/components';
 import { VideoCommentArea, VideoDescriptionArea, } from '@root/components/pages/videos';
@@ -32,10 +32,10 @@ const VideosPage = (props: Props) => {
 
   useEffect(() => {
     const windowResizeCallback = throttle(() => {
-      setVideoPlayerHeight(getPlayListHeight());
+      setVideoPlayerHeight(getVideoPlayHeight());
     }, 100);
 
-    setVideoPlayerHeight(getPlayListHeight());
+    setVideoPlayerHeight(getVideoPlayHeight());
     window.addEventListener('resize', windowResizeCallback);
 
     return () => {
@@ -43,12 +43,10 @@ const VideosPage = (props: Props) => {
     };
   }, []);
 
-  useEffect(() => {
-    setVideoPlayerHeight(getPlayListHeight());
-  }, [wide, playList,]);
-
-  const getPlayListHeight = () => {
-    return videoRef.current ? videoRef.current.offsetHeight : invalidVideoRef.current.offsetHeight;
+  const getVideoPlayHeight = () => {
+    const minHeight: number = 400;
+    const height: number = window.innerHeight - 180;
+    return Math.max(minHeight, height);
   };
 
   const onEndedVideoPlayer = () => {
@@ -143,38 +141,38 @@ const VideosPage = (props: Props) => {
       </Box>}
 
       {/* 단일 동영상 */}
-      {(video && video.id && !playList && <>
+      {(video && video.id && !playList && <VideoPlayerArea>
         <VideoPlayer
           video={video}
           ref={videoRef}
           autoPlay={true}
         />
-      </>)}
+      </VideoPlayerArea>)}
 
       {/* 재생 목록에 포함된 동영상 */}
-      {(video && video.id && playList && <Flex width='100%' gap='1rem' alignItems='stretch'
-        flexDirection={{
-          'base': 'column',
-          'lg': wide ? 'column' : 'row',
-        }}>
-        <VideoPlayer
-          video={video}
-          ref={videoRef}
-          autoPlay={true}
-          onEnded={onEndedVideoPlayer}
-          onPrevious={onPreviousVideo}
-          onNext={onNextVideo}
-          onWide={onWideVideo}
-          onNarrow={onNarrowVideo}
-        />
-        <PlayListVideoListView
-          width={{ 'base': '100%', 'lg': wide ? '100%' : '20rem', }}
-          height={{ 'base': 'none', 'lg': wide ? 'none' : videoPlayerHeight, }}
-          maxHeight={{ 'base': '18rem', 'lg': wide ? '18rem' : 'none', }}
-          playList={playList}
-          videoKey={videoKey}
-        />
-      </Flex>)}
+      {/*{(video && video.id && playList && <Flex width='100%' gap='1rem' alignItems='stretch'*/}
+      {/*  flexDirection={{*/}
+      {/*    'base': 'column',*/}
+      {/*    'lg': wide ? 'column' : 'row',*/}
+      {/*  }}>*/}
+      {/*  <VideoPlayer*/}
+      {/*    video={video}*/}
+      {/*    ref={videoRef}*/}
+      {/*    autoPlay={true}*/}
+      {/*    onEnded={onEndedVideoPlayer}*/}
+      {/*    onPrevious={onPreviousVideo}*/}
+      {/*    onNext={onNextVideo}*/}
+      {/*    onWide={onWideVideo}*/}
+      {/*    onNarrow={onNarrowVideo}*/}
+      {/*  />*/}
+      {/*  <PlayListVideoListView*/}
+      {/*    width={{ 'base': '100%', 'lg': wide ? '100%' : '20rem', }}*/}
+      {/*    height={{ 'base': 'none', 'lg': wide ? 'none' : videoPlayerHeight, }}*/}
+      {/*    maxHeight={{ 'base': '18rem', 'lg': wide ? '18rem' : 'none', }}*/}
+      {/*    playList={playList}*/}
+      {/*    videoKey={videoKey}*/}
+      {/*  />*/}
+      {/*</Flex>)}*/}
 
       {/* 동영상 설명 */}
       {video && video.id && <VideoDescriptionArea video={video}/>}
@@ -241,6 +239,45 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       videoCommentPage: videoCommentPage,
     },
   };
+};
+
+type VideoPlayerAreaProp = {
+  children?: ReactNode,
+};
+
+const VideoPlayerArea = ({
+  children,
+}: VideoPlayerAreaProp) => {
+  const ref = useRef<HTMLDivElement>();
+
+  const [videoPlayerAreaHeight, setVideoPlayerAreaHeight,] = useState<number>(0);
+
+  useEffect(() => {
+    const windowResizeCallback = throttle(() => {
+      const height: number = getVideoPlayAreaHeight();
+      setVideoPlayerAreaHeight(height);
+    }, 50);
+
+    const height: number = getVideoPlayAreaHeight();
+    setVideoPlayerAreaHeight(height);
+
+    window.addEventListener('resize', windowResizeCallback);
+
+    return () => {
+      window.removeEventListener('resize', windowResizeCallback);
+    };
+  }, []);
+
+  const getVideoPlayAreaHeight = (): number => {
+    const minHeight: number = 400;
+    const height: number = window.innerHeight - 180;
+
+    return Math.max(minHeight, height);
+  };
+
+  return <VStack justifyContent='stretch' alignItems='stretch' ref={ref} height={videoPlayerAreaHeight}>
+    {children}
+  </VStack>;
 };
 
 export default VideosPage;
